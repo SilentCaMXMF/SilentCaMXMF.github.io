@@ -212,3 +212,76 @@ footer {
 #menu-list li:hover {
     background-color: #f4f4f4;
 }
+
+/* Contacts Section */
+#contacts {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+#contacts li {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+#contacts li img {
+    width: 30px; /* Thumbnail size */
+    height: 30px;
+    border-radius: 50%; /* Optional: make the thumbnails circular */
+    object-fit: cover;
+}
+
+#contacts li a {
+    text-decoration: none;
+    color: #4CAF50;
+    font-family: 'Roboto', sans-serif;
+    font-size: 1em;
+}
+
+#contacts li a:hover {
+    text-decoration: underline;
+}
+
+/* Skills Section Container */
+#skills-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+#skills {
+    flex: 0 0 66%; /* Take up 2/3 of the horizontal space */
+    max-width: 66%; /* Ensure it doesn't exceed 2/3 of the width */
+    margin: 0 auto; /* Center the table horizontally */
+    border-collapse: collapse;
+}
+
+#skills th, #skills td {
+    border: 1px solid #ddd;
+    padding: 10px;
+    text-align: left;
+}
+
+#skills th {
+    background-color: #4CAF50;
+    color: white;
+}
+
+#skills td {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.skill-icon {
+    width: 32px; /* Set a consistent width */
+    height: 32px; /* Set a consistent height */
+    object-fit: contain; /* Ensure the image fits within the dimensions without distortion */
+    margin-right: 10px; /* Add spacing between the icon and the text */
+    vertical-align: middle; /* Align the icon with the text */
+}
