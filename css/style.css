@@ -93,3 +93,122 @@ footer {
     font-family: 'Lora', Georgia, serif;
     width: 100vw;
 }
+
+/* Summary Section */
+.summary {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.summary img {
+    width: 150px; /* Adjust the width to make it proportional */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 50%;
+    border: 2px solid #4CAF50;
+}
+
+.summary p {
+    flex: 1; /* Allow the text to take up the remaining space */
+    font-size: 1em; /* Adjust font size if needed */
+    margin: 0;
+}
+
+/* GitHub Repositories Section */
+#github-repos {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    justify-content: center;
+    align-items: center;
+}
+
+#github-repos .repo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    width: 200px; /* Set a consistent width for all repo cards */
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+#github-repos .repo:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+#github-repos .repo img {
+    width: 100%; /* Make the image fit the width of the card */
+    height: auto; /* Maintain aspect ratio */
+    max-height: 150px; /* Limit the height to keep it proportional */
+    object-fit: cover; /* Ensure the image fills the space without distortion */
+}
+
+#github-repos .repo p {
+    margin: 10px 0;
+    font-size: 1em; /* Adjust font size for consistency */
+    color: #4CAF50;
+    font-family: 'Roboto', sans-serif;
+}
+
+/* Dropdown Menu */
+#dropdown-menu {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+}
+
+#menu-button {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#menu-button:hover {
+    background-color: #45a049;
+}
+
+#menu-list {
+    display: none;
+    position: absolute;
+    top: 50px;
+    left: 0;
+    background-color: white;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    list-style: none;
+    padding: 10px 0;
+    margin: 0;
+    width: 200px;
+    max-height: 300px;
+    overflow-y: auto; /* Make the menu scrollable */
+}
+
+#menu-list li {
+    padding: 10px 15px;
+}
+
+#menu-list li a {
+    text-decoration: none;
+    color: #333;
+    font-family: 'Roboto', sans-serif;
+}
+
+#menu-list li a:hover {
+    color: #4CAF50;
+}
+
+#menu-list li:hover {
+    background-color: #f4f4f4;
+}
