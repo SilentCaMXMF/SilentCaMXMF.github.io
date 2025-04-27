@@ -253,42 +253,36 @@ footer {
     text-decoration: underline;
 }
 
-/* Skills Section Container */
+/* Skills Section */
 #skills-section {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    text-align: center;
     padding: 20px;
 }
 
-#skills {
-    flex: 0 0 66%; /* Take up 2/3 of the horizontal space */
-    max-width: 66%; /* Ensure it doesn't exceed 2/3 of the width */
-    margin: 0 auto; /* Center the table horizontally */
-    border-collapse: collapse;
-}
-
-#skills th, #skills td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: left;
-}
-
-#skills th {
-    background-color: #4CAF50;
-    color: white;
-}
-
-#skills td {
+#skills-container {
     display: flex;
-    align-items: center;
-    gap: 10px;
+    flex-wrap: wrap; /* Allow wrapping to the next line if needed */
+    justify-content: center; /* Center the skills horizontally */
+    gap: 20px; /* Add spacing between each skill */
+    margin-top: 20px;
+}
+
+.skill {
+    display: flex;
+    flex-direction: column; /* Align icon and text vertically */
+    align-items: center; /* Center align the content */
+    width: 120px; /* Set a fixed width for each skill */
+    text-align: center;
 }
 
 .skill-icon {
-    width: 32px; /* Set a consistent width */
-    height: 32px; /* Set a consistent height */
-    object-fit: contain; /* Ensure the image fits within the dimensions without distortion */
-    margin-right: 10px; /* Add spacing between the icon and the text */
-    vertical-align: super; /* Align the icon with the text */
+    width: 100px; /* Set a consistent size for icons */
+    height: 100px;
+    object-fit: contain; /* Ensure the image fits without distortion */
+    margin-bottom: 10px; /* Add spacing between the icon and text */
+}
+
+.skill p {
+    font-size: 1.12em;
+    margin: 0;
 }
