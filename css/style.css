@@ -68,11 +68,11 @@ header {
 
 header h1 {
     margin: 0;
-    font-size: 3em;
+    font-size: 5em;
 }
 
 header p {
-    font-size: 1.5em;
+    font-size: 3em;
     margin: 10px 0 0;
 }
 
@@ -112,6 +112,13 @@ footer {
     flex: 1; /* Allow the text to take up the remaining space */
     font-size: 1em; /* Adjust font size if needed */
     margin: 0;
+}
+
+/* Summary Section */
+#summary-section p {
+    font-size: 1.2em; /* Increase the font size */
+    line-height: 1.6; /* Improve readability with proper line spacing */
+    margin-bottom: 10px; /* Add spacing between paragraphs */
 }
 
 /* GitHub Repositories Section */
@@ -283,5 +290,5 @@ footer {
     height: 32px; /* Set a consistent height */
     object-fit: contain; /* Ensure the image fits within the dimensions without distortion */
     margin-right: 10px; /* Add spacing between the icon and the text */
-    vertical-align: middle; /* Align the icon with the text */
+    vertical-align: super; /* Align the icon with the text */
 }
