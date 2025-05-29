@@ -49,7 +49,7 @@ This project showcases professional experience, skills, and contact information 
 ---
 
 ## 📁 Project Structure
-
+```bash
 bio_portfolio_NEW/
 >>>>>>> 970049d (Create README.md)
 ├── css/
@@ -82,7 +82,7 @@ Have suggestions? Feel free to open an issue or submit a pull request!
 │ └── build-a-personal-portfolio-webpage.txt
 ├── index.html
 └── .vscode/
-
+```
 
 ---
 
