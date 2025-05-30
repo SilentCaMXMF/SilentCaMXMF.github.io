@@ -99,35 +99,37 @@
         </section>
 
         <section id="github-repos-section">
-            <h2>GitHub Repositories</h2>
-            <div id="github-repos">
-                <div class="repo">
-                    <a href="https://github.com/SilentCaMXMF/DebianUpdater" target="_blank">
-                        <img src="./img/debianUpdater_thumbnail.png" alt="Repository 1 Thumbnail">
-                        <p>Debian Auto updater</p>
-                    </a>
-                </div>
-                <div class="repo">
-                    <a href="https://github.com/SilentCaMXMF/Gmail-signature-new" target="_blank">
-                        <img src="./img/gmailSig_thumbnail.png" alt="Repository 2 Thumbnail">
-                        <p>Gmail-signature</p>
-                    </a>
-                </div>
-            </div>
-        </section>
+    <h2>GitHub Repositories</h2>
+    
+    <!-- Filter Controls -->
+    <div class="mb-3">
+        <input type="text" id="repo-filter" class="form-control" placeholder="Filter repositories...">
+    </div>
+    <div class="mb-3">
+        <select id="repo-sort" class="form-select">
+            <option value="name">Sort by Name</option>
+            <option value="updated">Sort by Last Updated</option>
+            <option value="stars">Sort by Stars</option>
+        </select>
+    </div>
+
+    <!-- Repositories Container -->
+    <div id="github-repos" class="row gy-4"></div>
+</section>
+
 
         <footer>
             <h2>Contacts</h2>
             <ul id="contacts">
                 <li>
-                    <a href="https://www.sololearn.com/profile/27808185" target="_blank">
-                        <img src="./img/sololearn_thumbnail.png" alt="Sololearn Thumbnail">
-                        Sololearn
-                    </a>
+                    <a href="https://www.freecodecamp.org/fccf49151df-4d61-4fca-95e4-34786a2857ac" target="_blank">
+            <img src="./img/fCC.png" alt="freeCodeCamp Thumbnail">
+            freeCodeCamp
+        </a>
                 </li>
                 <li>
                     <a href="https://www.linkedin.com/in/pedro-calado-33113926/" target="_blank">
-                        <img src="./img/linkedin_thumbnail.png" alt="LinkedIn Thumbnail">
+                        <img src="./img/linkedin_circle_color-32.png" alt="LinkedIn Thumbnail">
                         LinkedIn
                     </a>
                 </li>
