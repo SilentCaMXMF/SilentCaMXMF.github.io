@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # 🌐 SilentCaMXMF Portfolio
 
 Welcome to my personal portfolio website, built using HTML, CSS, and JavaScript, and hosted on **GitHub Pages**.
@@ -24,12 +23,6 @@ This site showcases my professional profile, coding projects, and contact inform
 - JavaScript (Vanilla)
 - GitHub Pages (Deployment)
 
-## 📂 Folder Structure
-
-```bash
-📁 bio_portfolio/
-├── index.html
-```
 
 # 💼 Bio Portfolio – SilentCaMXMF
 
@@ -73,12 +66,15 @@ Have suggestions? Feel free to open an issue or submit a pull request!
 1. **Clone the Repository**
    ```bash
    git clone https://github.com/SilentCaMXMF/bio_portfolio_NEW.git
-
+   ```
+   
 2. **Navigate to the Project Directory**
+```bash
    cd bio_portfolio_NEW
-3. **Open index.html in Your Browser**
+```
+4. **Open index.html in Your Browser**
    You can double-click the index.html file or use a live server extension in your code editor.
 
 ## 📄 License
 This project is open-source and available under the MIT License.
->>>>>>> 970049d (Create README.md)
+
