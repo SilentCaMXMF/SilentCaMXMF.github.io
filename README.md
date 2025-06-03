@@ -29,7 +29,8 @@ This site showcases my professional profile, coding projects, and contact inform
 ```bash
 📁 bio_portfolio/
 ├── index.html
-=======
+```
+
 # 💼 Bio Portfolio – SilentCaMXMF
 
 A responsive personal portfolio website built with HTML, CSS, and JavaScript.  
