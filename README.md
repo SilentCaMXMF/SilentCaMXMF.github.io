@@ -49,19 +49,6 @@ This project showcases professional experience, skills, and contact information 
 
 ---
 
-## 📁 Project Structure
-```bash
-bio_portfolio_NEW/
->>>>>>> 970049d (Create README.md)
-├── css/
-│ └── styles.css
-├── js/
-│ └── script.js
-<<<<<<< HEAD
-└── img/
-└── [Thumbnails, icons, etc.]
-
-```
 
 ## ✨ Future Enhancements
 
@@ -77,13 +64,7 @@ Here are some ideas and planned features to improve the portfolio:
 
 Have suggestions? Feel free to open an issue or submit a pull request!
 =======
-├── img/
-│ └── [images and icons]
-├── Documents/
-│ └── build-a-personal-portfolio-webpage.txt
-├── index.html
-└── .vscode/
-```
+
 
 ---
 
