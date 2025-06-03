@@ -11,7 +11,7 @@ body {
     background: linear-gradient(120deg, #4CAF50, #FF8C00, #3B5998, #8B0000);
     background-size: 400% 400%; /* For smooth animation */
     animation: gradientAnimation 15s ease infinite; /* Infinite gradient animation */
-    color: #333;
+    color: #666
 }
 
 /* Gradient Animation */
