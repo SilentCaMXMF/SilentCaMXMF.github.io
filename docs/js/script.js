@@ -1,9 +1,19 @@
-document.getElementById('menu-button').addEventListener('click', function () {
-    const menuList = document.getElementById('menu-list');
-    if (menuList.style.display === 'block') {
-        menuList.style.display = 'none';
-    } else {
-        menuList.style.display = 'block';
+document.getElementById('menu-button').addEventListener('click', function (e) {
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    dropdownMenu.classList.toggle('visible');
+    e.stopPropagation(); // Prevent click from bubbling to document
+});
+
+// Hide dropdown when clicking outside
+document.addEventListener('click', function (e) {
+    const dropdownMenu = document.getElementById('dropdown-menu');
+    const menuButton = document.getElementById('menu-button');
+    if (
+        dropdownMenu.classList.contains('visible') &&
+        !dropdownMenu.contains(e.target) &&
+        e.target !== menuButton
+    ) {
+        dropdownMenu.classList.remove('visible');
     }
 });
 

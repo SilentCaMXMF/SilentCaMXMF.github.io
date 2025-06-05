@@ -180,13 +180,17 @@ header h1 {
   position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  background: rgba(0, 0, 0, 0.95);
-  z-index: 999;
-  transform: translateY(-150%);
+  width: 10vw; /* Make the dropdown menu about 1/10th of the screen width */
+  min-width: 120px;   /* Optional: set a minimum width for usability */
+  max-width: 180px;   /* Optional: set a maximum width */
+  background: rgba(0, 0, 0, 0.97);
+  z-index: 2000;
+  border-radius: 0 0 12px 0;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+  transform: translateY(-100%);
   transition: transform 0.4s ease;
-  border-radius: 0 0 12px 0; /* Optional: rounded bottom-right corner */
-  box-shadow: 0 2px 12px rgba(0,0,0,0.3); /* Optional: subtle shadow */
+  padding-top: 60px; /* Adjust if you want space below the navbar */
+  height: auto; /* Let the menu grow with content */
 }
 
 #dropdown-menu.visible {
@@ -213,6 +217,15 @@ header h1 {
 
 #menu-list a:hover {
   color: var(--primary-color);
+}
+
+@media (max-width: 768px) {
+  #dropdown-menu {
+    width: 80vw; /* Slightly wider on small screens if you want */
+    min-width: 180px;
+    max-width: 100vw;
+    padding-top: 60px;
+  }
 }
 
 /* Section Styles */
