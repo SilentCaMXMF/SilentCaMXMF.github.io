@@ -3,162 +3,353 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <meta name="description" content="Pedro Calado - Junior Software Engineer portfolio">
+        <meta name="description" content="Pedro Calado - Junior Software Engineer portfolio showcasing projects, skills, and experience">
+        <meta name="keywords" content="software engineer, web developer, portfolio, Pedro Calado, JavaScript, React, HTML, CSS">
         <meta name="author" content="Pedro Calado">
-        <meta property="og:title" content="Pedro Calado Portfolio">
+        <meta property="og:title" content="Pedro Calado - Software Engineer Portfolio">
+        <meta property="og:description" content="Portfolio showcasing my projects, skills and experience as a Junior Software Engineer">
         <meta property="og:image" content="https://github.com/SilentCaMXMF/SilentCaMXMF.github.io/blob/main/img/pedro_tipoGhibli_passe.jpg">
-        <title>Bio Portfolio</title>
+        <meta property="og:url" content="https://silentcamxmf.github.io/">
+        <title>Pedro Calado | Junior Software Engineer</title>
         <link rel="icon" href="./img/favicon.ico" type="image/x-icon">
         <link rel="icon" type="image/png" sizes="32x32" href="./img/favicon-32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="./img/favicon-16x16.png">
 
+        <!-- Preload important resources -->
+        <link rel="preload" href="./css/style.css" as="style">
+        <link rel="preload" href="./js/script.js" as="script">
 
         <link rel="stylesheet" href="./css/style.css">
         <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+        <!-- Font Awesome for icons -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     </head>
     <body>
-        <header>
-            <h1>Pedro Calado</h1>
-            <p id="position">Junior Software Engineer</p>
+        <!-- Skip to content link for accessibility -->
+        <a href="#main-content" class="skip-link">Skip to main content</a>
+
+        <header class="sticky-top">
+            <div class="container">
+                <div class="header-content">
+                    <div>
+                        <h1>Pedro Calado</h1>
+                        <p id="position">Junior Software Engineer</p>
+                    </div>
+                    <!-- Main Navigation -->
+                    <nav id="main-nav">
+                        <ul>
+                            <li><a href="#summary-section">About</a></li>
+                            <li><a href="#experience-section">Experience</a></li>
+                            <li><a href="#education-section">Education</a></li>
+                            <li><a href="#skills-section">Skills</a></li>
+                            <li><a href="#github-repos-section">Projects</a></li>
+                            <li><a href="#contacts">Contact</a></li>
+                        </ul>
+                    </nav>
+                    <!-- Mobile menu button -->
+                    <button id="menu-button" aria-label="Toggle menu" aria-expanded="false">☰</button>
+                </div>
+            </div>
         </header>
 
-        <!-- Dropdown Menu -->
-        <nav id="dropdown-menu">
-            <button id="menu-button">☰ Menu</button>
+        <!-- Mobile Dropdown Menu -->
+        <nav id="dropdown-menu" class="hidden">
             <ul id="menu-list">
-                <li><a href="#summary-section">Summary</a></li>
+                <li><a href="#summary-section">About</a></li>
                 <li><a href="#experience-section">Experience</a></li>
                 <li><a href="#education-section">Education</a></li>
                 <li><a href="#skills-section">Skills</a></li>
-                <li><a href="#github-repos-section">GitHub Repositories</a></li>
-                <li><a href="#contacts">Contacts</a></li>
+                <li><a href="#github-repos-section">Projects</a></li>
+                <li><a href="#contacts">Contact</a></li>
             </ul>
         </nav>
 
-        <section id="summary-section" class="container">
-            <h2>Summary</h2>
-            <div class="row align-items-center">
-                <!-- Profile Picture -->
-                <div class="col-md-4 text-center">
-                    <img src="./img/pedro_tipoGhibli_passe.jpg" alt="Profile Picture" class="img-fluid rounded-circle">
+        <main id="main-content">
+            <section id="summary-section" class="container py-5">
+                <h2 class="section-title">About Me</h2>
+                <div class="row align-items-center">
+                    <!-- Profile Picture -->
+                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                        <img src="./img/pedro_tipoGhibli_passe.jpg" alt="Pedro Calado Profile Picture" class="img-fluid rounded-circle profile-img">
+                    </div>
+                    <!-- Summary Text -->
+                    <div class="col-md-8">
+                        <div class="summary-content">
+                            <p class="lead">Passionate Junior Software Engineer with diverse experience transitioning into tech</p>
+                            
+                            <div class="highlight-box">
+                                <h3>Key Highlights:</h3>
+                                <ul>
+                                    <li>Proficient in HTML, CSS, and JavaScript with React certification in progress</li>
+                                    <li>Strong background in project management and team collaboration</li>
+                                    <li>Problem-solver with attention to detail and passion for clean code</li>
+                                    <li>Quick learner committed to continuous professional development</li>
+                                    <li>Polyglote - English 🇬🇧, French 🇫🇷, Spanish 🇪🇸, Italian 🇮🇹 & Portuguese 🇵🇹</li>
+
+                                </ul>
+                            </div>
+                            
+                            <p class="highlight-box p">After years in cultural project management, I'm pursuing my passion for technology and software development. My diverse background gives me unique perspectives on problem-solving and user experience.</p>
+                            
+                            <p class="highlight-box p">Currently expanding my skills in modern JavaScript frameworks and looking for opportunities to contribute to meaningful projects.</p>
+                            
+                            <div class="cta-buttons">
+                                <a href="#contacts" class="btn btn-primary">Contact Me</a>
+                                <a href="#github-repos-section" class="btn btn-outline-primary">View Projects</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <!-- Summary Text -->
-                <div class="col-md-8">
-                    
-                    <p>Passionate about technology and software development.</p>
-                    <p>Looking for opportunities to apply my skills and grow in a dynamic environment.</p>
-                    <p>Proficient in HTML and CSS, with a strong foundation in web development.</p>
-                    <p>Experience in creating and maintaining web applications.</p>
-                    <p>Strong problem-solving skills and attention to detail.</p>
-                    <p>Excellent communication and teamwork abilities.</p>
-                    <p>Quick learner with a passion for continuous improvement.</p>
-                    <p>Currently getting certified in React and Redux.</p>
-                    <p>Available for freelance projects and collaborations.</p>
-                    <p><a
-                    href="mailto:pedroocalado@gmail.com">Contact me</a> for inquiries or opportunities.</p>
-                    <p>Thank you for visiting my portfolio!</p>
+            </section>
+
+            <section id="experience-section" class="container py-5">
+                <h2 class="section-title">Professional Experience</h2>
+                <div class="timeline">
+                    <div class="timeline-item">
+                        <div class="timeline-date">2025 - Present</div>
+                        <div class="timeline-content">
+                            <h3>Quality and Regulatory Compliance Office</h3>
+                            <h4><a href="https://www.insa.min-saude.pt/" target="_blank">INSA</a></h4>
+                            <p>Ensuring compliance with quality standards and regulations</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2020 - 2025</div>
+                        <div class="timeline-content">
+                            <h3>Waste Disposal Coordinator</h3>
+                            <h4><a href="https://jfarroios.pt/" target="_blank">Freguesia de Arroios</a></h4>
+                            <p>Managed waste disposal operations and community initiatives</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2015 - 2018</div>
+                        <div class="timeline-content">
+                            <h3>Artistic Director</h3>
+                            <h4><a href="https://largoresidencias.com/" target="_blank">Largo Residências</a></h4>
+                            <p>Directed artistic programs and cultural events</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2015 - 2016</div>
+                        <div class="timeline-content">
+                            <h3>Helpdesk Core Team Support</h3>
+                            <h4><a href="https://www.fujitsu.com/pt/about/local/centrocompetencias/" target="_blank">Fujitsu Global Delivery Center Lisboa</a></h4>
+                            <p>Provided technical support and troubleshooting</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2011 - Present</div>
+                        <div class="timeline-content">
+                            <h3>Road/Tour Manager</h3>
+                            <h4><a href="https://www.espelhodecultura.pt/" target="_blank">Espelho de Cultura</a></h4>
+                            <p>Managed tours and logistics for cultural events</p>
+                        </div>
+                    </div>
+                    <div class="timeline-item">
+                        <div class="timeline-date">2003 - 2004</div>
+                        <div class="timeline-content">
+                            <h3>Project Manager</h3>
+                            <h4><a href="https://www.tocarufar.online/" target="_blank">Tocá Rufar</a></h4>
+                            <p>Coordinated percussion projects and events</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="education-section" class="container py-5">
+                <h2 class="section-title">Education & Certifications</h2>
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="education-card">
+                            <h3>Formal Education</h3>
+                            <div class="education-item">
+                                <h4>Master in Anthropology</h4>
+                                <p>UNL-FCSH Lisboa</p>
+                            </div>
+                            <div class="education-item">
+                                <h4>Minor in Musical Science</h4>
+                                <p>UNL-FCSH Lisboa</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="education-card">
+                            <h3>Technical Certifications</h3>
+                            <div class="education-item">
+                                <h4>Responsive Web Design</h4>
+                                <p>freeCodeCamp</p>
+                                <a href="https://www.freecodecamp.org/certification/fccf49151df-4d61-4fca-95e4-34786a2857ac/responsive-web-design" target="_blank" class="cert-link">View Certificate</a>
+                            </div>
+                            <div class="education-item">
+                                <h4>JavaScript Algorithms and Data Structures</h4>
+                                <p>freeCodeCamp</p>
+                                <a href="https://www.freecodecamp.org/certification/fccf49151df-4d61-4fca-95e4-34786a2857ac/javascript-algorithms-and-data-structures" target="_blank" class="cert-link">View Certificate</a>
+                            </div>
+                            <div class="education-item">
+                                <h4>React and Redux (In Progress)</h4>
+                                <p>freeCodeCamp</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="skills-section" class="container py-5">
+                <h2 class="section-title">Technical Skills</h2>
+                <div class="skills-grid">
+                    <div class="skill-card">
+                        <div class="skill-icon">
+                            <i class="fab fa-html5"></i>
+                        </div>
+                        <h3>HTML5</h3>
+                        <p>Intermediate</p>
+                        <div class="skill-bar">
+                            <div class="skill-level" style="width: 75%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon">
+                            <i class="fab fa-css3-alt"></i>
+                        </div>
+                        <h3>CSS3</h3>
+                        <p>Intermediate</p>
+                        <div class="skill-bar">
+                            <div class="skill-level" style="width: 70%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon">
+                            <i class="fab fa-js"></i>
+                        </div>
+                        <h3>JavaScript</h3>
+                        <p>Intermediate</p>
+                        <div class="skill-bar">
+                            <div class="skill-level" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon">
+                            <i class="fab fa-react"></i>
+                        </div>
+                        <h3>React</h3>
+                        <p>Learning</p>
+                        <div class="skill-bar">
+                            <div class="skill-level" style="width: 40%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon">
+                            <i class="fab fa-python"></i>
+                        </div>
+                        <h3>Python</h3>
+                        <p>Beginner</p>
+                        <div class="skill-bar">
+                            <div class="skill-level" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon">
+                            <i class="fab fa-php"></i>
+                        </div>
+                        <h3>PHP</h3>
+                        <p>Beginner</p>
+                        <div class="skill-bar">
+                            <div class="skill-level" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon">
+                            <i class="fab fa-git-alt"></i>
+                        </div>
+                        <h3>Git</h3>
+                        <p>Intermediate</p>
+                        <div class="skill-bar">
+                            <div class="skill-level" style="width: 60%"></div>
+                        </div>
+                    </div>
+                    <div class="skill-card">
+                        <div class="skill-icon">
+                            <i class="fab fa-bootstrap"></i>
+                        </div>
+                        <h3>Bootstrap</h3>
+                        <p>Intermediate</p>
+                        <div class="skill-bar">
+                            <div class="skill-level" style="width: 65%"></div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="github-repos-section" class="container py-5">
+                <h2 class="section-title">My Projects</h2>
+                <div class="project-controls">
+                    <div class="search-filter">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="repo-filter" placeholder="Search projects...">
+                    </div>
+                    <select id="repo-sort" class="form-select">
+                        <option value="name">Sort by Name</option>
+                        <option value="updated">Sort by Recent</option>
+                        <option value="stars">Sort by Stars</option>
+                    </select>
+                </div>
+                <div id="loading-spinner" class="text-center my-4">
+                    <div class="spinner-border" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                </div>
+                <div id="github-repos" class="row gy-4"></div>
+                <div id="no-repos-message" class="text-center mt-4" style="display: none;">
+                    <p>No projects found matching your criteria.</p>
+                </div>
+            </section>
+        </main>
+
+        <footer id="contacts" class="py-5">
+            <div class="container">
+                <h2 class="section-title text-center">Get In Touch</h2>
+                <div class="contact-content">
+                    <div class="contact-info">
+                        <h3>Contact Information</h3>
+                        <p><i class="fas fa-envelope"></i> <a href="mailto:pedroocalado@gmail.com">pedroocalado@gmail.com</a></p>
+                        <p><i class="fas fa-map-marker-alt"></i> Lisbon, Portugal</p>
+                        <p>Available for freelance projects and full-time opportunities</p>
+                    </div>
+                    <div class="social-links">
+                        <h3>Connect With Me</h3>
+                        <ul>
+                            <li>
+                                <a href="https://www.linkedin.com/in/pedro-calado-33113926/" target="_blank" aria-label="LinkedIn">
+                                    <i class="fab fa-linkedin"></i> LinkedIn
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://github.com/SilentCaMXMF" target="_blank" aria-label="GitHub">
+                                    <i class="fab fa-github"></i> GitHub
+                                </a>
+                            </li>
+                            <li>
+                                <a href="https://www.freecodecamp.org/fccf49151df-4d61-4fca-95e4-34786a2857ac" target="_blank" aria-label="freeCodeCamp">
+                                    <i class="fab fa-free-code-camp"></i> freeCodeCamp
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <p class="copyright">&copy; <span id="current-year"></span> Pedro Calado. All rights reserved.</p>
                 </div>
             </div>
-        </section>
-
-        <section id="experience-section">
-            <h2>Experience</h2>
-            <ul id="experience">
-                <li><b>Project Manager @ <a href="https://www.tocarufar.online/">Tocá Rufar</a></b> | 2003 - 2004</li>
-                <li><b>Road/Tour Manager @ <a href="https://www.espelhodecultura.pt/">Espelho de Cultura</a></b> | 2011 - Present</li>
-                <li><b>Helpdesk Core Team Support @ <a href="https://www.fujitsu.com/pt/about/local/centrocompetencias/">Fujitsu Global Delivery Center Lisboa</a></b> | 2015 - 2016</li>
-                <li><b>Glum Artistic Director @ <a href="https://largoresidencias.com/">Largo Residências</a></b> | 2015 - 2018</li>
-                <li><b>Waste Disposal @ <a href="https://jfarroios.pt/">Freguesia de Arroios</a></b> | 2020 - 2025</li>
-                <li><b>Quality and Regulatory Compliance Office @ <a href="https://www.insa.min-saude.pt/">INSA</a></b> | 2025 - Present</li>
-
-            </ul>            
-        </section>
-
-        <section id="education-section">
-            <h2>Education</h2>
-            <ul id="education">
-                <li><b>Master in Anthropology - UNL-FCSH Lisboa</b></li>
-                <li><b>Minor in Musical Science - UNL-FCSH Lisboa</b></li>
-                <li><b>Responsive Web Design - freeCodeCamp</b></li>
-                <li><b>JavaScript Algorithms and Data Strutures - freeCodeCamp</b></li>
-
-
-            </ul>
-        </section>
-
-        <section id="skills-section">
-            <h2>Skills</h2>
-            <div id="skills-container">
-                <div class="skill">
-                    <img src="./img/html_icon_thumbnail.png" alt="HTML Icon" class="skill-icon">
-                    <p>HTML - Intermediate</p>
-                </div>
-                <div class="skill">
-                    <img src="./img/css_icon_thumb.jpeg" alt="CSS Icon" class="skill-icon">
-                    <p>CSS - Intermediate</p>
-                </div>
-                <div class="skill">
-                    <img src="./img/php_icon_thumb.png" alt="PHP Icon" class="skill-icon">
-                    <p>PHP - Beginner</p>
-                </div>
-                <div class="skill">
-                    <img src="./img/python_icon_thumb.png" alt="Python Icon" class="skill-icon">
-                    <p>Python - Beginner</p>
-                </div>
-                <div class="skill">
-                    <img src="./img/js_icon_thumb.png" alt="JavaScript Icon" class="skill-icon">
-                    <p>JavaScript - Beginner</p>
-                </div>
-            </div>
-        </section>
-
-        <section id="github-repos-section">
-    <h2>GitHub Repositories</h2>
-    
-    <!-- Filter Controls -->
-    <div class="mb-3">
-        <input type="text" id="repo-filter" class="form-control" placeholder="Filter repositories...">
-    </div>
-    <div class="mb-3">
-        <select id="repo-sort" class="form-select">
-            <option value="name">Sort by Name</option>
-            <option value="updated">Sort by Last Updated</option>
-            <option value="stars">Sort by Stars</option>
-        </select>
-    </div>
-
-    <!-- Repositories Container -->
-    <div id="github-repos" class="row gy-4"></div>
-</section>
-
-
-        <footer>
-            <h2>Contacts</h2>
-            <ul id="contacts">
-                <li>
-                    <a href="https://www.freecodecamp.org/fccf49151df-4d61-4fca-95e4-34786a2857ac" target="_blank">
-            <img src="./img/fCC.png" alt="freeCodeCamp Thumbnail">
-            freeCodeCamp
-        </a>
-                </li>
-                <li>
-                    <a href="https://www.linkedin.com/in/pedro-calado-33113926/" target="_blank">
-                        <img src="./img/linkedin_circle_color-32.png" alt="LinkedIn Thumbnail">
-                        LinkedIn
-                    </a>
-                </li>
-                <li>
-                    <a href="https://github.com/SilentCaMXMF" target="_blank">
-                        <img src="./img/GitHub-Mark-32px.png" alt="GitHub Thumbnail">
-                        GitHub
-                    </a>
-                </li>
-            </ul>
-            <p>&copy; Pedro Calado</p>
         </footer>
+
+        <!-- Back to top button -->
+        <a href="#" id="back-to-top" aria-label="Back to top">
+            <i class="fas fa-arrow-up"></i>
+        </a>
 
         <!-- Link to JavaScript file -->
         <script src="./js/script.js"></script>
-
+        <!-- Bootstrap JS -->
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     </body>
 </html>
