@@ -134,7 +134,8 @@ document.addEventListener("DOMContentLoaded", () => {
             reposWithDesc = allRepos.filter(repo => repo.description && repo.description.trim() !== "");
             reposWithoutDesc = allRepos.filter(repo => !repo.description || repo.description.trim() === "");
 
-            renderRepos(reposWithDesc);
+            // Only show the first 3 repos with description on initial load
+            renderRepos(reposWithDesc.slice(0, 3));
 
             // Show button to load repos without description if there are any
             if (reposWithoutDesc.length > 0) {
