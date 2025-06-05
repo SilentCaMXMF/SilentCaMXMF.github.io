@@ -23,10 +23,10 @@ document.addEventListener("DOMContentLoaded", () => {
     fetch("https://api.github.com/users/SilentCaMXMF/repos")
         .then(response => response.json())
         .then(repos => {
-            // Clear existing static repos (optional)
+            // Show only the first 3 repos on page load
             repoContainer.innerHTML = "";
 
-            repos.forEach(repo => {
+            repos.slice(0, 3).forEach(repo => {
                 const repoElement = document.createElement("div");
                 repoElement.classList.add("repo");
 
