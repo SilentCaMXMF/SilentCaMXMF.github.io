@@ -572,7 +572,7 @@ section::before {
 
 /* Featured Projects Section */
 .featured-carousel-wrapper {
-  background: rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.6);
   border-radius: 10px;
   padding: 40px 20px;
   margin-bottom: 40px;
@@ -589,10 +589,10 @@ section::before {
 
 .repo-card.featured {
   border: 3px solid #ffd700;
-  background: rgba(255, 215, 0, 0.1);
+  background: rgba(0, 0, 0, 0.6);
   position: relative;
   overflow: visible;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
   margin: 0 auto;
 }
 
@@ -615,7 +615,7 @@ section::before {
 }
 
 .repo-card.featured .repo-header {
-  background: rgba(255, 215, 0, 0.15);
+  background: rgba(0, 0, 0, 0.5);
   border-bottom: 2px solid rgba(255, 215, 0, 0.3);
   padding: 25px;
 }
@@ -634,17 +634,17 @@ section::before {
 }
 
 .repo-card.featured .repo-meta {
-  background: rgba(255, 215, 0, 0.1);
+  background: rgba(0, 0, 0, 0.4);
   padding: 15px 20px;
   font-size: 1rem;
 }
 
 .repo-card.featured .repo-meta span {
-  opacity: 0.95;
+  opacity: 1;
 }
 
 .repo-card.featured .repo-footer {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 0, 0, 0.5);
   padding: 20px;
 }
 
@@ -859,7 +859,6 @@ section::before {
 
 .repo-description {
   margin-bottom: 10px;
-  opacity: 0.8;
 }
 
 .repo-meta {
