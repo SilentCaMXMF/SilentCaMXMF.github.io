@@ -1,0 +1,12 @@
+# Robots.txt for SilentCaMXMF Portfolio
+
+User-agent: *
+Allow: /
+
+# Disallow admin or private pages (none for this site)
+
+# Sitemap location
+Sitemap: https://silentcamxmf.github.io/sitemap.xml
+
+# Crawl-delay (optional, adjust as needed)
+Crawl-delay: 1
