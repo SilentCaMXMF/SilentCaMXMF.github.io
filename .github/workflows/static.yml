@@ -43,15 +43,6 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: '.'
-          exclude: |
-            .git*
-            .gitignore
-            .github/
-            .vscode/
-            Documents/
-            AGENTS.md
-            README.md
-            build-a-personal-portfolio-webpage.txt
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
