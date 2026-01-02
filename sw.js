@@ -1,7 +1,7 @@
-const CACHE_NAME = 'portfolio-v2';
-const STATIC_CACHE = 'static-v2';
-const CDN_CACHE = 'cdn-v2';
-const IMAGES_CACHE = 'images-v2';
+const CACHE_NAME = 'portfolio-v3';
+const STATIC_CACHE = 'static-v3';
+const CDN_CACHE = 'cdn-v3';
+const IMAGES_CACHE = 'images-v3';
 
 const STATIC_ASSETS = [
   '/',
