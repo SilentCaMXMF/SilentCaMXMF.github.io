@@ -1,0 +1,47 @@
+/* Performance optimizations for animations */
+/* Add to existing CSS file */
+
+/* CSS Containment for better performance */
+.skill-card, 
+.repo-card, 
+.btn,
+.timeline-item {
+  contain: layout style paint;
+}
+
+/* Optimize background elements */
+body::before, 
+body::after {
+  contain: strict;
+  will-change: transform;
+}
+
+/* Reduce motion for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Animation pause controls - support both class and data attribute for compatibility */
+.animations-paused *,
+html[data-animations="paused"] * {
+  animation-play-state: paused !important;
+  transition: none !important;
+}
+
+/* Optimized gradient animation */
+@keyframes gradientShift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+/* Performance-optimized background */
+body {
+  background-size: 200% 200%;
+  animation: gradientShift 15s ease infinite;
+}

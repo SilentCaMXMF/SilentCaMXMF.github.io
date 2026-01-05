@@ -1,0 +1,87 @@
+{
+  "name": "Pedro Calado Portfolio",
+  "short_name": "Pedro Calado",
+  "description": "Junior Software Engineer specializing in modern web development. Portfolio showcasing projects, skills, and experience.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "theme_color": "#9ab891",
+  "background_color": "#2c2c2c",
+  "lang": "en",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/img/pedro_tipoGhibli_passe-320.webp",
+      "sizes": "320x320",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/pedro_tipoGhibli_passe-480.webp",
+      "sizes": "480x480",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/img/pedro_tipoGhibli_passe-640.webp",
+      "sizes": "640x640",
+      "type": "image/webp",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": [
+    "portfolio",
+    "developer",
+    "software",
+    "technology"
+  ],
+  "screenshots": [
+    {
+      "src": "/img/pedro_tipoGhibli_passe-640.webp",
+      "sizes": "640x640",
+      "type": "image/webp",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Projects",
+      "short_name": "Projects",
+      "description": "View my portfolio projects",
+      "url": "/#github-repos-section",
+      "icons": [
+        {
+          "src": "/img/pedro_tipoGhibli_passe-320.webp",
+          "sizes": "320x320"
+        }
+      ]
+    },
+    {
+      "name": "Skills",
+      "short_name": "Skills",
+      "description": "View my technical skills",
+      "url": "/#skills-section",
+      "icons": [
+        {
+          "src": "/img/pedro_tipoGhibli_passe-320.webp",
+          "sizes": "320x320"
+        }
+      ]
+    },
+    {
+      "name": "Contact",
+      "short_name": "Contact",
+      "description": "Get in touch",
+      "url": "/#contacts",
+      "icons": [
+        {
+          "src": "/img/pedro_tipoGhibli_passe-320.webp",
+          "sizes": "320x320"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

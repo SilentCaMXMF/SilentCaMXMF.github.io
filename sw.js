@@ -1,145 +1,302 @@
-const CACHE_NAME = 'portfolio-v3';
-const STATIC_CACHE = 'static-v3';
-const CDN_CACHE = 'cdn-v3';
-const IMAGES_CACHE = 'images-v3';
+/**
+ * Service Worker for Pedro Calado's Portfolio
+ * Provides offline support and performance optimization
+ * @version 1.0.0
+ */
 
+const CACHE_NAME = 'portfolio-v1.0.0';
+const RUNTIME_CACHE = 'portfolio-runtime-v1.0.0';
+
+// Static assets to cache on install
 const STATIC_ASSETS = [
-  '/',
-  '/index.html',
-  '/css/style.css',
-  '/js/script.js',
-  '/.nojekyll',
-  '/AGENTS.md',
-  '/README.md'
+    '/',
+    '/index.html',
+    '/css/modern-animations.css',
+    '/css/animations-optimized.css',
+    '/css/accessibility-enhanced.css',
+    '/css/bootstrap-replacement.css',
+    '/css/custom-icons.css',
+    '/css/loading-states.css',
+    '/js/app.js',
+    '/js/modules/IconManager.js',
+    '/js/modules/LazyLoader.js',
+    '/js/modules/ThemeManager.js',
+    '/js/modules/NavigationManager.js',
+    '/js/modules/GitHubAPI.js',
+    '/js/modules/AnimationController.js',
+    '/js/modules/ScrollAnimations.js',
+    '/js/modules/LoadingStates.js',
+    '/js/modules/MobileNavigation.js',
+    '/js/modules/KeyboardShortcuts.js',
+    '/js/modules/ErrorHandler.js',
+    '/js/modules/CacheManager.js',
+    '/images/profile.webp',
+    '/images/profile-150x150.webp',
+    '/images/profile-300x300.webp',
+    '/images/profile-600x600.webp',
+    '/images/profile-800x800.webp'
 ];
 
-const CDN_ASSETS = [
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css',
-  'https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js',
-  'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css'
-];
+// GitHub API URLs to cache
+const GITHUB_API_PATTERN = /https:\/\/api\.github\.com\/users\/SilentCaMXMF\/repos/;
 
-const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico'];
+const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'];
 
+/**
+ * Install event - cache static assets
+ */
 self.addEventListener('install', (event) => {
-  event.waitUntil(
-    Promise.all([
-      caches.open(STATIC_CACHE).then((cache) => cache.addAll(STATIC_ASSETS)),
-      caches.open(CDN_CACHE).then((cache) => cache.addAll(CDN_ASSETS))
-    ])
-  );
-  self.skipWaiting();
+    console.log('[Service Worker] Installing...');
+    
+    event.waitUntil(
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                console.log('[Service Worker] Caching static assets');
+                return cache.addAll(STATIC_ASSETS.map(url => new Request(url, { cache: 'reload' })));
+            })
+            .then(() => {
+                console.log('[Service Worker] Static assets cached');
+                return self.skipWaiting();
+            })
+            .catch((error) => {
+                console.error('[Service Worker] Install failed:', error);
+            })
+    );
 });
 
-self.addEventListener('fetch', (event) => {
-  const url = new URL(event.request.url);
-
-  if (isImageRequest(url)) {
-    event.respondWith(handleImageRequest(event));
-  } else if (isCDNRequest(url)) {
-    event.respondWith(handleCDNRequest(event));
-  } else {
-    event.respondWith(handleStaticRequest(event));
-  }
-});
-
+/**
+ * Activate event - clean up old caches
+ */
 self.addEventListener('activate', (event) => {
-  event.waitUntil(
-    Promise.all([
-      deleteOldCaches([CACHE_NAME, STATIC_CACHE, CDN_CACHE, IMAGES_CACHE]),
-      self.clients.claim()
-    ])
-  );
+    console.log('[Service Worker] Activating...');
+    
+    event.waitUntil(
+        caches.keys()
+            .then((cacheNames) => {
+                return Promise.all(
+                    cacheNames.map((cacheName) => {
+                        if (cacheName !== CACHE_NAME && cacheName !== RUNTIME_CACHE) {
+                            console.log('[Service Worker] Deleting old cache:', cacheName);
+                            return caches.delete(cacheName);
+                        }
+                    })
+                );
+            })
+            .then(() => {
+                console.log('[Service Worker] Activated');
+                return self.clients.claim();
+            })
+    );
 });
 
+/**
+ * Fetch event - handle requests with cache strategies
+ */
+self.addEventListener('fetch', (event) => {
+    const { request } = event;
+    const url = new URL(request.url);
+
+    // Handle GitHub API requests with stale-while-revalidate
+    if (GITHUB_API_PATTERN.test(url.href)) {
+        event.respondWith(handleStaleWhileRevalidate(request));
+        return;
+    }
+
+    // Handle navigation requests with network-first strategy
+    if (request.mode === 'navigate') {
+        event.respondWith(handleNavigationRequest(request));
+        return;
+    }
+
+    // Handle static assets with cache-first strategy
+    if (STATIC_ASSETS.some(asset => url.pathname.endsWith(asset))) {
+        event.respondWith(handleCacheFirstRequest(request));
+        return;
+    }
+
+    // Handle images with cache-first strategy
+    if (request.destination === 'image' || isImageRequest(url)) {
+        event.respondWith(handleImageRequest(request));
+        return;
+    }
+
+    // Default to network-first for everything else
+    event.respondWith(handleNetworkFirstRequest(request));
+});
+
+/**
+ * Helper function to check if request is an image
+ */
 function isImageRequest(url) {
-  return IMAGE_EXTENSIONS.some(ext => url.pathname.endsWith(ext));
+    return IMAGE_EXTENSIONS.some(ext => url.pathname.endsWith(ext));
 }
 
-function isCDNRequest(url) {
-  return url.hostname.includes('cdn.jsdelivr.net') || 
-         url.hostname.includes('cdnjs.cloudflare.com');
+/**
+ * Handle navigation requests with network-first strategy
+ */
+async function handleNavigationRequest(request) {
+    try {
+        // Try network first
+        const networkResponse = await fetch(request);
+        
+        if (networkResponse.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
+        
+        return networkResponse;
+    } catch (error) {
+        console.log('[Service Worker] Network failed, trying cache');
+        
+        // Fallback to cache
+        const cachedResponse = await caches.match(request);
+        
+        if (cachedResponse) {
+            return cachedResponse;
+        }
+        
+        // Return offline page
+        return caches.match('/');
+    }
 }
 
-async function handleStaticRequest(event) {
-  try {
-    const cachedResponse = await caches.match(event.request);
+/**
+ * Handle cache-first requests for static assets
+ */
+async function handleCacheFirstRequest(request) {
+    const cachedResponse = await caches.match(request);
+    
     if (cachedResponse) {
-      return cachedResponse;
+        return cachedResponse;
     }
-
-    const response = await fetch(event.request);
     
-    if (!response || response.status !== 200) {
-      return response;
+    try {
+        const networkResponse = await fetch(request);
+        
+        if (networkResponse.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
+        
+        return networkResponse;
+    } catch (error) {
+        console.error('[Service Worker] Fetch failed:', error);
+        return new Response('Network error', { status: 503 });
     }
-
-    const cache = await caches.open(STATIC_CACHE);
-    cache.put(event.request, response.clone());
-    
-    return response;
-  } catch (error) {
-    console.error('Fetch failed:', error);
-    return await caches.match('/index.html') || 
-           new Response('Offline - Please check your connection', { 
-             status: 503, 
-             statusText: 'Service Unavailable' 
-           });
-  }
 }
 
-async function handleCDNRequest(event) {
-  try {
-    const cachedResponse = await caches.match(event.request);
+/**
+ * Handle image requests with cache-first strategy
+ */
+async function handleImageRequest(request) {
+    const cachedResponse = await caches.match(request);
+    
     if (cachedResponse) {
-      return cachedResponse;
+        return cachedResponse;
     }
-
-    const response = await fetch(event.request);
     
-    if (!response || response.status !== 200) {
-      return response;
+    try {
+        const networkResponse = await fetch(request);
+        
+        if (networkResponse.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
+        
+        return networkResponse;
+    } catch (error) {
+        console.log('[Service Worker] Image fetch failed, returning placeholder');
+        return new Response('Image not available', { status: 404 });
     }
-
-    const cache = await caches.open(CDN_CACHE);
-    cache.put(event.request, response.clone());
-    
-    return response;
-  } catch (error) {
-    console.error('CDN fetch failed:', error);
-    const cachedResponse = await caches.match(event.request);
-    return cachedResponse || new Response('Offline', { status: 503 });
-  }
 }
 
-async function handleImageRequest(event) {
-  try {
-    const cachedResponse = await caches.match(event.request);
-    if (cachedResponse) {
-      return cachedResponse;
-    }
-
-    const response = await fetch(event.request);
+/**
+ * Handle stale-while-revalidate for API requests
+ */
+async function handleStaleWhileRevalidate(request) {
+    const cache = await caches.open(RUNTIME_CACHE);
+    const cachedResponse = await cache.match(request);
     
-    if (!response || response.status !== 200) {
-      return response;
-    }
-
-    const cache = await caches.open(IMAGES_CACHE);
-    cache.put(event.request, response.clone());
+    const networkPromise = fetch(request).then((networkResponse) => {
+        if (networkResponse.ok) {
+            cache.put(request, networkResponse.clone());
+        }
+        return networkResponse;
+    }).catch(() => cachedResponse);
     
-    return response;
-  } catch (error) {
-    console.error('Image fetch failed:', error);
-    return await caches.match(event.request) || new Response('Image unavailable', { status: 503 });
-  }
+    return cachedResponse || networkPromise;
 }
 
-async function deleteOldCaches(allowedCaches) {
-  const cacheNames = await caches.keys();
-  return Promise.all(
-    cacheNames
-      .filter(cacheName => !allowedCaches.includes(cacheName))
-      .map(cacheName => caches.delete(cacheName))
-  );
+/**
+ * Handle network-first requests for dynamic content
+ */
+async function handleNetworkFirstRequest(request) {
+    try {
+        const networkResponse = await fetch(request);
+        
+        if (networkResponse.ok) {
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(request, networkResponse.clone());
+        }
+        
+        return networkResponse;
+    } catch (error) {
+        console.log('[Service Worker] Network failed, trying cache');
+        return caches.match(request);
+    }
 }
+
+/**
+ * Background sync for offline actions
+ */
+self.addEventListener('sync', (event) => {
+    console.log('[Service Worker] Background sync:', event.tag);
+    
+    if (event.tag === 'sync-github-data') {
+        event.waitUntil(syncGitHubData());
+    }
+});
+
+/**
+ * Sync GitHub data in background
+ */
+async function syncGitHubData() {
+    try {
+        const response = await fetch('https://api.github.com/users/SilentCaMXMF/repos');
+        
+        if (response.ok) {
+            const data = await response.json();
+            const cache = await caches.open(RUNTIME_CACHE);
+            cache.put(
+                'https://api.github.com/users/SilentCaMXMF/repos',
+                new Response(JSON.stringify(data))
+            );
+            console.log('[Service Worker] GitHub data synced');
+        }
+    } catch (error) {
+        console.error('[Service Worker] Background sync failed:', error);
+    }
+}
+
+/**
+ * Message handling for manual cache updates
+ */
+self.addEventListener('message', (event) => {
+    console.log('[Service Worker] Message received:', event.data);
+    
+    if (event.data && event.data.type === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+    
+    if (event.data && event.data.type === 'CLEAR_CACHE') {
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => caches.delete(cacheName))
+            );
+        }).then(() => {
+            event.ports[0].postMessage({ success: true });
+        });
+    }
+});
+
+console.log('[Service Worker] Service worker loaded');
