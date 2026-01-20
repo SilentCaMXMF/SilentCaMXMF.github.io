@@ -42,7 +42,7 @@
         <link rel="manifest" href="./manifest.json">
         <meta name="theme-color" content="#9ab891">
 
-        <!-- Preload critical resources -->
+        <!-- Preload critical CSS resources -->
         <link rel="preload" href="./css/style.css" as="style">
         <link rel="preload" href="./css/bootstrap-replacement.css" as="style">
         <link rel="preload" href="./css/custom-icons.css" as="style">
@@ -50,9 +50,18 @@
         <link rel="preload" href="./css/accessibility-enhanced.css" as="style">
         <link rel="preload" href="./css/modern-animations.css" as="style">
         <link rel="preload" href="./css/loading-states.css" as="style">
-        <link rel="preload" href="./js/script.js" as="script">
         
-        <!-- Preload critical images -->
+        <!-- Preload modern ES6 modules for modern browsers -->
+        <link rel="modulepreload" href="./js/app.js">
+        <link rel="modulepreload" href="./js/modules/IconManager.js">
+        <link rel="modulepreload" href="./js/modules/LazyLoader.js">
+        <link rel="modulepreload" href="./js/modules/ThemeManager.js">
+        <link rel="modulepreload" href="./js/modules/CacheManager.js">
+        
+        <!-- Preload fallback script for older browsers -->
+        <link rel="preload" href="./js/script.js" as="script" crossorigin="anonymous">
+        
+        <!-- Preload critical images that are used immediately -->
         <link rel="preload" href="./img/pedro_tipoGhibli_passe-320.webp" as="image" type="image/webp">
         <link rel="preload" href="./img/drumming_server.png" as="image" type="image/png">
         
@@ -67,6 +76,15 @@
         <link rel="prefetch" href="#experience-section">
         <link rel="prefetch" href="#skills-section">
         <link rel="prefetch" href="#github-repos-section">
+        
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="./css/bootstrap-replacement.css">
+        <link rel="stylesheet" href="./css/custom-icons.css">
+        <link rel="stylesheet" href="./css/animations-optimized.css">
+        <link rel="stylesheet" href="./css/accessibility-enhanced.css">
+        <link rel="stylesheet" href="./css/modern-animations.css">
+        <link rel="stylesheet" href="./css/loading-states.css">
         
         <!-- Critical CSS for faster initial render -->
         <style>
@@ -753,9 +771,8 @@
             // Fallback to original script for older browsers
             console.warn('Browser does not support ES modules, loading fallback...');
             document.write('<script src="./js/script.js"><\/script>');
-        </script>
-        <!-- Service Worker Registration -->
-        <script>
+            
+            // Service Worker Registration for fallback browsers
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('/sw.js')
