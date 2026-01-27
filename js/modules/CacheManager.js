@@ -137,7 +137,7 @@ const now = Date.now();
         let finalExpiry = expiry || (now + this.config.defaultExpiry);
         const staleExpiry = now + this.config.staleDataExpiry;
 
-const cacheEntry = {
+        const cacheEntry = {
             data,
             timestamp: now,
             expiry: finalExpiry,

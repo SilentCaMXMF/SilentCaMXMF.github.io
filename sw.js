@@ -96,6 +96,11 @@ self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
 
+    // Skip chrome-extension requests to prevent caching conflicts
+    if (request.url.startsWith('chrome-extension://') || request.url.startsWith('moz-extension://')) {
+        return; // Let browser handle extension requests directly
+    }
+
     // Handle GitHub API requests with stale-while-revalidate
     if (GITHUB_API_PATTERN.test(url.href)) {
         event.respondWith(handleStaleWhileRevalidate(request));
