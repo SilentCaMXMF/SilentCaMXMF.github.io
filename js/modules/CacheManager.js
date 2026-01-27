@@ -133,8 +133,8 @@ set(key, data, expiry = null) {
             return false;
         }
 
-        const now = Date.now();
-        const finalExpiry = expiry || (now + this.config.defaultExpiry);
+const now = Date.now();
+        let finalExpiry = expiry || (now + this.config.defaultExpiry);
         const staleExpiry = now + this.config.staleDataExpiry;
 
 const cacheEntry = {
