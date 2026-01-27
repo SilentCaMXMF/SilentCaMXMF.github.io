@@ -277,22 +277,43 @@ class PortfolioApp {
  * Application entry point
  */
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('🔍 DOM Content Loaded, starting initialization...');
+    
     try {
+        // Test basic functionality first
+        console.log('📋 Testing basic functionality...');
+        
+        // Test module imports
+        console.log('📦 Testing module imports...');
+        if (typeof PortfolioApp === 'undefined') {
+            throw new Error('PortfolioApp class is not defined');
+        }
+        
         // Create and initialize app
+        console.log('🏗️ Creating PortfolioApp instance...');
         window.portfolioApp = new PortfolioApp();
+        
+        if (!window.portfolioApp) {
+            throw new Error('Failed to create PortfolioApp instance');
+        }
+        
+        console.log('⚙️ Initializing app...');
         await window.portfolioApp.initialize();
         
-// Make app available globally for debugging
+        // Make app available globally for debugging
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             window.debugApp = window.portfolioApp;
         }
         
-} catch (error) {
+        console.log('✅ Application initialization completed successfully');
+        
+    } catch (error) {
         console.error('🚨 Failed to start portfolio application:', error);
         console.error('Error details:', {
             message: error.message,
             stack: error.stack,
-            name: error.name
+            name: error.name,
+            timestamp: new Date().toISOString()
         });
         
         // Fallback: Show error message to user with actual error details
