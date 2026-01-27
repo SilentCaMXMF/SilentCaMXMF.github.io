@@ -49,7 +49,7 @@ class PortfolioApp {
             this.start();
             
             this.initialized = true;
-            console.log('✅ Portfolio App initialized successfully - v2');
+            console.log('✅ Portfolio App initialized successfully');
             
         } catch (error) {
             this.errorHandler.handleError(error, 'App initialization failed');
