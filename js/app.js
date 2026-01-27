@@ -287,10 +287,15 @@ document.addEventListener('DOMContentLoaded', async () => {
             window.debugApp = window.portfolioApp;
         }
         
-    } catch (error) {
+} catch (error) {
         console.error('🚨 Failed to start portfolio application:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name
+        });
         
-        // Fallback: Show error message to user
+        // Fallback: Show error message to user with actual error details
         document.body.innerHTML = `
             <div style="
                 display: flex;
@@ -303,9 +308,14 @@ document.addEventListener('DOMContentLoaded', async () => {
                 text-align: center;
                 padding: 20px;
             ">
-                <div>
+                <div style="max-width: 600px;">
                     <h1>⚠️ Application Error</h1>
-                    <p>Sorry, something went wrong loading the portfolio.</p>
+                    <p><strong>Error:</strong> ${error.message}</p>
+                    <p><strong>Type:</strong> ${error.name || 'Unknown'}</p>
+                    <details style="margin: 20px 0; text-align: left;">
+                        <summary>Technical Details</summary>
+                        <pre style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 4px; overflow: auto; font-size: 12px; text-align: left;">${error.stack || 'No stack trace available'}</pre>
+                    </details>
                     <button onclick="window.location.reload()" style="
                         background: var(--primary-color, #9ab891);
                         color: white;
@@ -314,6 +324,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                         border-radius: 4px;
                         cursor: pointer;
                         font-size: 16px;
+                        margin-top: 20px;
                     ">
                         Try Again
                     </button>
