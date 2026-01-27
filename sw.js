@@ -232,6 +232,11 @@ async function handleStaleWhileRevalidate(request) {
  */
 async function handleNetworkFirstRequest(request) {
     try {
+        // Skip chrome-extension requests to prevent caching conflicts
+        if (request.url.startsWith('chrome-extension://')) {
+            return await fetch(request);
+        }
+        
         const networkResponse = await fetch(request);
         
         if (networkResponse.ok) {
