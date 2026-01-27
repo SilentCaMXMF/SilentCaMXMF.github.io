@@ -131,9 +131,9 @@ export class CacheManager {
 set(key, data, expiry = null) {
         if (!this.initialized) {
             return false;
-        }
+}
 
-const now = Date.now();
+        const now = Date.now();
         let finalExpiry = expiry || (now + this.config.defaultExpiry);
         const staleExpiry = now + this.config.staleDataExpiry;
 
