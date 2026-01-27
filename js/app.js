@@ -282,8 +282,8 @@ document.addEventListener('DOMContentLoaded', async () => {
         window.portfolioApp = new PortfolioApp();
         await window.portfolioApp.initialize();
         
-        // Make app available globally for debugging
-        if (process?.env?.NODE_ENV === 'development') {
+// Make app available globally for debugging
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             window.debugApp = window.portfolioApp;
         }
         
