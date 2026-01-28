@@ -4,8 +4,8 @@
  * @version 1.0.0
  */
 
-const CACHE_NAME = 'portfolio-v1.0.0';
-const RUNTIME_CACHE = 'portfolio-runtime-v1.0.0';
+const CACHE_NAME = 'portfolio-v1.0.1';
+const RUNTIME_CACHE = 'portfolio-runtime-v1.0.1';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
