@@ -300,7 +300,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         console.log('⚙️ Initializing app...');
         await window.portfolioApp.initialize();
         
-        // Make app available globally for debugging
+        // Make app available globally for debugging (v2)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             window.debugApp = window.portfolioApp;
         }
