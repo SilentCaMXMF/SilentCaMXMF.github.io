@@ -175,6 +175,11 @@ export class ScrollAnimations {
      * Add initial state to element before animation
      */
     addInitialState(element) {
+        // Don't hide elements if animations are disabled
+        if (!this.animationsEnabled) {
+            return;
+        }
+        
         const animation = element.dataset.scrollAnimation;
         
         // Set initial transform and opacity based on animation type
@@ -372,12 +377,36 @@ export class ScrollAnimations {
     animateSkillBars() {
         const skillBars = document.querySelectorAll('.skill-bar[role="progressbar"]');
         
-        skillBars.forEach(bar => {
+        skillBars.forEach((bar, index) => {
+            // Skip animation setup if animations are disabled
+            if (!this.animationsEnabled) {
+                return;
+            }
+            
             this.observeSection(bar, {
                 animation: this.animationTypes.REVEAL,
                 duration: 1500,
-                delay: 200
+                delay: 200 + (index * 100)
             });
+            
+            // Add custom skill bar animation
+            const skillLevel = bar.querySelector('.skill-level');
+            if (skillLevel) {
+                const finalWidth = skillLevel.style.width;
+                
+                // Set initial state
+                if (this.animationsEnabled) {
+                    skillLevel.style.transform = 'scaleX(0)';
+                    skillLevel.style.width = '100%';
+                    
+                    // Animate when visible
+                    setTimeout(() => {
+                        skillLevel.style.transform = 'scaleX(1)';
+                    }, 200 + (index * 100));
+                } else {
+                    skillLevel.style.transform = 'scaleX(1)';
+                }
+            }
         });
     }
 
