@@ -193,6 +193,37 @@
   opacity: 0.2;
 }
 
+/* CRITICAL: Essential loading animations must always run */
+[data-loading-essential="true"],
+.spinner-border,
+.loading-spinner,
+.loading-spinner-enhanced,
+.skeleton-loader,
+.skeleton,
+[role="status"][aria-live="polite"] {
+  /* Ensure these animations always run regardless of global animation state */
+  animation-play-state: running !important;
+}
+
+/* Override any attempts to pause loading animations */
+.animations-paused [data-loading-essential="true"],
+.animations-paused .spinner-border,
+.animations-paused .loading-spinner,
+.animations-paused .loading-spinner-enhanced,
+.animations-paused .skeleton-loader,
+.animations-paused .skeleton,
+.animations-paused [role="status"][aria-live="polite"],
+html[data-animations="paused"] [data-loading-essential="true"],
+html[data-animations="paused"] .spinner-border,
+html[data-animations="paused"] .loading-spinner,
+html[data-animations="paused"] .loading-spinner-enhanced,
+html[data-animations="paused"] .skeleton-loader,
+html[data-animations="paused"] .skeleton,
+html[data-animations="paused"] [role="status"][aria-live="polite"] {
+  animation-play-state: running !important;
+  transition: none !important;
+}
+
 /* Responsive spinner sizing */
 @media (max-width: 768px) {
   .loading-spinner {
@@ -294,5 +325,21 @@
   50% {
     opacity: 0.1;
     transform: scale(1.1);
+  }
+}
+
+/* Universal protection for loading indicators */
+.spinner-border,
+.loading-spinner,
+.loading-spinner-enhanced,
+.skeleton-loader,
+.skeleton {
+  animation-play-state: running !important;
+}
+
+/* Respect user preferences for reduced motion while maintaining feedback */
+@media (prefers-reduced-motion: reduce) {
+  .spinner-border {
+    animation-duration: 3s;
   }
 }

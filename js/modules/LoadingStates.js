@@ -587,6 +587,65 @@ export class LoadingStates {
         if (!spinner.getAttribute('aria-live')) {
             spinner.setAttribute('aria-live', 'polite');
         }
+        
+        // CRITICAL: Ensure spinner animations are immune to pause controls
+        this.protectSpinnerAnimations(spinner);
+    }
+
+    /**
+     * Protect spinner animations from being paused by animation controls
+     */
+    protectSpinnerAnimations(spinner) {
+        // Add data attribute for CSS protection
+        spinner.setAttribute('data-loading-essential', 'true');
+        
+        // Force animation to run regardless of global animation state
+        spinner.style.setProperty('animation-play-state', 'running', 'important');
+        
+        // Override any future attempts to pause this animation
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && 
+                    (mutation.attributeName === 'style' || 
+                     mutation.attributeName === 'class')) {
+                    // Re-force running state if it gets changed
+                    if (spinner.style.animationPlayState === 'paused') {
+                        spinner.style.setProperty('animation-play-state', 'running', 'important');
+                    }
+                }
+            });
+        });
+        
+        observer.observe(spinner, {
+            attributes: true,
+            attributeFilter: ['style', 'class']
+        });
+        
+        // Store observer for cleanup
+        spinner._animationObserver = observer;
+    }
+
+    /**
+     * Protect loading animations from being paused
+     */
+    protectLoadingAnimations(spinner) {
+        if (!spinner) return;
+        
+        // Force animation state with higher specificity
+        spinner.style.setProperty('animation-play-state', 'running', 'important');
+        
+        // Create observer to maintain animation state
+        const observer = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type === 'attributes' && 
+                    mutation.attributeName === 'style') {
+                    spinner.style.setProperty('animation-play-state', 'running', 'important');
+                }
+            });
+        });
+        
+        observer.observe(spinner, { attributes: true, attributeFilter: ['style'] });
+        return observer;
     }
 
     /**
@@ -768,6 +827,15 @@ export class LoadingStates {
      */
     destroy() {
         this.clearAllLoadingStates();
+        
+        // Clean up animation observers
+        const spinners = document.querySelectorAll('[data-loading-essential="true"]');
+        spinners.forEach(spinner => {
+            if (spinner._animationObserver) {
+                spinner._animationObserver.disconnect();
+                spinner._animationObserver = null;
+            }
+        });
         
         // Remove global styles
         const style = document.getElementById('loading-states-styles');

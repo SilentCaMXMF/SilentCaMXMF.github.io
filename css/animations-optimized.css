@@ -34,6 +34,27 @@ html[data-animations="paused"] * {
   transition: none !important;
 }
 
+/* CRITICAL: Keep loading animations running even when animations are paused */
+.animations-paused .spinner-border,
+.animations-paused .loading-spinner,
+.animations-paused .loading-spinner-enhanced,
+.animations-paused .skeleton-loader,
+.animations-paused .skeleton,
+.animations-paused [role="status"][aria-live="polite"],
+.animations-paused .loading-enhanced,
+.animations-paused [data-loading-essential="true"],
+html[data-animations="paused"] .spinner-border,
+html[data-animations="paused"] .loading-spinner,
+html[data-animations="paused"] .loading-spinner-enhanced,
+html[data-animations="paused"] .skeleton-loader,
+html[data-animations="paused"] .skeleton,
+html[data-animations="paused"] [role="status"][aria-live="polite"],
+html[data-animations="paused"] .loading-enhanced,
+html[data-animations="paused"] [data-loading-essential="true"] {
+  animation-play-state: running !important;
+  transition: none !important;
+}
+
 /* Ensure content visibility when animations are paused */
 .animations-paused .skill-card,
 .animations-paused .skill-bar,
@@ -98,4 +119,17 @@ html[data-animations="paused"] .skill-card:nth-child(8) {
 body {
   background-size: 200% 200%;
   animation: gradientShift 15s ease infinite;
+}
+
+/* Essential animations that must always run */
+.animations-paused-non-essential .spinner-border,
+.animations-paused-non-essential .loading-spinner,
+.animations-paused-non-essential [role="status"] .spinner-border {
+  animation-play-state: running !important;
+}
+
+/* Essential loading animations */
+.animations-paused-non-essential .skeleton,
+.animations-paused-non-essential .shimmer {
+  animation-play-state: running !important;
 }
