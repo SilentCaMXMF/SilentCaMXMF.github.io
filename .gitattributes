@@ -1,1 +1,12 @@
-* text=auto eol=lf
+# Auto-detect text files and normalize
+* text=auto
+
+# Force LF in repo for these files
+*.sh text eol=lf
+*.py text eol=lf
+*.yml text eol=lf
+*.yaml text eol=lf
+
+# Keep CRLF on Windows for these files
+*.bat text eol=crlf
+*.cmd text eol=crlf

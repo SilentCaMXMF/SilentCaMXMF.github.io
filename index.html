@@ -752,14 +752,16 @@
             <i class="fas fa-pause"></i>
         </button>
 
+        <!-- Load legacy script first for global functions -->
+        <script src="./js/script.js"></script>
+        
         <!-- Link to modern modular JavaScript -->
         <script type="module" src="./js/app.js"></script>
         
         <!-- Fallback for browsers without ES modules support -->
         <script nomodule>
             // Fallback to original script for older browsers
-            console.warn('Browser does not support ES modules, loading fallback...');
-            document.write('<script src="./js/script.js"><\/script>');
+            console.warn('Browser does not support ES modules, using legacy mode only...');
         </script>
         <!-- Service Worker Registration -->
         <script>
