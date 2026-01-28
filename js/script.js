@@ -1,3 +1,18 @@
+// ==========================================
+// FUNCTION DECLARATIONS - Ensure global availability
+// ==========================================
+
+// Declare functions early to ensure they're available when app.js calls them
+let renderFeaturedReposFromData;
+let renderReposFromData;
+let renderRepos;
+let showLoadMoreButton;
+let appendRepos;
+let filterRepos;
+let sortRepos;
+let fetchFeaturedRepos;
+let fetchRepos;
+
 // Replace Font Awesome classes with custom icons
 function replaceFontIcons() {
     const iconMappings = {
@@ -157,25 +172,35 @@ const savedTheme = localStorage.getItem('theme') || 'light';
 document.documentElement.setAttribute('data-theme', savedTheme);
 themeIcon.className = savedTheme === 'dark' ? 'icon icon-sun' : 'icon icon-moon';
 
+// ==========================================
+// GLOBAL FUNCTIONS - Available before DOMContentLoaded
+// These functions must be defined globally for app.js to call them
+// ==========================================
+
+// Global variables for featured projects
 let featuredRepos = [];
 let currentFeaturedIndex = 0;
 
+// Global functions - move outside DOMContentLoaded to be available when app.js calls them
+
 async function fetchFeaturedRepos() {
+    // This function is now handled by the modern app.js
+    // Keeping for backward compatibility
+    console.log('⚠️ fetchFeaturedRepos called - this is now handled by the modern app.js');
+}
+
+// Global function to render featured projects from provided data
+function renderFeaturedReposFromData(repos) {
     const featuredContainer = document.getElementById("featured-container");
     const featuredSpinner = document.getElementById("featured-loading-spinner");
     
-    featuredSpinner.style.display = 'block';
+    // Hide spinner
+    if (featuredSpinner) {
+        featuredSpinner.style.display = 'none';
+    }
     
     try {
-        const response = await fetch("https://api.github.com/users/SilentCaMXMF/repos?per_page=100");
-        
-        if (!response.ok) {
-            throw new Error(`GitHub API error: ${response.status}`);
-        }
-        
-        const allRepos = await response.json();
-        
-        const reposWithDescriptions = allRepos.filter(repo => repo.description && repo.description.trim() !== "");
+        const reposWithDescriptions = repos.filter(repo => repo.description && repo.description.trim() !== "");
         
         const sortedRepos = [...reposWithDescriptions].sort((a, b) => {
             const dateCompare = new Date(b.updated_at) - new Date(a.updated_at);
@@ -190,16 +215,14 @@ async function fetchFeaturedRepos() {
         setupFeaturedNavigation();
         
     } catch (error) {
-        console.error("Error fetching featured repos:", error);
-        document.getElementById("featured-container").innerHTML = `
+        console.error("Error rendering featured repos from data:", error);
+        featuredContainer.innerHTML = `
             <div class="alert alert-warning" role="alert">
                 <i class="fas fa-exclamation-triangle"></i> 
                 Failed to load featured projects.
             </div>
         `;
         featuredContainer.style.display = 'block';
-    } finally {
-        featuredSpinner.style.display = 'none';
     }
 }
 
@@ -306,7 +329,7 @@ function updateFeaturedCounter() {
 }
 
 document.addEventListener("DOMContentLoaded", () => {
-    fetchFeaturedRepos();
+    console.log('🔧 Setting up legacy event listeners...');
     
     const repoContainer = document.getElementById("github-repos");
     const filterInput = document.getElementById("repo-filter");
@@ -314,189 +337,231 @@ document.addEventListener("DOMContentLoaded", () => {
     const loadingSpinner = document.getElementById("loading-spinner");
     const noReposMessage = document.getElementById("no-repos-message");
     
-    let allRepos = [];
-    let reposWithDesc = [];
-    let reposWithoutDesc = [];
-
-    async function fetchRepos() {
-        loadingSpinner.style.display = 'block';
-        noReposMessage.style.display = 'none';
-        
-        const cacheKey = 'github-repos-cache';
-        const cacheExpiry = 5 * 60 * 1000;
-        
-        try {
-            const cachedData = localStorage.getItem(cacheKey);
-            if (cachedData) {
-                const { data, timestamp } = JSON.parse(cachedData);
-                const now = Date.now();
-                
-                if (now - timestamp < cacheExpiry) {
-                    allRepos = data;
-                }
-            }
-            
-            if (allRepos.length === 0) {
-                const response = await fetch("https://api.github.com/users/SilentCaMXMF/repos?per_page=100");
-                
-                if (!response.ok) {
-                    throw new Error(`GitHub API error: ${response.status}`);
-                }
-                
-                allRepos = await response.json();
-                
-                localStorage.setItem(cacheKey, JSON.stringify({
-                    data: allRepos,
-                    timestamp: Date.now()
-                }));
-            }
-            
-            reposWithDesc = allRepos.filter(repo => repo.description && repo.description.trim() !== "");
-            reposWithoutDesc = allRepos.filter(repo => !repo.description || repo.description.trim() === "");
-            
-            renderRepos(reposWithDesc.slice(0, 3));
-            
-            if (reposWithoutDesc.length > 0) {
-                showLoadMoreButton();
-            }
-            
-        } catch (error) {
-            console.error("Error fetching repos:", error);
-            repoContainer.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-danger" role="alert">
-                        <i class="fas fa-exclamation-triangle"></i> 
-                        Failed to load repositories. Please try again later.
-                    </div>
-                </div>
-            `;
-        } finally {
-            loadingSpinner.style.display = 'none';
-        }
-    }
-
-    function filterRepos(repos, query) {
-        const lower = query.toLowerCase();
-        const filtered = repos.filter(repo =>
-            repo.name.toLowerCase().includes(lower) ||
-            (repo.description && repo.description.toLowerCase().includes(lower))
-        );
-        return sortRepos(filtered);
-    }
-
-    function sortRepos(repos) {
-        const sortType = sortSelect.value;
-        return [...repos].sort((a, b) => {
-            if (sortType === "name") {
-                return a.name.localeCompare(b.name);
-            } else if (sortType === "updated") {
-                return new Date(b.updated_at) - new Date(a.updated_at);
-            } else if (sortType === "stars") {
-                return (b.stargazers_count || 0) - (a.stargazers_count || 0);
-            }
-            return 0;
+    // Set up filter and sort event listeners
+    if (filterInput) {
+        filterInput.addEventListener("input", () => {
+            const filtered = filterRepos(window.reposWithDesc || [], filterInput.value);
+            renderRepos(filtered);
         });
     }
-
-    function renderRepos(repos) {
-        // Remove skeleton loaders first
-        const skeletonCards = repoContainer.querySelectorAll('.skeleton-repo-card');
-        skeletonCards.forEach(card => card.remove());
-        
-        repoContainer.innerHTML = "";
-        
-        if (repos.length === 0) {
-            noReposMessage.style.display = 'block';
+    
+    if (sortSelect) {
+        sortSelect.addEventListener("change", () => {
+            const filtered = filterRepos(window.reposWithDesc || [], filterInput.value);
+            renderRepos(filtered);
+        });
+    }
+    
+// Wait a moment to check if modern app will be available
+    setTimeout(() => {
+        // Check if modern app is available
+        if (window.portfolioApp && window.portfolioApp.initialized) {
+            console.log('📱 Modern app detected, delegating to app.js');
+            // Let app.js handle the data fetching
             return;
+        } else {
+            console.log('🔧 Legacy mode: calling fetchRepos and fetchFeaturedRepos');
+            // Always call as backup for now
+            fetchRepos();
+            fetchFeaturedRepos();
+        }
+    }, 200); // Increased delay to allow app.js to initialize
+});
+
+// ==========================================
+// GLOBAL FUNCTIONS - Available after DOMContentLoaded
+// ==========================================
+
+// Global function for fetching repos (legacy)
+async function fetchRepos() {
+    // This function is now handled by the modern app.js
+    // Keeping for backward compatibility
+    console.log('⚠️ fetchRepos called - this is now handled by the modern app.js');
+}
+
+// Global function to render all projects from provided data
+function renderReposFromData(repos) {
+    const repoContainer = document.getElementById("github-repos");
+    const loadingSpinner = document.getElementById("loading-spinner");
+    const noReposMessage = document.getElementById("no-repos-message");
+    
+    if (!repoContainer) {
+        console.error('❌ github-repos container not found');
+        return;
+    }
+    
+    if (loadingSpinner) loadingSpinner.style.display = 'none';
+    if (noReposMessage) noReposMessage.style.display = 'none';
+    
+    try {
+        const allRepos = repos;
+        const reposWithDesc = allRepos.filter(repo => repo.description && repo.description.trim() !== "");
+        const reposWithoutDesc = allRepos.filter(repo => !repo.description || repo.description.trim() === "");
+        
+        // Store in global scope for filter/sort functionality
+        window.allRepos = allRepos;
+        window.reposWithDesc = reposWithDesc;
+        window.reposWithoutDesc = reposWithoutDesc;
+        
+        renderRepos(reposWithDesc.slice(0, 3));
+        
+        if (reposWithoutDesc.length > 0) {
+            showLoadMoreButton();
         }
         
-        noReposMessage.style.display = 'none';
-
-        repos.forEach(repo => {
-            const card = document.createElement("div");
-            card.className = "col-md-6 col-lg-4 mb-4";
-
-            card.innerHTML = `
-                <div class="repo-card h-100">
-                    <div class="repo-header">
-                        <div class="repo-name">${repo.name}</div>
-                        <div class="repo-description">${repo.description || "No description available."}</div>
-                    </div>
-                    <div class="repo-meta">
-                        <span>
-                            <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
-                        </span>
-                        <span>
-                            <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
-                        </span>
-                    </div>
-                    <div class="repo-footer">
-                        <a href="${repo.html_url}" target="_blank" class="repo-link">
-                            <i class="fab fa-github"></i> View Repository
-                        </a>
-                    </div>
+    } catch (error) {
+        console.error("Error rendering repos from data:", error);
+        repoContainer.innerHTML = `
+            <div class="col-12">
+                <div class="alert alert-danger" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Failed to load repositories. Please try again later.
                 </div>
-            `;
-
-            repoContainer.appendChild(card);
-        });
+            </div>
+        `;
     }
+}
 
-    function showLoadMoreButton() {
-        const btn = document.createElement("button");
-        btn.textContent = "Load repos without description";
-        btn.className = "btn btn-secondary my-3";
-        btn.addEventListener("click", () => {
-            const filtered = filterRepos(reposWithoutDesc, filterInput.value);
-            appendRepos(filtered);
-            btn.remove();
-        });
-
-        repoContainer.parentElement.insertBefore(btn, repoContainer.nextSibling);
+function renderRepos(repos) {
+    const repoContainer = document.getElementById("github-repos");
+    const noReposMessage = document.getElementById("no-repos-message");
+    
+    if (!repoContainer) {
+        console.error('❌ github-repos container not found');
+        return;
     }
+    
+    // Remove skeleton loaders first
+    const skeletonCards = repoContainer.querySelectorAll('.skeleton-repo-card');
+    skeletonCards.forEach(card => card.remove());
+    
+    repoContainer.innerHTML = "";
+    
+    if (repos.length === 0) {
+        if (noReposMessage) noReposMessage.style.display = 'block';
+        return;
+    }
+    
+    if (noReposMessage) noReposMessage.style.display = 'none';
 
-    function appendRepos(repos) {
-        repos.forEach(repo => {
-            const card = document.createElement("div");
-            card.className = "col-md-6 col-lg-4 mb-4";
+    repos.forEach(repo => {
+        const card = document.createElement("div");
+        card.className = "col-md-6 col-lg-4 mb-4";
 
-            card.innerHTML = `
-                <div class="repo-card h-100">
-                    <div class="repo-header">
-                        <div class="repo-name">${repo.name}</div>
-                        <div class="repo-description">${repo.description || "No description available."}</div>
-                    </div>
-                    <div class="repo-meta">
-                        <span>
-                            <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
-                        </span>
-                        <span>
-                            <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
-                        </span>
-                    </div>
-                    <div class="repo-footer">
-                        <a href="${repo.html_url}" target="_blank" class="repo-link">
-                            <i class="fab fa-github"></i> View Repository
-                        </a>
-                    </div>
+        card.innerHTML = `
+            <div class="repo-card h-100">
+                <div class="repo-header">
+                    <div class="repo-name">${repo.name}</div>
+                    <div class="repo-description">${repo.description || "No description available."}</div>
                 </div>
-            `;
+                <div class="repo-meta">
+                    <span>
+                        <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
+                    </span>
+                    <span>
+                        <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
+                    </span>
+                </div>
+                <div class="repo-footer">
+                    <a href="${repo.html_url}" target="_blank" class="repo-link">
+                        <i class="fab fa-github"></i> View Repository
+                    </a>
+                </div>
+            </div>
+        `;
 
-            repoContainer.appendChild(card);
-        });
-    }
+        repoContainer.appendChild(card);
+    });
+}
 
-    filterInput.addEventListener("input", () => {
-        const filtered = filterRepos(reposWithDesc, filterInput.value);
-        renderRepos(filtered);
+// Global function to show load more button
+function showLoadMoreButton() {
+    const repoContainer = document.getElementById("github-repos");
+    const filterInput = document.getElementById("repo-filter");
+    
+    if (!repoContainer) return;
+    
+    const btn = document.createElement("button");
+    btn.textContent = "Load repos without description";
+    btn.className = "btn btn-secondary my-3";
+    btn.addEventListener("click", () => {
+        const filtered = filterRepos(window.reposWithoutDesc || [], filterInput.value);
+        appendRepos(filtered);
+        btn.remove();
     });
 
-    sortSelect.addEventListener("change", () => {
-        const filtered = filterRepos(reposWithDesc, filterInput.value);
-        renderRepos(filtered);
-    });
+    repoContainer.parentElement.insertBefore(btn, repoContainer.nextSibling);
+}
 
-    fetchRepos();
+// Global function to append repos
+function appendRepos(repos) {
+    const repoContainer = document.getElementById("github-repos");
+    if (!repoContainer) return;
+    
+    repos.forEach(repo => {
+        const card = document.createElement("div");
+        card.className = "col-md-6 col-lg-4 mb-4";
+
+        card.innerHTML = `
+            <div class="repo-card h-100">
+                <div class="repo-header">
+                    <div class="repo-name">${repo.name}</div>
+                    <div class="repo-description">${repo.description || "No description available."}</div>
+                </div>
+                <div class="repo-meta">
+                    <span>
+                        <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
+                    </span>
+                    <span>
+                        <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
+                    </span>
+                </div>
+                <div class="repo-footer">
+                    <a href="${repo.html_url}" target="_blank" class="repo-link">
+                        <i class="fab fa-github"></i> View Repository
+                    </a>
+                </div>
+            </div>
+        `;
+
+        repoContainer.appendChild(card);
+    });
+}
+
+// Global filter and sort functions
+function filterRepos(repos, query) {
+    const lower = query.toLowerCase();
+    const filtered = repos.filter(repo =>
+        repo.name.toLowerCase().includes(lower) ||
+        (repo.description && repo.description.toLowerCase().includes(lower))
+    );
+    return sortRepos(filtered);
+}
+
+function sortRepos(repos) {
+    const sortSelect = document.getElementById("repo-sort");
+    const sortType = sortSelect ? sortSelect.value : "updated";
+    return [...repos].sort((a, b) => {
+        if (sortType === "name") {
+            return a.name.localeCompare(b.name);
+        } else if (sortType === "updated") {
+            return new Date(b.updated_at) - new Date(a.updated_at);
+        } else if (sortType === "stars") {
+            return (b.stargazers_count || 0) - (a.stargazers_count || 0);
+        }
+        return 0;
+    });
+}
+
+    // Check if modern app is available
+    if (window.portfolioApp && window.portfolioApp.initialized) {
+        console.log('📱 Modern app detected, delegating to app.js');
+        // Let app.js handle data fetching
+        return;
+    } else {
+        console.log('🔧 Legacy mode: calling fetchRepos');
+        fetchRepos();
+    }
 });
 
 document.addEventListener("DOMContentLoaded", () => {

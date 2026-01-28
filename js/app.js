@@ -50,6 +50,12 @@ class PortfolioApp {
             
             this.initialized = true;
             console.log('✅ Portfolio App initialized successfully');
+        console.log('🔍 App state check:', {
+            initialized: this.initialized,
+            modules: Object.keys(this.modules),
+            gitHubAPI: !!this.modules.gitHubAPI,
+            loadingStates: !!this.modules.loadingStates
+        });
             
         } catch (error) {
             this.errorHandler.handleError(error, 'App initialization failed');
@@ -205,14 +211,40 @@ class PortfolioApp {
         });
     }
 
-    /**
+/**
      * Load initial data
      */
     async loadInitialData() {
         try {
-            // Load GitHub repositories
-            await this.modules.gitHubAPI.fetchRepos();
-            await this.modules.gitHubAPI.fetchFeaturedRepos();
+            // Load GitHub repositories using modern API
+            console.log('🔄 Fetching GitHub repositories...');
+            const allRepos = await this.modules.gitHubAPI.fetchRepos();
+            const featuredRepos = await this.modules.gitHubAPI.fetchFeaturedRepos();
+            
+            console.log('📊 Data loaded, checking for legacy functions...');
+            console.log('renderFeaturedReposFromData available:', typeof renderFeaturedReposFromData);
+            console.log('renderReposFromData available:', typeof renderReposFromData);
+            
+            // Wait a moment for DOM to be ready and script.js functions to be available
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
+            // Try legacy functions first
+            if (typeof renderFeaturedReposFromData === 'function' && typeof renderReposFromData === 'function') {
+                console.log('✅ Using legacy rendering functions');
+                try {
+                    // Pass data to legacy rendering functions
+                    renderFeaturedReposFromData(allRepos);
+                    renderReposFromData(allRepos);
+                    console.log('✅ Data passed to legacy rendering functions successfully');
+                } catch (legacyError) {
+                    console.warn('⚠️ Legacy rendering failed, using fallback:', legacyError);
+                    this.renderProjectsFallback(allRepos, featuredRepos);
+                }
+            } else {
+                // Fallback: render directly if legacy functions aren't available
+                console.warn('⚠️ Legacy rendering functions not available, using fallback');
+                this.renderProjectsFallback(allRepos, featuredRepos);
+            }
             
             // Setup scroll animations after content is loaded
             setTimeout(() => {
@@ -222,9 +254,11 @@ class PortfolioApp {
                 }
             }, 500);
             
-            console.log('📊 Initial data loaded successfully');
+            console.log('📊 Initial data loading completed');
         } catch (error) {
             this.errorHandler.handleError(error, 'Failed to load initial data');
+            // Show error state in UI
+            this.showLoadError();
         }
     }
 
@@ -251,6 +285,202 @@ class PortfolioApp {
         }
     }
 
+/**
+     * Fallback rendering method
+     */
+    renderProjectsFallback(allRepos, featuredRepos) {
+        try {
+            console.log('🔄 Using fallback rendering method');
+            
+            // Hide loading spinners
+            const featuredSpinner = document.getElementById("featured-loading-spinner");
+            const allProjectsSpinner = document.getElementById("loading-spinner");
+            
+            if (featuredSpinner) featuredSpinner.style.display = 'none';
+            if (allProjectsSpinner) allProjectsSpinner.style.display = 'none';
+            
+            // Show containers
+            const featuredContainer = document.getElementById("featured-container");
+            const allProjectsContainer = document.getElementById("github-repos");
+            
+            if (featuredContainer) {
+                featuredContainer.style.display = 'block';
+                
+                // Render featured projects
+                if (featuredRepos && featuredRepos.length > 0) {
+                    this.renderFeaturedProjectsFallback(featuredRepos, featuredContainer);
+                } else {
+                    // Use all repos if no featured repos specified
+                    const reposWithDescriptions = allRepos.filter(repo => repo.description && repo.description.trim() !== "");
+                    const sortedRepos = [...reposWithDescriptions].sort((a, b) => {
+                        const dateCompare = new Date(b.updated_at) - new Date(a.updated_at);
+                        if (dateCompare !== 0) return dateCompare;
+                        return (b.stargazers_count || 0) - (a.stargazers_count || 0);
+                    });
+                    const topRepos = sortedRepos.slice(0, 5);
+                    this.renderFeaturedProjectsFallback(topRepos, featuredContainer);
+                }
+            }
+            
+            if (allProjectsContainer) {
+                allProjectsContainer.style.display = 'block';
+                
+                // Render all projects
+                if (allRepos && allRepos.length > 0) {
+                    this.renderAllProjectsFallback(allRepos, allProjectsContainer);
+                } else {
+                    allProjectsContainer.innerHTML = `
+                        <div class="col-12">
+                            <div class="alert alert-info" role="alert">
+                                <i class="fas fa-info-circle"></i> 
+                                No repositories found.
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+            
+            console.log('✅ Fallback rendering completed');
+            
+        } catch (error) {
+            console.error('❌ Fallback rendering failed:', error);
+            this.showLoadError();
+        }
+    }
+    
+    /**
+     * Render featured projects using fallback method
+     */
+    renderFeaturedProjectsFallback(repos, container) {
+        if (repos.length === 0) {
+            container.innerHTML = `
+                <div class="alert alert-info" role="alert">
+                    <i class="fas fa-info-circle"></i> 
+                    No featured projects found.
+                </div>
+            `;
+            return;
+        }
+        
+        const repo = repos[0]; // Show first repo as featured
+        
+        container.innerHTML = `
+            <div class="repo-card featured h-100">
+                <div class="star-badge">
+                    <i class="fas fa-star"></i>
+                </div>
+                <div class="repo-header">
+                    <div class="repo-name">${repo.name}</div>
+                    <div class="repo-description">${repo.description || "No description available."}</div>
+                </div>
+                <div class="repo-meta">
+                    <span>
+                        <i class="fas fa-code-branch"></i> ${repo.language || 'N/A'}
+                    </span>
+                    <span>
+                        <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
+                    </span>
+                    <span>
+                        <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
+                    </span>
+                </div>
+                <div class="repo-footer">
+                    <a href="${repo.html_url}" target="_blank" class="repo-link">
+                        <i class="fab fa-github"></i> View Repository
+                    </a>
+                </div>
+            </div>
+        `;
+    }
+    
+    /**
+     * Render all projects using fallback method
+     */
+    renderAllProjectsFallback(repos, container) {
+        const reposWithDesc = repos.filter(repo => repo.description && repo.description.trim() !== "");
+        const displayRepos = reposWithDesc.slice(0, 6); // Show first 6 repos
+        
+        container.innerHTML = '';
+        
+        if (displayRepos.length === 0) {
+            container.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle"></i> 
+                        No repositories with descriptions found.
+                    </div>
+                </div>
+            `;
+            return;
+        }
+        
+        displayRepos.forEach(repo => {
+            const card = document.createElement("div");
+            card.className = "col-md-6 col-lg-4 mb-4";
+
+            card.innerHTML = `
+                <div class="repo-card h-100">
+                    <div class="repo-header">
+                        <div class="repo-name">${repo.name}</div>
+                        <div class="repo-description">${repo.description || "No description available."}</div>
+                    </div>
+                    <div class="repo-meta">
+                        <span>
+                            <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
+                        </span>
+                        <span>
+                            <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
+                        </span>
+                    </div>
+                    <div class="repo-footer">
+                        <a href="${repo.html_url}" target="_blank" class="repo-link">
+                            <i class="fab fa-github"></i> View Repository
+                        </a>
+                    </div>
+                </div>
+            `;
+
+            container.appendChild(card);
+        });
+    }
+    
+    /**
+     * Show loading error state
+     */
+    showLoadError() {
+        const featuredContainer = document.getElementById("featured-container");
+        const allProjectsContainer = document.getElementById("github-repos");
+        
+        // Hide spinners
+        const featuredSpinner = document.getElementById("featured-loading-spinner");
+        const allProjectsSpinner = document.getElementById("loading-spinner");
+        
+        if (featuredSpinner) featuredSpinner.style.display = 'none';
+        if (allProjectsSpinner) allProjectsSpinner.style.display = 'none';
+        
+        // Show error messages
+        if (featuredContainer) {
+            featuredContainer.innerHTML = `
+                <div class="alert alert-warning" role="alert">
+                    <i class="fas fa-exclamation-triangle"></i> 
+                    Failed to load featured projects. Please refresh the page.
+                </div>
+            `;
+            featuredContainer.style.display = 'block';
+        }
+        
+        if (allProjectsContainer) {
+            allProjectsContainer.innerHTML = `
+                <div class="col-12">
+                    <div class="alert alert-danger" role="alert">
+                        <i class="fas fa-exclamation-triangle"></i> 
+                        Failed to load repositories. Please refresh the page.
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
     /**
      * Get module instance
      */
