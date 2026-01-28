@@ -7,7 +7,7 @@
   }
   
   .skill-card {
-    padding: 35px 25px;
+    padding: clamp(25px, 5vw, 35px) clamp(20px, 4vw, 25px);
   }
 }
 
@@ -17,11 +17,11 @@
   }
   
   .skill-card {
-    padding: 20px 15px;
+    padding: clamp(15px, 3vw, 20px) clamp(10px, 2vw, 15px);
   }
   
   .skill-icon {
-    font-size: 3rem;
+    font-size: clamp(2.5rem, 5vw, 3rem);
   }
 }
 
@@ -55,12 +55,7 @@
   border-left: 4px solid var(--primary-color);
 }
 
-/* Advanced Grid with modern functions */
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
-  gap: clamp(1rem, 2vw, 2rem);
-}
+/* Grid gap handled by main CSS - removed duplicate definition */
 
 /* Modern clamp for responsive typography */
 .section-title {

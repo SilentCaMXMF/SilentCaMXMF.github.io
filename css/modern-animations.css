@@ -3,6 +3,8 @@
 /* Staggered animation for skill cards */
 .skill-card {
   animation: slideInUp 0.6s ease-out backwards;
+  opacity: 1;
+  transform: none;
 }
 
 .skill-card:nth-child(1) { animation-delay: 0.1s; }

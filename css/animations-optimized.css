@@ -34,6 +34,60 @@ html[data-animations="paused"] * {
   transition: none !important;
 }
 
+/* Ensure content visibility when animations are paused */
+.animations-paused .skill-card,
+.animations-paused .skill-bar,
+.animations-paused [data-scroll-animation],
+.animations-paused .skill-level,
+html[data-animations="paused"] .skill-card,
+html[data-animations="paused"] .skill-bar,
+html[data-animations="paused"] [data-scroll-animation],
+html[data-animations="paused"] .skill-level {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+/* Ensure skill cards and bars are visible by default */
+.skill-card {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+.skill-bar {
+  opacity: 1 !important;
+  transform: none !important;
+  clip-path: none !important;
+}
+
+.skill-level {
+  opacity: 1 !important;
+}
+
+/* Additional fallback for reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .skill-card,
+  .skill-bar,
+  .skill-level,
+  [data-scroll-animation] {
+    opacity: 1 !important;
+    transform: none !important;
+    clip-path: none !important;
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+/* Fix for staggered animations causing hidden elements */
+.animations-paused .skill-card:nth-child(7),
+.animations-paused .skill-card:nth-child(8),
+html[data-animations="paused"] .skill-card:nth-child(7),
+html[data-animations="paused"] .skill-card:nth-child(8) {
+  opacity: 1 !important;
+  transform: none !important;
+}
+
 /* Optimized gradient animation */
 @keyframes gradientShift {
   0%, 100% { background-position: 0% 50%; }

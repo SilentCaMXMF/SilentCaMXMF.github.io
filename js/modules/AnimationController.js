@@ -68,34 +68,41 @@ export class AnimationController {
      */
     loadAnimationPreference() {
         let savedPreference;
+        let animationsEnabled = true; // Default to enabled
+        let shouldPause = false;
         
         if (this.preferenceManager) {
             // Get from PreferenceManager
-            const animationsEnabled = this.preferenceManager.get('animations');
+            animationsEnabled = this.preferenceManager.get('animations');
             const reducedMotion = this.preferenceManager.get('reducedMotion');
             
             // Respect reduced motion preference
             if (reducedMotion) {
-                this.pauseAnimations();
-                return;
+                shouldPause = true;
             }
             
             savedPreference = animationsEnabled;
         } else {
             // Fallback to localStorage for backward compatibility
             savedPreference = localStorage.getItem(this.storageKey);
+            
+            // Default to enabled if not explicitly set
+            animationsEnabled = savedPreference !== 'false' && savedPreference !== false;
         }
         
         // Respect system reduced motion preference
         if (this.prefersReducedMotion) {
+            shouldPause = true;
+        }
+        
+        // Pause animations if reduced motion is preferred
+        if (shouldPause) {
             this.pauseAnimations();
             return;
         }
         
-        // Load saved preference or default to enabled
-        const animationsEnabled = savedPreference !== false && savedPreference !== 'false';
-        
-        if (animationsEnabled) {
+        // Apply animation preference (default to enabled)
+        if (animationsEnabled !== false) {
             this.resumeAnimations();
         } else {
             this.pauseAnimations();
