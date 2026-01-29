@@ -27,17 +27,17 @@
 
 /* Modern Color Functions */
 .skill-card {
-  background: color-mix(in srgb, var(--skill-bg) 80%, transparent 20%);
+  background: color-mix(in srgb, var(--skill-bg) 80%, var(--card-bg) 20%);
   border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent 80%);
 }
 
 .btn-primary {
-  background: color-mix(in srgb, var(--primary-color) 70%, var(--secondary-color) 30%);
-  border: 2px solid color-mix(in srgb, var(--primary-color) 90%, transparent 10%);
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  border: 2px solid var(--primary-color);
 }
 
 .btn-primary:hover {
-  background: color-mix(in srgb, var(--primary-color) 80%, var(--secondary-color) 20%);
+  background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
   box-shadow: 0 8px 25px color-mix(in srgb, var(--primary-color) 40%, transparent 60%);
 }
 
@@ -50,8 +50,8 @@
 /* Modern gradient with color-mix */
 .highlight-box {
   background: linear-gradient(135deg, 
-    color-mix(in srgb, rgba(0, 0, 0, 0.4) 70%, var(--primary-color) 10%), 
-    color-mix(in srgb, rgba(0, 0, 0, 0.6) 80%, var(--secondary-color) 5%));
+    color-mix(in srgb, var(--card-bg) 70%, var(--section-overlay) 10%), 
+    color-mix(in srgb, var(--card-bg) 80%, var(--secondary-color) 5%));
   border-left: 4px solid var(--primary-color);
 }
 
@@ -73,19 +73,19 @@
 /* Modern backdrop-filter with color-mix */
 .header-content {
   backdrop-filter: blur(10px);
-  background: color-mix(in srgb, rgba(0, 0, 0, 0.9) 90%, transparent 10%);
+  background: color-mix(in srgb, var(--card-bg) 90%, var(--section-overlay) 10%);
 }
 
 /* Enhanced card backgrounds */
 .repo-card {
   background: linear-gradient(135deg, 
-    color-mix(in srgb, rgba(0, 0, 0, 0.4) 80%, var(--primary-color) 5%), 
-    color-mix(in srgb, rgba(255, 255, 255, 0.05) 90%, transparent 10%));
+    color-mix(in srgb, var(--card-bg) 80%, var(--section-overlay) 5%), 
+    color-mix(in srgb, var(--card-bg) 90%, var(--primary-color) 10%));
 }
 
 /* Modern shadow utilities */
 .soft-shadow {
-  box-shadow: 0 4px 20px color-mix(in srgb, rgba(0, 0, 0, 0.15) 80%, transparent 20%);
+  box-shadow: 0 4px 20px var(--section-overlay);
 }
 
 .glow-shadow {
