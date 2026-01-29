@@ -27,7 +27,7 @@
 
 /* Modern Color Functions */
 .skill-card {
-  background: color-mix(in srgb, var(--skill-bg) 80%, transparent 20%);
+  background: color-mix(in srgb, var(--skill-bg) 80%, var(--card-bg) 20%);
   border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent 80%);
 }
 
@@ -73,7 +73,7 @@
 /* Modern backdrop-filter with color-mix */
 .header-content {
   backdrop-filter: blur(10px);
-  background: color-mix(in srgb, rgba(0, 0, 0, 0.9) 90%, transparent 10%);
+  background: color-mix(in srgb, var(--card-bg) 95%, var(--dark-bg) 5%);
 }
 
 /* Enhanced card backgrounds */
