@@ -297,23 +297,30 @@
                 <h2 class="section-title">About Me</h2>
                 <div class="row align-items-center">
                     <!-- Profile Picture -->
-                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                    <div class="col-12 col-md-5 col-lg-4 text-center mb-4 mb-md-0">
                         <picture>
                             <source srcset="./img/pedro_tipoGhibli_passe-320.webp 320w,
                                     ./img/pedro_tipoGhibli_passe-480.webp 480w,
                                     ./img/pedro_tipoGhibli_passe-640.webp 640w"
                                 type="image/webp"
-                                sizes="(max-width: 768px) 180px, 250px">
-                            <source srcset="./img/pedro_tipoGhibli_passe-320.jpg 320w,
-                                    ./img/pedro_tipoGhibli_passe-480.jpg 480w,
-                                    ./img/pedro_tipoGhibli_passe-640.jpg 640w"
-                                type="image/jpeg"
-                                sizes="(max-width: 768px) 180px, 250px">
+                                sizes="(max-width: 768px) 220px, (max-width: 992px) 300px, 380px">
+                            <!-- Tablet -->
+                            <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w"
+                                type="image/webp"
+                                media="(min-width: 769px) and (max-width: 992px)"
+                                sizes="300px">
+                            <!-- Desktop -->
+                            <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w,
+                                    ./img/pedro_tipoGhibli_passe-640.webp 640w"
+                                type="image/webp"
+                                media="(min-width: 993px)"
+                                sizes="380px">
+                            <!-- Fallback -->
                             <img src="./img/pedro_tipoGhibli_passe-640.jpg"
                                 alt="Pedro Calado Profile Picture"
                                 class="img-fluid rounded-circle profile-img loaded"
-                                width="250"
-                                height="250">
+                                width="450"
+                                height="450">
                         </picture>
                     </div>
                     <!-- Summary Text -->
