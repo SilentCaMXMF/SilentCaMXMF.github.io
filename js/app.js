@@ -340,6 +340,31 @@ class PortfolioApp {
         this.initialized = false;
         console.log('Portfolio app destroyed');
     }
+
+    /**
+     * Show first-time user onboarding
+     * Displays helpful tips for new visitors
+     */
+    showFirstTimeOnboarding() {
+        // Check if user has visited before
+        if (localStorage.getItem('portfolio-visited')) {
+            return;
+        }
+        
+        // Mark as visited
+        localStorage.setItem('portfolio-visited', 'true');
+        
+        // Show welcome toast after a short delay
+        setTimeout(() => {
+            if (this.modules.loadingStates) {
+                this.modules.loadingStates.showToast(
+                    '💡 Tip: Press "P" to pause animations, "T" to toggle theme, "/" to search',
+                    'info',
+                    8000
+                );
+            }
+        }, 2000);
+    }
 }
 
 /**
@@ -455,32 +480,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         document.body.innerHTML = '';
         document.body.appendChild(errorContainer);
     }
-
-    /**
-     * Show first-time user onboarding
-     * Displays helpful tips for new visitors
-     */
-    showFirstTimeOnboarding() {
-        // Check if user has visited before
-        if (localStorage.getItem('portfolio-visited')) {
-            return;
-        }
-        
-        // Mark as visited
-        localStorage.setItem('portfolio-visited', 'true');
-        
-        // Show welcome toast after a short delay
-        setTimeout(() => {
-            if (this.modules.loadingStates) {
-                this.modules.loadingStates.showToast(
-                    '💡 Tip: Press "P" to pause animations, "T" to toggle theme, "/" to search',
-                    'info',
-                    8000
-                );
-            }
-        }, 2000);
-    }
-}
+});
 
 // Export for module usage
 export { PortfolioApp };
