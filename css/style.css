@@ -354,6 +354,7 @@ header h1 {
 }
 
 .theme-toggle i {
+  color: inherit;
   font-size: 1.1rem;
 }
 
