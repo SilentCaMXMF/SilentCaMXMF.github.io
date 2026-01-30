@@ -6,7 +6,6 @@
  * @since 2026-01-05
  */
 
-import { IconManager } from './modules/IconManager.js';
 import { LazyLoader } from './modules/LazyLoader.js';
 import { ThemeManager } from './modules/ThemeManager.js';
 import { PreferenceManager } from './modules/PreferenceManager.js';
@@ -62,7 +61,6 @@ class PortfolioApp {
      */
     async initializeModules() {
         const moduleConfigs = [
-            { name: 'iconManager', Module: IconManager, deps: [] },
             { name: 'lazyLoader', Module: LazyLoader, deps: [] },
             { name: 'preferenceManager', Module: PreferenceManager, deps: [] },
             { name: 'themeManager', Module: ThemeManager, deps: ['preferenceManager'] },

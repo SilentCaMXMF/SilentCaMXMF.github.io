@@ -253,7 +253,7 @@ export class AnimationController {
             
             // Update icon
             if (this.animationIcon) {
-                this.animationIcon.className = isPaused ? 'icon icon-play' : 'icon icon-pause';
+                this.animationIcon.className = isPaused ? 'fas fa-play' : 'fas fa-pause';
             }
         }
     }
