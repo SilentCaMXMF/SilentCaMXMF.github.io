@@ -1,3 +1,66 @@
+/* Compact repo cards - Option A */
+.repo-card.compact {
+  padding: 15px;
+  border-radius: 8px;
+  opacity: 1 !important;
+  animation: none !important;
+}
+
+.repo-card.compact .repo-header {
+  padding: 12px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.repo-card.compact .repo-name {
+  font-size: 1rem;
+  flex: 1;
+  min-width: 0;
+  word-wrap: break-word;
+}
+
+.repo-card.compact .repo-description {
+  font-size: 0.85rem;
+  margin-bottom: 10px;
+  padding: 0 12px;
+}
+
+.repo-card.compact .repo-meta {
+  padding: 8px 12px;
+  font-size: 0.8rem;
+}
+
+.repo-card.compact .repo-footer {
+  padding: 10px 12px;
+}
+
+.repo-card.compact .repo-link {
+  font-size: 0.85rem;
+  padding: 6px 12px;
+}
+
+.language-badge {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  margin-top: 4px;
+  flex-shrink: 0;
+}
+
+.language-badge.js { background: #f7df1e; }
+.language-badge.python { background: #3776ab; }
+.language-badge.html { background: #e34c26; }
+.language-badge.css { background: #1572b6; }
+.language-badge.php { background: #777bb4; }
+.language-badge.shell { background: #89e051; }
+.language-badge.typescript { background: #3178c6; }
+.language-badge.vue { background: #41b883; }
+.language-badge.java { background: #b07219; }
+.language-badge.c { background: #555555; }
+.language-badge.unknown { background: #6e7681; }
+
 /* List view repos - Option B */
 #github-repos.list-view {
   display: flex;

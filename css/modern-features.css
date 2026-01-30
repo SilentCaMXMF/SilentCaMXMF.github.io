@@ -77,7 +77,7 @@
 }
 
 /* Enhanced card backgrounds */
-.repo-card {
+.repo-card:not(.compact) {
   background: linear-gradient(135deg, 
     color-mix(in srgb, rgba(0, 0, 0, 0.4) 80%, var(--primary-color) 5%), 
     color-mix(in srgb, rgba(255, 255, 255, 0.05) 90%, transparent 10%));

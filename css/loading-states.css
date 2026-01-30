@@ -70,17 +70,17 @@
 }
 
 /* Staggered loading for repo cards */
-.repo-card {
+.repo-card:not(.compact) {
   opacity: 0;
   animation: fadeInUp 0.5s ease-out forwards;
 }
 
-.repo-card:nth-child(1) { animation-delay: 0.1s; }
-.repo-card:nth-child(2) { animation-delay: 0.2s; }
-.repo-card:nth-child(3) { animation-delay: 0.3s; }
-.repo-card:nth-child(4) { animation-delay: 0.4s; }
-.repo-card:nth-child(5) { animation-delay: 0.5s; }
-.repo-card:nth-child(6) { animation-delay: 0.6s; }
+.repo-card:not(.compact):nth-child(1) { animation-delay: 0.1s; }
+.repo-card:not(.compact):nth-child(2) { animation-delay: 0.2s; }
+.repo-card:not(.compact):nth-child(3) { animation-delay: 0.3s; }
+.repo-card:not(.compact):nth-child(4) { animation-delay: 0.4s; }
+.repo-card:not(.compact):nth-child(5) { animation-delay: 0.5s; }
+.repo-card:not(.compact):nth-child(6) { animation-delay: 0.6s; }
 
 @keyframes fadeInUp {
   from {
