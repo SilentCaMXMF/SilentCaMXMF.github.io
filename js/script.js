@@ -447,13 +447,15 @@ function renderRepos(repos) {
     repos.forEach(repo => {
         const card = document.createElement("div");
         card.className = "col-md-6 col-lg-4 mb-4";
+        const languageClass = (repo.language || 'unknown').toLowerCase().replace(/\+/g, 'plus');
 
         card.innerHTML = `
-            <div class="repo-card h-100">
+            <div class="repo-card h-100 compact">
                 <div class="repo-header">
+                    <span class="language-badge ${languageClass}"></span>
                     <div class="repo-name">${repo.name}</div>
-                    <div class="repo-description">${repo.description || "No description available."}</div>
                 </div>
+                <div class="repo-description">${repo.description || "No description available."}</div>
                 <div class="repo-meta">
                     <span>
                         <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
@@ -501,13 +503,15 @@ function appendRepos(repos) {
     repos.forEach(repo => {
         const card = document.createElement("div");
         card.className = "col-md-6 col-lg-4 mb-4";
+        const languageClass = (repo.language || 'unknown').toLowerCase().replace(/\+/g, 'plus');
 
         card.innerHTML = `
-            <div class="repo-card h-100">
+            <div class="repo-card h-100 compact">
                 <div class="repo-header">
+                    <span class="language-badge ${languageClass}"></span>
                     <div class="repo-name">${repo.name}</div>
-                    <div class="repo-description">${repo.description || "No description available."}</div>
                 </div>
+                <div class="repo-description">${repo.description || "No description available."}</div>
                 <div class="repo-meta">
                     <span>
                         <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
