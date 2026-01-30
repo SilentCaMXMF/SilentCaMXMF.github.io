@@ -1,5 +1,26 @@
-/* Importing Custom Fonts */
+/* Import Custom Fonts */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&family=Lora:wght@400;600;700&display=swap');
+
+/* Import Bootstrap Replacement (grid, spacing, utilities) */
+@import './bootstrap-replacement.css';
+
+/* Import Accessibility Enhancements */
+@import './accessibility-enhanced.css';
+
+/* Import Animation Optimizations */
+@import './animations-optimized.css';
+
+/* Import Modern Animations */
+@import './modern-animations.css';
+
+/* Import Loading States */
+@import './loading-states.css';
+
+/* Import Modern Features */
+@import './modern-features.css';
+
+/* Import Repository Display Options */
+@import './repo-display-options.css';
 
 /* General Styles */
 :root {

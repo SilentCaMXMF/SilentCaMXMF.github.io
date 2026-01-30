@@ -44,24 +44,9 @@
 
         <!-- Preload most critical resources -->
         <link rel="preload" href="./css/style.css" as="style">
-        <link rel="preload" href="./css/bootstrap-replacement.css" as="style">
-        <link rel="preload" href="./css/custom-icons.css" as="style">
-        <link rel="preload" href="./css/animations-optimized.css" as="style">
-        <link rel="preload" href="./css/accessibility-enhanced.css" as="style">
-        <link rel="preload" href="./css/modern-animations.css" as="style">
-        <link rel="preload" href="./css/loading-states.css" as="style">
-        <link rel="preload" href="./js/app.js" as="script" crossorigin="anonymous">
         
-        <!-- Critical CSS files (loaded immediately after preloads) -->
+        <!-- Critical CSS files (consolidated into one file with @import) -->
         <link rel="stylesheet" href="./css/style.css">
-        <link rel="stylesheet" href="./css/bootstrap-replacement.css">
-        <link rel="stylesheet" href="./css/custom-icons.css">
-        <link rel="stylesheet" href="./css/animations-optimized.css">
-        <link rel="stylesheet" href="./css/accessibility-enhanced.css">
-        <link rel="stylesheet" href="./css/modern-animations.css">
-        <link rel="stylesheet" href="./css/loading-states.css">
-        <link rel="stylesheet" href="./css/modern-features.css">
-        <link rel="stylesheet" href="./css/repo-display-options.css">
         
         <!-- Preload critical images -->
         <link rel="preload" href="./img/drumming_server.png" as="image" type="image/png">
@@ -274,7 +259,7 @@
                     </nav>
                     <!-- Theme toggle button -->
                     <button id="theme-toggle" aria-label="Toggle dark mode" class="theme-toggle">
-                        <i class="icon icon-moon"></i>
+                        <i class="fas fa-moon"></i>
                     </button>
                     <!-- Mobile menu button -->
                     <button id="menu-button" aria-label="Toggle menu" aria-expanded="false">☰</button>
@@ -761,17 +746,9 @@
             <i class="fas fa-pause"></i>
         </button>
 
-        <!-- Load legacy script first for global functions -->
-        <script src="./js/script.js"></script>
-        
-        <!-- Link to modern modular JavaScript -->
+        <!-- Load modern modular JavaScript -->
         <script type="module" src="./js/app.js"></script>
-        
-        <!-- Fallback for browsers without ES modules support -->
-        <script nomodule>
-            // Fallback to original script for older browsers
-            console.warn('Browser does not support ES modules, using legacy mode only...');
-        </script>
+
         <!-- Service Worker Registration -->
         <script>
             if ('serviceWorker' in navigator) {

@@ -12,6 +12,7 @@ import { ThemeManager } from './modules/ThemeManager.js';
 import { PreferenceManager } from './modules/PreferenceManager.js';
 import { NavigationManager } from './modules/NavigationManager.js';
 import { GitHubAPI } from './modules/GitHubAPI.js';
+import { GitHubRenderer } from './modules/GitHubRenderer.js';
 import { AnimationController } from './modules/AnimationController.js';
 import { ScrollAnimations } from './modules/ScrollAnimations.js';
 import { LoadingStates } from './modules/LoadingStates.js';
@@ -50,13 +51,7 @@ class PortfolioApp {
             
             this.initialized = true;
             console.log('✅ Portfolio App initialized successfully');
-        console.log('🔍 App state check:', {
-            initialized: this.initialized,
-            modules: Object.keys(this.modules),
-            gitHubAPI: !!this.modules.gitHubAPI,
-            loadingStates: !!this.modules.loadingStates
-        });
-            
+
         } catch (error) {
             this.errorHandler.handleError(error, 'App initialization failed');
         }
@@ -73,10 +68,11 @@ class PortfolioApp {
             { name: 'themeManager', Module: ThemeManager, deps: ['preferenceManager'] },
             { name: 'cacheManager', Module: CacheManager, deps: [] },
             { name: 'gitHubAPI', Module: GitHubAPI, deps: ['cacheManager'] },
+            { name: 'gitHubRenderer', Module: GitHubRenderer, deps: [] },
             { name: 'animationController', Module: AnimationController, deps: ['preferenceManager'] },
             { name: 'scrollAnimations', Module: ScrollAnimations, deps: ['preferenceManager'] },
             { name: 'loadingStates', Module: LoadingStates, deps: [] },
-            { name: 'mobileNavigation', Module: MobileNavigation, deps: ['navigationManager'] },
+            { name: 'mobileNavigation', Module: MobileNavigation, deps: [] },
             { name: 'navigationManager', Module: NavigationManager, deps: ['scrollAnimations', 'loadingStates', 'mobileNavigation'] },
             { name: 'keyboardShortcuts', Module: KeyboardShortcuts, deps: ['navigationManager', 'preferenceManager'] }
         ];
@@ -141,14 +137,14 @@ class PortfolioApp {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then((registration) => {
-                        console.log('✅ Service Worker registered:', registration.scope);
-                        
+                        console.log('Service Worker registered:', registration.scope);
+
                         // Listen for updates
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('🔄 New service worker available');
+                                    console.log('New service worker available');
                                     // Notify user about update
                                     this.notifyUpdateAvailable();
                                 }
@@ -156,12 +152,12 @@ class PortfolioApp {
                         });
                     })
                     .catch((error) => {
-                        console.error('❌ Service Worker registration failed:', error);
+                        console.error('Service Worker registration failed:', error);
                         this.errorHandler.logWarning('Service Worker registration failed', { error });
                     });
             });
         } else {
-            console.log('⚠️ Service Workers not supported in this browser');
+            console.log('Service Workers not supported in this browser');
         }
     }
 
@@ -211,41 +207,21 @@ class PortfolioApp {
         });
     }
 
-/**
+    /**
      * Load initial data
      */
     async loadInitialData() {
         try {
             // Load GitHub repositories using modern API
-            console.log('🔄 Fetching GitHub repositories...');
             const allRepos = await this.modules.gitHubAPI.fetchRepos();
-            const featuredRepos = await this.modules.gitHubAPI.fetchFeaturedRepos();
-            
-            console.log('📊 Data loaded, checking for legacy functions...');
-            console.log('renderFeaturedReposFromData available:', typeof renderFeaturedReposFromData);
-            console.log('renderReposFromData available:', typeof renderReposFromData);
-            
-            // Wait a moment for DOM to be ready and script.js functions to be available
-            await new Promise(resolve => setTimeout(resolve, 100));
-            
-            // Try legacy functions first
-            if (typeof renderFeaturedReposFromData === 'function' && typeof renderReposFromData === 'function') {
-                console.log('✅ Using legacy rendering functions');
-                try {
-                    // Pass data to legacy rendering functions
-                    renderFeaturedReposFromData(allRepos);
-                    renderReposFromData(allRepos);
-                    console.log('✅ Data passed to legacy rendering functions successfully');
-                } catch (legacyError) {
-                    console.warn('⚠️ Legacy rendering failed, using fallback:', legacyError);
-                    this.renderProjectsFallback(allRepos, featuredRepos);
-                }
-            } else {
-                // Fallback: render directly if legacy functions aren't available
-                console.warn('⚠️ Legacy rendering functions not available, using fallback');
-                this.renderProjectsFallback(allRepos, featuredRepos);
+
+            // Initialize GitHub renderer
+            if (this.modules.gitHubRenderer) {
+                await this.modules.gitHubRenderer.initialize();
+                this.modules.gitHubRenderer.renderFeaturedReposFromData(allRepos);
+                this.modules.gitHubRenderer.renderReposFromData(allRepos);
             }
-            
+
             // Setup scroll animations after content is loaded
             setTimeout(() => {
                 if (this.modules.scrollAnimations) {
@@ -253,8 +229,8 @@ class PortfolioApp {
                     this.modules.scrollAnimations.animateTimeline();
                 }
             }, 500);
-            
-            console.log('📊 Initial data loading completed');
+
+            console.log('Initial data loading completed');
         } catch (error) {
             this.errorHandler.handleError(error, 'Failed to load initial data');
             // Show error state in UI
@@ -273,8 +249,8 @@ class PortfolioApp {
                     const perfData = performance.getEntriesByType('navigation')[0];
                     if (perfData) {
                         const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
-                        console.log(`⏱️ Page load time: ${loadTime}ms`);
-                        
+                        console.log(`Page load time: ${loadTime}ms`);
+
                         // Log performance metrics
                         if (loadTime > 3000) {
                             this.errorHandler.logWarning('Slow page load detected', { loadTime });
@@ -285,205 +261,43 @@ class PortfolioApp {
         }
     }
 
-/**
-     * Fallback rendering method
-     */
-    renderProjectsFallback(allRepos, featuredRepos) {
-        try {
-            console.log('🔄 Using fallback rendering method');
-            
-            // Hide loading spinners
-            const featuredSpinner = document.getElementById("featured-loading-spinner");
-            const allProjectsSpinner = document.getElementById("loading-spinner");
-            
-            if (featuredSpinner) featuredSpinner.style.display = 'none';
-            if (allProjectsSpinner) allProjectsSpinner.style.display = 'none';
-            
-            // Show containers
-            const featuredContainer = document.getElementById("featured-container");
-            const allProjectsContainer = document.getElementById("github-repos");
-            
-            if (featuredContainer) {
-                featuredContainer.style.display = 'block';
-                
-                // Render featured projects
-                if (featuredRepos && featuredRepos.length > 0) {
-                    this.renderFeaturedProjectsFallback(featuredRepos, featuredContainer);
-                } else {
-                    // Use all repos if no featured repos specified
-                    const reposWithDescriptions = allRepos.filter(repo => repo.description && repo.description.trim() !== "");
-                    const sortedRepos = [...reposWithDescriptions].sort((a, b) => {
-                        const dateCompare = new Date(b.updated_at) - new Date(a.updated_at);
-                        if (dateCompare !== 0) return dateCompare;
-                        return (b.stargazers_count || 0) - (a.stargazers_count || 0);
-                    });
-                    const topRepos = sortedRepos.slice(0, 5);
-                    this.renderFeaturedProjectsFallback(topRepos, featuredContainer);
-                }
-            }
-            
-            if (allProjectsContainer) {
-                allProjectsContainer.style.display = 'block';
-                
-                // Render all projects
-                if (allRepos && allRepos.length > 0) {
-                    this.renderAllProjectsFallback(allRepos, allProjectsContainer);
-                } else {
-                    allProjectsContainer.innerHTML = `
-                        <div class="col-12">
-                            <div class="alert alert-info" role="alert">
-                                <i class="fas fa-info-circle"></i> 
-                                No repositories found.
-                            </div>
-                        </div>
-                    `;
-                }
-            }
-            
-            console.log('✅ Fallback rendering completed');
-            
-        } catch (error) {
-            console.error('❌ Fallback rendering failed:', error);
-            this.showLoadError();
-        }
-    }
-    
-    /**
-     * Render featured projects using fallback method
-     */
-    renderFeaturedProjectsFallback(repos, container) {
-        if (repos.length === 0) {
-            container.innerHTML = `
-                <div class="alert alert-info" role="alert">
-                    <i class="fas fa-info-circle"></i> 
-                    No featured projects found.
-                </div>
-            `;
-            return;
-        }
-        
-        const repo = repos[0]; // Show first repo as featured
-        
-        container.innerHTML = `
-            <div class="repo-card featured h-100">
-                <div class="star-badge">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="repo-header">
-                    <div class="repo-name">${repo.name}</div>
-                    <div class="repo-description">${repo.description || "No description available."}</div>
-                </div>
-                <div class="repo-meta">
-                    <span>
-                        <i class="fas fa-code-branch"></i> ${repo.language || 'N/A'}
-                    </span>
-                    <span>
-                        <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
-                    </span>
-                    <span>
-                        <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
-                    </span>
-                </div>
-                <div class="repo-footer">
-                    <a href="${repo.html_url}" target="_blank" class="repo-link">
-                        <i class="fab fa-github"></i> View Repository
-                    </a>
-                </div>
-            </div>
-        `;
-    }
-    
-    /**
-     * Render all projects using fallback method
-     */
-    renderAllProjectsFallback(repos, container) {
-        const reposWithDesc = repos.filter(repo => repo.description && repo.description.trim() !== "");
-        const displayRepos = reposWithDesc.slice(0, 6); // Show first 6 repos
-        
-        container.innerHTML = '';
-        
-        if (displayRepos.length === 0) {
-            container.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-info" role="alert">
-                        <i class="fas fa-info-circle"></i> 
-                        No repositories with descriptions found.
-                    </div>
-                </div>
-            `;
-            return;
-        }
-        
-        displayRepos.forEach(repo => {
-            const card = document.createElement("div");
-            card.className = "col-md-6 col-lg-4 mb-4";
-
-            const languageClass = (repo.language || 'unknown').toLowerCase().replace(/\+/g, 'plus');
-
-            card.innerHTML = `
-                <div class="repo-card h-100 compact">
-                    <div class="repo-header">
-                        <span class="language-badge ${languageClass}"></span>
-                        <div class="repo-name">${repo.name}</div>
-                    </div>
-                    <div class="repo-description">${repo.description || "No description available."}</div>
-                    <div class="repo-meta">
-                        <span>
-                            <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
-                        </span>
-                        <span>
-                            <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
-                        </span>
-                    </div>
-                    <div class="repo-footer">
-                        <a href="${repo.html_url}" target="_blank" class="repo-link">
-                            <i class="fab fa-github"></i> View Repository
-                        </a>
-                    </div>
-                </div>
-            `;
-
-            container.appendChild(card);
-        });
-    }
-    
     /**
      * Show loading error state
      */
     showLoadError() {
         const featuredContainer = document.getElementById("featured-container");
         const allProjectsContainer = document.getElementById("github-repos");
-        
+
         // Hide spinners
         const featuredSpinner = document.getElementById("featured-loading-spinner");
         const allProjectsSpinner = document.getElementById("loading-spinner");
-        
+
         if (featuredSpinner) featuredSpinner.style.display = 'none';
         if (allProjectsSpinner) allProjectsSpinner.style.display = 'none';
-        
+
         // Show error messages
         if (featuredContainer) {
             featuredContainer.innerHTML = `
                 <div class="alert alert-warning" role="alert">
-                    <i class="fas fa-exclamation-triangle"></i> 
+                    <i class="fas fa-exclamation-triangle"></i>
                     Failed to load featured projects. Please refresh the page.
                 </div>
             `;
             featuredContainer.style.display = 'block';
         }
-        
+
         if (allProjectsContainer) {
             allProjectsContainer.innerHTML = `
                 <div class="col-12">
                     <div class="alert alert-danger" role="alert">
-                        <i class="fas fa-exclamation-triangle"></i> 
+                        <i class="fas fa-exclamation-triangle"></i>
                         Failed to load repositories. Please refresh the page.
                     </div>
                 </div>
             `;
         }
     }
-    
+
     /**
      * Get module instance
      */
@@ -500,9 +314,9 @@ class PortfolioApp {
                 module.destroy();
             }
         });
-        
+
         this.initialized = false;
-        console.log('🧹 Portfolio app destroyed');
+        console.log('Portfolio app destroyed');
     }
 }
 
@@ -510,45 +324,45 @@ class PortfolioApp {
  * Application entry point
  */
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('🔍 DOM Content Loaded, starting initialization...');
-    
+    console.log('DOM Content Loaded, starting initialization...');
+
     try {
         // Test basic functionality first
-        console.log('📋 Testing basic functionality...');
-        
+        console.log('Testing basic functionality...');
+
         // Test module imports
-        console.log('📦 Testing module imports...');
+        console.log('Testing module imports...');
         if (typeof PortfolioApp === 'undefined') {
             throw new Error('PortfolioApp class is not defined');
         }
-        
+
         // Create and initialize app
-        console.log('🏗️ Creating PortfolioApp instance...');
+        console.log('Creating PortfolioApp instance...');
         window.portfolioApp = new PortfolioApp();
-        
+
         if (!window.portfolioApp) {
             throw new Error('Failed to create PortfolioApp instance');
         }
-        
-        console.log('⚙️ Initializing app...');
+
+        console.log('Initializing app...');
         await window.portfolioApp.initialize();
-        
+
         // Make app available globally for debugging (v2)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             window.debugApp = window.portfolioApp;
         }
-        
-        console.log('✅ Application initialization completed successfully');
-        
+
+        console.log('Application initialization completed successfully');
+
     } catch (error) {
-        console.error('🚨 Failed to start portfolio application:', error);
+        console.error('Failed to start portfolio application:', error);
         console.error('Error details:', {
             message: error.message,
             stack: error.stack,
             name: error.name,
             timestamp: new Date().toISOString()
         });
-        
+
         // Fallback: Show error message to user with actual error details
         document.body.innerHTML = `
             <div style="
@@ -563,7 +377,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                 padding: 20px;
             ">
                 <div style="max-width: 600px;">
-                    <h1>⚠️ Application Error</h1>
+                    <h1>Application Error</h1>
                     <p><strong>Error:</strong> ${error.message}</p>
                     <p><strong>Type:</strong> ${error.name || 'Unknown'}</p>
                     <details style="margin: 20px 0; text-align: left;">
