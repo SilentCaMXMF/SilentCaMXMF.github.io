@@ -72,6 +72,7 @@
 
 /* Modern backdrop-filter with color-mix */
 .header-content {
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
 }
 

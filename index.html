@@ -3,6 +3,19 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Content Security Policy - Prevents XSS attacks and controls resource loading -->
+        <!-- Note: 'unsafe-inline' and 'unsafe-eval' are needed for current inline scripts/styles but should be refactored in future -->
+        <meta http-equiv="Content-Security-Policy" 
+              content="default-src 'self'; 
+                       script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
+                       style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com; 
+                       font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
+                       img-src 'self' data: https:; 
+                       connect-src 'self' https://api.github.com; 
+                       frame-ancestors 'none'; 
+                       base-uri 'self';">
+        
         <meta name="description" content="Pedro Calado - Junior Software Engineer specializing in modern web development. View my portfolio of projects showcasing HTML, CSS, JavaScript, React, and responsive design skills. Available for opportunities in Lisbon, Portugal.">
         <meta name="keywords" content="Pedro Calado, software engineer, web developer, junior developer, portfolio, HTML5, CSS3, JavaScript, React, responsive web design, frontend developer, web development, Lisbon, Portugal, programming, Bootstrap, Git, modern web technologies">
         <meta name="author" content="Pedro Calado">
@@ -38,7 +51,9 @@
         <title>Pedro Calado - Junior Software Engineer | Web Development Portfolio | Lisbon</title>
 
         <!-- Font Awesome Icons -->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <!-- Font Awesome Solid only (30KB vs 73KB for all.min.css) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
 
         <link rel="icon" href="./img/drumming_server.png" type="image/x-icon">
         <link rel="icon" type="image/png" sizes="32x32" href="./img/drumming_server32x32.png">
@@ -48,8 +63,20 @@
 
         <!-- Preload most critical resources -->
         <link rel="preload" href="./css/style.css" as="style">
-        
-        <!-- Critical CSS files (consolidated into one file with @import) -->
+
+        <!-- Google Fonts with display=swap for non-blocking render -->
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600;700&family=Lora:wght@400;600;700&display=swap">
+
+        <!-- CSS files loaded in parallel instead of @import (better performance) -->
+        <link rel="stylesheet" href="./css/bootstrap-replacement.css">
+        <link rel="stylesheet" href="./css/accessibility-enhanced.css">
+        <link rel="stylesheet" href="./css/loading-states.css">
+        <link rel="stylesheet" href="./css/animations-optimized.css">
+        <link rel="stylesheet" href="./css/modern-animations.css">
+        <link rel="stylesheet" href="./css/repo-display-options.css">
+        <link rel="stylesheet" href="./css/modern-features.css">
         <link rel="stylesheet" href="./css/style.css">
         
         <!-- Preload critical images -->
@@ -69,7 +96,7 @@
         
         <!-- Critical CSS for faster initial render -->
         <style>
-            :root{--primary-color:#9ab891;--secondary-color:#d4c4a8;--dark-bg:#2c2c2c;--light-text:#fff;--dark-text:#333;--focus-color:#4a9eff}*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Roboto,Open Sans,sans-serif;line-height:1.6;color:var(--dark-text);background:linear-gradient(135deg,var(--body-gradient-1),var(--body-gradient-2),var(--body-gradient-3),var(--body-gradient-4))}.container{max-width:1200px;margin:0 auto;padding:0 20px}.py-5{padding:3rem 0}.text-center{text-align:center}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.skip-link{position:absolute;top:-40px;left:6px;background:var(--primary-color);color:white;padding:8px;text-decoration:none;z-index:1000}.skip-link:focus{top:6px}[data-theme=dark]{--primary-color:#8aad82;--secondary-color:#c4b598;--dark-bg:#1a1a1a;--light-text:#f0f0f0;--dark-text:#e0e0e0;--focus-color:#5ab4ff}
+            :root{--primary-color:#2d7a4e;--secondary-color:#f4a460;--dark-bg:#2c2c2c;--light-text:#fff;--dark-text:#333;--focus-color:#4a9eff}*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Roboto,Open Sans,sans-serif;line-height:1.6;color:var(--dark-text);background:linear-gradient(135deg,var(--body-gradient-1),var(--body-gradient-2),var(--body-gradient-3),var(--body-gradient-4))}.container{max-width:1200px;margin:0 auto;padding:0 20px}.py-5{padding:3rem 0}.text-center{text-align:center}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.skip-link{position:absolute;top:-40px;left:6px;background:var(--primary-color);color:white;padding:8px;text-decoration:none;z-index:1000}.skip-link:focus{top:6px}[data-theme=dark]{--primary-color:#8aad82;--secondary-color:#c4b598;--dark-bg:#1a1a1a;--light-text:#f0f0f0;--dark-text:#e0e0e0;--focus-color:#5ab4ff}
         </style>
         
         <!-- Structured Data (JSON-LD) -->
@@ -621,13 +648,20 @@
                     <div class="search-filter">
                         <label for="repo-filter" class="sr-only">Search projects</label>
                         <i class="fas fa-search" aria-hidden="true"></i>
-                        <input type="text" id="repo-filter" 
-                               placeholder="Search projects..." 
+                        <input type="text" id="repo-filter"
+                               placeholder="Search projects..."
                                aria-label="Search projects by name, description, or language"
                                aria-describedby="repo-filter-help">
                         <span id="repo-filter-help" class="sr-only">
                             Type to filter the list of projects below. You can search by project name, description, or programming language.
                         </span>
+                    </div>
+                    <div class="filter-group">
+                        <label for="language-filter" class="sr-only">Filter by programming language</label>
+                        <select id="language-filter" aria-label="Filter by programming language">
+                            <option value="">All Languages</option>
+                            <!-- Options populated dynamically -->
+                        </select>
                     </div>
                     <label for="repo-sort" class="sr-only">Sort projects</label>
                     <select id="repo-sort" aria-label="Sort projects by">

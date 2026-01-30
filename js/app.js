@@ -122,6 +122,9 @@ class PortfolioApp {
             // Setup performance monitoring
             this.setupPerformanceMonitoring();
             
+            // Show first-time user onboarding
+            this.showFirstTimeOnboarding();
+            
         } catch (error) {
             this.errorHandler.handleError(error, 'Failed to start application');
         }
@@ -181,28 +184,33 @@ class PortfolioApp {
             gap: 12px;
             animation: slideIn 0.3s ease-out;
         `;
-        
-        notification.innerHTML = `
-            <span>A new version is available!</span>
-            <button id="update-btn" style="
-                background: #2c2c2c;
-                color: #9ab891;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                cursor: pointer;
-                font-weight: 600;
-            ">Update</button>
+
+        // SECURITY: Using DOM methods instead of innerHTML
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = 'A new version is available!';
+
+        const updateBtn = document.createElement('button');
+        updateBtn.id = 'update-btn';
+        updateBtn.style.cssText = `
+            background: #2c2c2c;
+            color: #9ab891;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
         `;
-        
-        document.body.appendChild(notification);
-        
-        document.getElementById('update-btn').addEventListener('click', () => {
+        updateBtn.textContent = 'Update';
+        updateBtn.addEventListener('click', () => {
             if (navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
             }
             window.location.reload();
         });
+
+        notification.appendChild(messageSpan);
+        notification.appendChild(updateBtn);
+        document.body.appendChild(notification);
     }
 
     /**
@@ -273,26 +281,42 @@ class PortfolioApp {
         if (featuredSpinner) featuredSpinner.style.display = 'none';
         if (allProjectsSpinner) allProjectsSpinner.style.display = 'none';
 
-        // Show error messages
+        // Show error messages - SECURITY: Using DOM methods instead of innerHTML
         if (featuredContainer) {
-            featuredContainer.innerHTML = `
-                <div class="alert alert-warning" role="alert">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Failed to load featured projects. Please refresh the page.
-                </div>
-            `;
+            featuredContainer.innerHTML = '';
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-warning';
+            alertDiv.setAttribute('role', 'alert');
+
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-exclamation-triangle';
+
+            alertDiv.appendChild(icon);
+            alertDiv.appendChild(document.createTextNode(' Failed to load featured projects. Please refresh the page.'));
+
+            featuredContainer.appendChild(alertDiv);
             featuredContainer.style.display = 'block';
         }
 
         if (allProjectsContainer) {
-            allProjectsContainer.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-danger" role="alert">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Failed to load repositories. Please refresh the page.
-                    </div>
-                </div>
-            `;
+            allProjectsContainer.innerHTML = '';
+
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-12';
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.setAttribute('role', 'alert');
+
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-exclamation-triangle';
+
+            alertDiv.appendChild(icon);
+            alertDiv.appendChild(document.createTextNode(' Failed to load repositories. Please refresh the page.'));
+
+            colDiv.appendChild(alertDiv);
+            allProjectsContainer.appendChild(colDiv);
         }
     }
 
@@ -362,41 +386,99 @@ document.addEventListener('DOMContentLoaded', async () => {
         });
 
         // Fallback: Show error message to user with actual error details
-        document.body.innerHTML = `
-            <div style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                background: var(--dark-bg, #2c2c2c);
-                color: var(--light-text, #fff);
-                font-family: system-ui, sans-serif;
-                text-align: center;
-                padding: 20px;
-            ">
-                <div style="max-width: 600px;">
-                    <h1>Application Error</h1>
-                    <p><strong>Error:</strong> ${error.message}</p>
-                    <p><strong>Type:</strong> ${error.name || 'Unknown'}</p>
-                    <details style="margin: 20px 0; text-align: left;">
-                        <summary>Technical Details</summary>
-                        <pre style="background: rgba(0,0,0,0.1); padding: 10px; border-radius: 4px; overflow: auto; font-size: 12px; text-align: left;">${error.stack || 'No stack trace available'}</pre>
-                    </details>
-                    <button onclick="window.location.reload()" style="
-                        background: var(--primary-color, #9ab891);
-                        color: white;
-                        border: none;
-                        padding: 12px 24px;
-                        border-radius: 4px;
-                        cursor: pointer;
-                        font-size: 16px;
-                        margin-top: 20px;
-                    ">
-                        Try Again
-                    </button>
-                </div>
-            </div>
+        // SECURITY: Using DOM methods instead of innerHTML to prevent XSS
+        const errorContainer = document.createElement('div');
+        errorContainer.style.cssText = `
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--dark-bg, #2c2c2c);
+            color: var(--light-text, #fff);
+            font-family: system-ui, sans-serif;
+            text-align: center;
+            padding: 20px;
         `;
+
+        const contentDiv = document.createElement('div');
+        contentDiv.style.maxWidth = '600px';
+
+        const heading = document.createElement('h1');
+        heading.textContent = 'Application Error';
+
+        const errorP = document.createElement('p');
+        const strongError = document.createElement('strong');
+        strongError.textContent = 'Error: ';
+        errorP.appendChild(strongError);
+        errorP.appendChild(document.createTextNode(error.message || 'Unknown error'));
+
+        const typeP = document.createElement('p');
+        const strongType = document.createElement('strong');
+        strongType.textContent = 'Type: ';
+        typeP.appendChild(strongType);
+        typeP.appendChild(document.createTextNode(error.name || 'Unknown'));
+
+        const details = document.createElement('details');
+        details.style.cssText = 'margin: 20px 0; text-align: left;';
+
+        const summary = document.createElement('summary');
+        summary.textContent = 'Technical Details';
+
+        const pre = document.createElement('pre');
+        pre.style.cssText = 'background: rgba(0,0,0,0.1); padding: 10px; border-radius: 4px; overflow: auto; font-size: 12px; text-align: left;';
+        pre.textContent = error.stack || 'No stack trace available';
+
+        details.appendChild(summary);
+        details.appendChild(pre);
+
+        const button = document.createElement('button');
+        button.style.cssText = `
+            background: var(--primary-color, #9ab891);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        `;
+        button.textContent = 'Try Again';
+        button.addEventListener('click', () => window.location.reload());
+
+        contentDiv.appendChild(heading);
+        contentDiv.appendChild(errorP);
+        contentDiv.appendChild(typeP);
+        contentDiv.appendChild(details);
+        contentDiv.appendChild(button);
+        errorContainer.appendChild(contentDiv);
+
+        document.body.innerHTML = '';
+        document.body.appendChild(errorContainer);
+    }
+
+    /**
+     * Show first-time user onboarding
+     * Displays helpful tips for new visitors
+     */
+    showFirstTimeOnboarding() {
+        // Check if user has visited before
+        if (localStorage.getItem('portfolio-visited')) {
+            return;
+        }
+        
+        // Mark as visited
+        localStorage.setItem('portfolio-visited', 'true');
+        
+        // Show welcome toast after a short delay
+        setTimeout(() => {
+            if (this.modules.loadingStates) {
+                this.modules.loadingStates.showToast(
+                    '💡 Tip: Press "P" to pause animations, "T" to toggle theme, "/" to search',
+                    'info',
+                    8000
+                );
+            }
+        }, 2000);
     }
 });
 

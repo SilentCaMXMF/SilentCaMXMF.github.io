@@ -18,7 +18,7 @@ export class GitHubRenderer {
         this.reposWithoutDesc = [];
         this.options = {
             maxFeaturedRepos: 5,
-            initialReposToShow: 3,
+            initialReposToShow: 6,
             containerId: 'github-repos',
             featuredContainerId: 'featured-container',
             featuredProjectId: 'featured-project',
@@ -27,8 +27,11 @@ export class GitHubRenderer {
             noReposMessageId: 'no-repos-message',
             filterInputId: 'repo-filter',
             sortSelectId: 'repo-sort',
+            languageFilterId: 'language-filter',
             ...options
         };
+        this.currentLanguageFilter = '';
+        this.filteredRepos = [];
         this.eventManager = new EventManager();
     }
 
@@ -37,7 +40,77 @@ export class GitHubRenderer {
      */
     initialize() {
         this.setupFilterAndSort();
+        this.setupLanguageFilter();
         return this;
+    }
+
+    /**
+     * Setup language filter dropdown
+     */
+    setupLanguageFilter() {
+        const select = document.getElementById(this.options.languageFilterId);
+        if (!select) return;
+
+        select.addEventListener('change', (e) => {
+            this.currentLanguageFilter = e.target.value;
+            this.applyFilters();
+        });
+    }
+
+    /**
+     * Populate language filter options dynamically
+     */
+    populateLanguageFilter() {
+        const select = document.getElementById(this.options.languageFilterId);
+        if (!select || this.allRepos.length === 0) return;
+
+        // Get unique languages from all repos
+        const languages = [...new Set(this.allRepos
+            .map(r => r.language)
+            .filter(Boolean))]
+            .sort();
+
+        // Clear existing options except "All Languages"
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+
+        // Add language options
+        languages.forEach(lang => {
+            const option = document.createElement('option');
+            option.value = lang;
+            option.textContent = lang;
+            select.appendChild(option);
+        });
+    }
+
+    /**
+     * Apply both text filter and language filter
+     */
+    applyFilters() {
+        const filterInput = document.getElementById(this.options.filterInputId);
+        const query = filterInput ? filterInput.value : '';
+
+        let repos = [...this.reposWithDesc];
+
+        // Apply language filter
+        if (this.currentLanguageFilter) {
+            repos = repos.filter(repo => repo.language === this.currentLanguageFilter);
+        }
+
+        // Apply text filter
+        if (query) {
+            const lower = query.toLowerCase();
+            repos = repos.filter(repo =>
+                repo.name.toLowerCase().includes(lower) ||
+                (repo.description && repo.description.toLowerCase().includes(lower))
+            );
+        }
+
+        // Apply sorting
+        repos = this.sortRepos(repos);
+
+        this.renderRepos(repos);
     }
 
     /**
@@ -49,15 +122,13 @@ export class GitHubRenderer {
 
         if (filterInput) {
             filterInput.addEventListener('input', () => {
-                const filtered = this.filterRepos(this.reposWithDesc, filterInput.value);
-                this.renderRepos(filtered);
+                this.applyFilters();
             });
         }
 
         if (sortSelect) {
             sortSelect.addEventListener('change', () => {
-                const filtered = this.filterRepos(this.reposWithDesc, filterInput ? filterInput.value : '');
-                this.renderRepos(filtered);
+                this.applyFilters();
             });
         }
     }
@@ -94,12 +165,19 @@ export class GitHubRenderer {
         } catch (error) {
             console.error('Error rendering featured repos:', error);
             if (featuredContainer) {
-                featuredContainer.innerHTML = `
-                    <div class="alert alert-warning" role="alert">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Failed to load featured projects.
-                    </div>
-                `;
+                featuredContainer.innerHTML = '';
+
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-warning';
+                alertDiv.setAttribute('role', 'alert');
+
+                const icon = document.createElement('i');
+                icon.className = 'fas fa-exclamation-triangle';
+
+                alertDiv.appendChild(icon);
+                alertDiv.appendChild(document.createTextNode(' Failed to load featured projects.'));
+
+                featuredContainer.appendChild(alertDiv);
                 featuredContainer.style.display = 'block';
             }
         }
@@ -121,45 +199,97 @@ export class GitHubRenderer {
         }
 
         if (this.featuredRepos.length === 0) {
-            featuredContainer.innerHTML = `
-                <div class="alert alert-info" role="alert">
-                    <i class="fas fa-info-circle"></i>
-                    No featured projects found.
-                </div>
-            `;
+            featuredContainer.innerHTML = '';
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-info';
+            alertDiv.setAttribute('role', 'alert');
+
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-info-circle';
+
+            alertDiv.appendChild(icon);
+            alertDiv.appendChild(document.createTextNode(' No featured projects found.'));
+
+            featuredContainer.appendChild(alertDiv);
             featuredContainer.style.display = 'block';
             return;
         }
 
         const repo = this.featuredRepos[this.currentFeaturedIndex];
 
-        featuredProject.innerHTML = `
-            <div class="repo-card featured h-100">
-                <div class="star-badge">
-                    <i class="fas fa-star"></i>
-                </div>
-                <div class="repo-header">
-                    <div class="repo-name">${this.escapeHtml(repo.name)}</div>
-                    <div class="repo-description">${this.escapeHtml(repo.description || 'No description available.')}</div>
-                </div>
-                <div class="repo-meta">
-                    <span>
-                        <i class="fas fa-code-branch"></i> ${this.escapeHtml(repo.language || 'N/A')}
-                    </span>
-                    <span>
-                        <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
-                    </span>
-                    <span>
-                        <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
-                    </span>
-                </div>
-                <div class="repo-footer">
-                    <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer" class="repo-link">
-                        <i class="fab fa-github"></i> View Repository
-                    </a>
-                </div>
-            </div>
-        `;
+        // SECURITY: Using DOM methods instead of innerHTML to prevent XSS
+        const cardDiv = document.createElement('div');
+        cardDiv.className = 'repo-card featured h-100';
+
+        const starBadge = document.createElement('div');
+        starBadge.className = 'star-badge';
+        const starIcon = document.createElement('i');
+        starIcon.className = 'fas fa-star';
+        starBadge.appendChild(starIcon);
+
+        const repoHeader = document.createElement('div');
+        repoHeader.className = 'repo-header';
+
+        const repoName = document.createElement('div');
+        repoName.className = 'repo-name';
+        repoName.textContent = repo.name;
+
+        const repoDesc = document.createElement('div');
+        repoDesc.className = 'repo-description';
+        repoDesc.textContent = repo.description || 'No description available.';
+
+        repoHeader.appendChild(repoName);
+        repoHeader.appendChild(repoDesc);
+
+        const repoMeta = document.createElement('div');
+        repoMeta.className = 'repo-meta';
+
+        const langSpan = document.createElement('span');
+        const langIcon = document.createElement('i');
+        langIcon.className = 'fas fa-code-branch';
+        langSpan.appendChild(langIcon);
+        langSpan.appendChild(document.createTextNode(' ' + (repo.language || 'N/A')));
+
+        const starsSpan = document.createElement('span');
+        const starsIcon = document.createElement('i');
+        starsIcon.className = 'fas fa-star';
+        starsSpan.appendChild(starsIcon);
+        starsSpan.appendChild(document.createTextNode(' ' + (repo.stargazers_count || 0)));
+
+        const dateSpan = document.createElement('span');
+        const dateIcon = document.createElement('i');
+        dateIcon.className = 'fas fa-clock';
+        dateSpan.appendChild(dateIcon);
+        dateSpan.appendChild(document.createTextNode(' ' + new Date(repo.updated_at).toLocaleDateString()));
+
+        repoMeta.appendChild(langSpan);
+        repoMeta.appendChild(starsSpan);
+        repoMeta.appendChild(dateSpan);
+
+        const repoFooter = document.createElement('div');
+        repoFooter.className = 'repo-footer';
+
+        const repoLink = document.createElement('a');
+        repoLink.href = repo.html_url;
+        repoLink.target = '_blank';
+        repoLink.rel = 'noopener noreferrer';
+        repoLink.className = 'repo-link';
+
+        const githubIcon = document.createElement('i');
+        githubIcon.className = 'fab fa-github';
+        repoLink.appendChild(githubIcon);
+        repoLink.appendChild(document.createTextNode(' View Repository'));
+
+        repoFooter.appendChild(repoLink);
+
+        cardDiv.appendChild(starBadge);
+        cardDiv.appendChild(repoHeader);
+        cardDiv.appendChild(repoMeta);
+        cardDiv.appendChild(repoFooter);
+
+        featuredProject.innerHTML = '';
+        featuredProject.appendChild(cardDiv);
 
         this.updateFeaturedCounter();
         featuredContainer.style.display = 'block';
@@ -254,7 +384,11 @@ export class GitHubRenderer {
             this.reposWithDesc = repos.filter(repo => repo.description && repo.description.trim() !== '');
             this.reposWithoutDesc = repos.filter(repo => !repo.description || repo.description.trim() === '');
 
-            this.renderRepos(this.reposWithDesc.slice(0, this.options.initialReposToShow));
+            // Populate language filter with available languages
+            this.populateLanguageFilter();
+
+            // Apply initial render with filters
+            this.applyFilters();
 
             if (this.reposWithoutDesc.length > 0) {
                 this.showLoadMoreButton();
@@ -264,14 +398,23 @@ export class GitHubRenderer {
 
         } catch (error) {
             console.error('Error rendering repos:', error);
-            repoContainer.innerHTML = `
-                <div class="col-12">
-                    <div class="alert alert-danger" role="alert">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        Failed to load repositories. Please try again later.
-                    </div>
-                </div>
-            `;
+            repoContainer.innerHTML = '';
+
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-12';
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.setAttribute('role', 'alert');
+
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-exclamation-triangle';
+
+            alertDiv.appendChild(icon);
+            alertDiv.appendChild(document.createTextNode(' Failed to load repositories. Please try again later.'));
+
+            colDiv.appendChild(alertDiv);
+            repoContainer.appendChild(colDiv);
         }
     }
 
@@ -311,41 +454,78 @@ export class GitHubRenderer {
         card.className = 'col-md-6 col-lg-4 mb-4';
         const languageClass = (repo.language || 'unknown').toLowerCase().replace(/\+/g, 'plus');
 
-        card.innerHTML = `
-            <div class="repo-card h-100 compact" tabindex="0" role="article"
-                 aria-label="Project: ${this.escapeHtml(repo.name)}">
-                <div class="repo-header">
-                    <span class="language-badge ${languageClass}"></span>
-                    <div class="repo-name">${this.escapeHtml(repo.name)}</div>
-                </div>
-                <div class="repo-description">${this.escapeHtml(repo.description || 'No description available.')}</div>
-                <div class="repo-meta">
-                    <span>
-                        <i class="fas fa-star"></i> ${repo.stargazers_count || 0}
-                    </span>
-                    <span>
-                        <i class="fas fa-clock"></i> ${new Date(repo.updated_at).toLocaleDateString()}
-                    </span>
-                </div>
-                <div class="repo-footer">
-                    <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer" class="repo-link">
-                        <i class="fab fa-github"></i> View Repository
-                    </a>
-                </div>
-            </div>
-        `;
+        // SECURITY: Using DOM methods instead of innerHTML to prevent XSS
+        const repoCard = document.createElement('div');
+        repoCard.className = 'repo-card h-100 compact';
+        repoCard.setAttribute('tabindex', '0');
+        repoCard.setAttribute('role', 'article');
+        repoCard.setAttribute('aria-label', `Project: ${repo.name}`);
+
+        const repoHeader = document.createElement('div');
+        repoHeader.className = 'repo-header';
+
+        const langBadge = document.createElement('span');
+        langBadge.className = `language-badge ${languageClass}`;
+
+        const repoName = document.createElement('div');
+        repoName.className = 'repo-name';
+        repoName.textContent = repo.name;
+
+        repoHeader.appendChild(langBadge);
+        repoHeader.appendChild(repoName);
+
+        const repoDesc = document.createElement('div');
+        repoDesc.className = 'repo-description';
+        repoDesc.textContent = repo.description || 'No description available.';
+
+        const repoMeta = document.createElement('div');
+        repoMeta.className = 'repo-meta';
+
+        const starsSpan = document.createElement('span');
+        const starsIcon = document.createElement('i');
+        starsIcon.className = 'fas fa-star';
+        starsSpan.appendChild(starsIcon);
+        starsSpan.appendChild(document.createTextNode(' ' + (repo.stargazers_count || 0)));
+
+        const dateSpan = document.createElement('span');
+        const dateIcon = document.createElement('i');
+        dateIcon.className = 'fas fa-clock';
+        dateSpan.appendChild(dateIcon);
+        dateSpan.appendChild(document.createTextNode(' ' + new Date(repo.updated_at).toLocaleDateString()));
+
+        repoMeta.appendChild(starsSpan);
+        repoMeta.appendChild(dateSpan);
+
+        const repoFooter = document.createElement('div');
+        repoFooter.className = 'repo-footer';
+
+        const repoLink = document.createElement('a');
+        repoLink.href = repo.html_url;
+        repoLink.target = '_blank';
+        repoLink.rel = 'noopener noreferrer';
+        repoLink.className = 'repo-link';
+
+        const githubIcon = document.createElement('i');
+        githubIcon.className = 'fab fa-github';
+        repoLink.appendChild(githubIcon);
+        repoLink.appendChild(document.createTextNode(' View Repository'));
+
+        repoFooter.appendChild(repoLink);
+
+        repoCard.appendChild(repoHeader);
+        repoCard.appendChild(repoDesc);
+        repoCard.appendChild(repoMeta);
+        repoCard.appendChild(repoFooter);
 
         // Add keyboard support
-        card.querySelector('.repo-card').addEventListener('keydown', (e) => {
+        repoCard.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' || e.key === ' ') {
                 e.preventDefault();
-                const viewLink = card.querySelector('.repo-link');
-                if (viewLink) {
-                    window.open(viewLink.href, '_blank');
-                }
+                window.open(repo.html_url, '_blank');
             }
         });
 
+        card.appendChild(repoCard);
         return card;
     }
 
@@ -354,16 +534,18 @@ export class GitHubRenderer {
      */
     showLoadMoreButton() {
         const repoContainer = document.getElementById(this.options.containerId);
-        const filterInput = document.getElementById(this.options.filterInputId);
 
         if (!repoContainer) return;
 
+        // Remove existing load more button if present
+        const existingBtn = repoContainer.parentElement.querySelector('.load-more-btn');
+        if (existingBtn) existingBtn.remove();
+
         const btn = document.createElement('button');
-        btn.textContent = 'Load repos without description';
-        btn.className = 'btn btn-secondary my-3';
+        btn.textContent = `Load repos without description (${this.reposWithoutDesc.length})`;
+        btn.className = 'btn btn-secondary my-3 load-more-btn';
         btn.addEventListener('click', () => {
-            const filtered = this.filterRepos(this.reposWithoutDesc, filterInput ? filterInput.value : '');
-            this.appendRepos(filtered);
+            this.appendRepos(this.reposWithoutDesc);
             btn.remove();
         });
 
@@ -384,7 +566,7 @@ export class GitHubRenderer {
     }
 
     /**
-     * Filter repositories by search query
+     * Filter repositories by search query (legacy method - use applyFilters instead)
      */
     filterRepos(repos, query) {
         const lower = query.toLowerCase();
@@ -392,13 +574,20 @@ export class GitHubRenderer {
             repo.name.toLowerCase().includes(lower) ||
             (repo.description && repo.description.toLowerCase().includes(lower))
         );
-        return this.sortRepos(filtered);
+        return this.sortReposList(filtered);
     }
 
     /**
      * Sort repositories by selected criteria
      */
     sortRepos(repos) {
+        return this.sortReposList(repos);
+    }
+
+    /**
+     * Sort a list of repositories by selected criteria
+     */
+    sortReposList(repos) {
         const sortSelect = document.getElementById(this.options.sortSelectId);
         const sortType = sortSelect ? sortSelect.value : 'updated';
 
