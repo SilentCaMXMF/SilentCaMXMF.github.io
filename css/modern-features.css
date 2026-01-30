@@ -73,7 +73,6 @@
 /* Modern backdrop-filter with color-mix */
 .header-content {
   backdrop-filter: blur(10px);
-  background: color-mix(in srgb, var(--card-bg) 95%, var(--dark-bg) 5%);
 }
 
 /* Enhanced card backgrounds */
