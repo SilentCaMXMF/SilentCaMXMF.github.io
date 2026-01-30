@@ -480,7 +480,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         }, 2000);
     }
-});
+}
 
 // Export for module usage
 export { PortfolioApp };
