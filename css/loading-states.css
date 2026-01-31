@@ -70,17 +70,17 @@
 }
 
 /* Staggered loading for repo cards */
-.repo-card {
+.repo-card:not(.compact) {
   opacity: 0;
   animation: fadeInUp 0.5s ease-out forwards;
 }
 
-.repo-card:nth-child(1) { animation-delay: 0.1s; }
-.repo-card:nth-child(2) { animation-delay: 0.2s; }
-.repo-card:nth-child(3) { animation-delay: 0.3s; }
-.repo-card:nth-child(4) { animation-delay: 0.4s; }
-.repo-card:nth-child(5) { animation-delay: 0.5s; }
-.repo-card:nth-child(6) { animation-delay: 0.6s; }
+.repo-card:not(.compact):nth-child(1) { animation-delay: 0.1s; }
+.repo-card:not(.compact):nth-child(2) { animation-delay: 0.2s; }
+.repo-card:not(.compact):nth-child(3) { animation-delay: 0.3s; }
+.repo-card:not(.compact):nth-child(4) { animation-delay: 0.4s; }
+.repo-card:not(.compact):nth-child(5) { animation-delay: 0.5s; }
+.repo-card:not(.compact):nth-child(6) { animation-delay: 0.6s; }
 
 @keyframes fadeInUp {
   from {
@@ -101,6 +101,155 @@
   justify-content: center;
   flex-direction: column;
   gap: 20px;
+}
+
+/* Enhanced integration with Bootstrap spinner */
+.loading-spinner-enhanced .spinner-border {
+  position: relative;
+  z-index: 2;
+}
+
+/* Responsive sizing */
+@media (max-width: 768px) {
+  .spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .loading-spinner-enhanced {
+    gap: 0.5rem;
+  }
+}
+
+/* Loading text with fade animation */
+.loading-spinner::after {
+  content: "Loading featured projects...";
+  display: block;
+  margin-top: 1rem;
+  font-size: 0.9rem;
+  color: var(--text-color, #333);
+  animation: fadeInOut 2s ease-in-out infinite;
+}
+
+[data-theme="dark"] .loading-spinner::after {
+  color: var(--light-text, #f0f0f0);
+}
+
+@keyframes fadeInOut {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Improved spinner container for better UX */
+.loading-spinner {
+  position: relative;
+  padding: 2rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.3s ease;
+}
+
+[data-theme="dark"] .loading-spinner {
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.loading-spinner:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Combined spinner animation for better UX */
+.loading-spinner-enhanced {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 16px;
+  min-height: 120px;
+}
+
+.loading-spinner-enhanced .spinner-border {
+  position: relative;
+  z-index: 2;
+}
+
+.loading-spinner-enhanced::before {
+  content: '';
+  position: absolute;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+  opacity: 0.1;
+  animation: pulse 2s ease-in-out infinite;
+  z-index: 1;
+}
+
+[data-theme="dark"] .loading-spinner-enhanced::before {
+  background: radial-gradient(circle, var(--primary-color) 0%, transparent 70%);
+  opacity: 0.2;
+}
+
+/* CRITICAL: Essential loading animations must always run */
+[data-loading-essential="true"],
+.spinner-border,
+.loading-spinner,
+.loading-spinner-enhanced,
+.skeleton-loader,
+.skeleton,
+[role="status"][aria-live="polite"] {
+  /* Ensure these animations always run regardless of global animation state */
+  animation-play-state: running !important;
+}
+
+/* Override any attempts to pause loading animations */
+.animations-paused [data-loading-essential="true"],
+.animations-paused .spinner-border,
+.animations-paused .loading-spinner,
+.animations-paused .loading-spinner-enhanced,
+.animations-paused .skeleton-loader,
+.animations-paused .skeleton,
+.animations-paused [role="status"][aria-live="polite"],
+html[data-animations="paused"] [data-loading-essential="true"],
+html[data-animations="paused"] .spinner-border,
+html[data-animations="paused"] .loading-spinner,
+html[data-animations="paused"] .loading-spinner-enhanced,
+html[data-animations="paused"] .skeleton-loader,
+html[data-animations="paused"] .skeleton,
+html[data-animations="paused"] [role="status"][aria-live="polite"] {
+  animation-play-state: running !important;
+  transition: none !important;
+}
+
+/* Responsive spinner sizing */
+@media (max-width: 768px) {
+  .loading-spinner {
+    padding: 1.5rem;
+    min-height: 80px;
+  }
+  
+  .loading-spinner .spinner-border {
+    width: 1.5rem;
+    height: 1.5rem;
+  }
+  
+  .loading-spinner::after {
+    font-size: 0.8rem;
+  }
+  
+  .loading-spinner-enhanced {
+    min-height: 100px;
+    gap: 12px;
+  }
+  
+  .loading-spinner-enhanced::before {
+    width: 50px;
+    height: 50px;
+  }
 }
 
 /* Progress indicator */
@@ -166,4 +315,32 @@
 
 .lazy-loading.loaded {
   animation: imageFadeIn 0.5s ease-out;
+}
+
+/* Pulsing background effect */
+@keyframes pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.1;
+    transform: scale(1.1);
+  }
+}
+
+/* Universal protection for loading indicators */
+.spinner-border,
+.loading-spinner,
+.loading-spinner-enhanced,
+.skeleton-loader,
+.skeleton {
+  animation-play-state: running !important;
+}
+
+/* Respect user preferences for reduced motion while maintaining feedback */
+@media (prefers-reduced-motion: reduce) {
+  .spinner-border {
+    animation-duration: 3s;
+  }
 }

@@ -7,7 +7,7 @@
   }
   
   .skill-card {
-    padding: 35px 25px;
+    padding: clamp(25px, 5vw, 35px) clamp(20px, 4vw, 25px);
   }
 }
 
@@ -17,17 +17,17 @@
   }
   
   .skill-card {
-    padding: 20px 15px;
+    padding: clamp(15px, 3vw, 20px) clamp(10px, 2vw, 15px);
   }
   
   .skill-icon {
-    font-size: 3rem;
+    font-size: clamp(2.5rem, 5vw, 3rem);
   }
 }
 
 /* Modern Color Functions */
 .skill-card {
-  background: color-mix(in srgb, var(--skill-bg) 80%, transparent 20%);
+  background: color-mix(in srgb, var(--skill-bg) 80%, var(--card-bg) 20%);
   border: 1px solid color-mix(in srgb, var(--primary-color) 20%, transparent 80%);
 }
 
@@ -55,12 +55,7 @@
   border-left: 4px solid var(--primary-color);
 }
 
-/* Advanced Grid with modern functions */
-.skills-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(min(250px, 100%), 1fr));
-  gap: clamp(1rem, 2vw, 2rem);
-}
+/* Grid gap handled by main CSS - removed duplicate definition */
 
 /* Modern clamp for responsive typography */
 .section-title {
@@ -77,12 +72,12 @@
 
 /* Modern backdrop-filter with color-mix */
 .header-content {
+  -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
-  background: color-mix(in srgb, rgba(0, 0, 0, 0.9) 90%, transparent 10%);
 }
 
 /* Enhanced card backgrounds */
-.repo-card {
+.repo-card:not(.compact) {
   background: linear-gradient(135deg, 
     color-mix(in srgb, rgba(0, 0, 0, 0.4) 80%, var(--primary-color) 5%), 
     color-mix(in srgb, rgba(255, 255, 255, 0.05) 90%, transparent 10%));

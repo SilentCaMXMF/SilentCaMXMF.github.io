@@ -51,9 +51,8 @@ export class MobileNavigation {
             this.bindEvents();
             this.setupMobileOptimizations();
             this.initialized = true;
-            console.log('📱 MobileNavigation initialized');
         } catch (error) {
-            console.error('❌ MobileNavigation initialization failed:', error);
+            console.error('MobileNavigation initialization failed:', error);
             throw error;
         }
     }
@@ -89,6 +88,12 @@ export class MobileNavigation {
      * Bind event listeners
      */
     bindEvents() {
+        // Basic click handler for menu toggle (works on all devices)
+        this.menuButton.addEventListener('click', (e) => this.handleClick(e));
+
+        // Click outside to close menu
+        document.addEventListener('click', (e) => this.handleOutsideClick(e));
+
         if (!this.isMobile) {
             return;
         }
@@ -166,6 +171,32 @@ export class MobileNavigation {
         
         // Set viewport for mobile
         viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes';
+    }
+
+    /**
+     * Handle click on menu button
+     */
+    handleClick(e) {
+        const isVisible = this.dropdownMenu.classList.toggle('visible');
+        this.menuButton.setAttribute('aria-expanded', isVisible);
+        e.stopPropagation();
+
+        // Announce to screen readers
+        this.announceMenuState(isVisible);
+    }
+
+    /**
+     * Handle clicks outside the menu to close it
+     */
+    handleOutsideClick(e) {
+        if (
+            this.dropdownMenu.classList.contains('visible') &&
+            !this.dropdownMenu.contains(e.target) &&
+            e.target !== this.menuButton
+        ) {
+            this.dropdownMenu.classList.remove('visible');
+            this.menuButton.setAttribute('aria-expanded', 'false');
+        }
     }
 
     /**
@@ -251,8 +282,6 @@ export class MobileNavigation {
         this.dispatchGestureEvent(this.gestures.LONG_PRESS, {
             target: 'menu-button'
         });
-        
-        console.log('👆 Menu opened via long press');
     }
 
     /**
@@ -338,7 +367,6 @@ export class MobileNavigation {
         }
         
         this.dispatchGestureEvent(this.gestures.SWIPE_LEFT, { direction: 'left' });
-        console.log('👈 Swipe left detected');
     }
 
     /**
@@ -364,7 +392,6 @@ export class MobileNavigation {
         }
         
         this.dispatchGestureEvent(this.gestures.SWIPE_RIGHT, { direction: 'right' });
-        console.log('👉 Swipe right detected');
     }
 
     /**
@@ -420,11 +447,10 @@ export class MobileNavigation {
             console.warn('Swipe gestures only available on mobile devices');
             return false;
         }
-        
+
         document.body.addEventListener('touchstart', (e) => this.handleGlobalTouchStart(e), { passive: true });
         document.body.addEventListener('touchend', (e) => this.handleGlobalTouchEnd(e), { passive: true });
-        
-        console.log('👆 Swipe gestures enabled');
+
         return true;
     }
 
@@ -716,7 +742,5 @@ export class MobileNavigation {
         this.menuButton = null;
         this.dropdownMenu = null;
         this.initialized = false;
-        
-        console.log('🧹 MobileNavigation destroyed');
     }
 }

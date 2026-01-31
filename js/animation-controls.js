@@ -70,38 +70,123 @@ const animationController = {
   },
 
   setupMagneticButtons() {
+    // Only apply on hover-capable devices (skip touch devices)
+    if (!window.matchMedia('(hover: hover)').matches) return;
+
     const buttons = document.querySelectorAll('.btn');
-    
+    const magneticStrength = 0.2;
+
     buttons.forEach(button => {
+      let rafId = null;
+      let targetX = 0;
+      let targetY = 0;
+      let currentX = 0;
+      let currentY = 0;
+      let isHovering = false;
+
+      // Pre-calculate button dimensions to avoid layout thrashing
+      let rect = button.getBoundingClientRect();
+
+      // Update rect on resize
+      const updateRect = () => {
+        rect = button.getBoundingClientRect();
+      };
+      window.addEventListener('resize', updateRect, { passive: true });
+
+      const animate = () => {
+        if (!isHovering && Math.abs(currentX) < 0.1 && Math.abs(currentY) < 0.1) {
+          // Stop animation when settled
+          button.style.transform = '';
+          rafId = null;
+          return;
+        }
+
+        // Smooth interpolation (lerp) for natural motion
+        currentX += (targetX - currentX) * 0.15;
+        currentY += (targetY - currentY) * 0.15;
+
+        // Batch DOM write
+        button.style.transform = `translate(${currentX}px, ${currentY}px)`;
+
+        rafId = requestAnimationFrame(animate);
+      };
+
+      button.addEventListener('mouseenter', () => {
+        isHovering = true;
+        updateRect();
+      });
+
       button.addEventListener('mousemove', (e) => {
-        if (window.matchMedia('(hover: hover)').matches) {
-          const rect = button.getBoundingClientRect();
-          const x = e.clientX - rect.left - rect.width / 2;
-          const y = e.clientY - rect.top - rect.height / 2;
-          
-          button.style.transform = `translate(${x * 0.2}px, ${y * 0.2}px)`;
+        if (!isHovering) return;
+
+        // Calculate target position (throttled via RAF)
+        targetX = (e.clientX - rect.left - rect.width / 2) * magneticStrength;
+        targetY = (e.clientY - rect.top - rect.height / 2) * magneticStrength;
+
+        // Start RAF loop if not already running
+        if (!rafId) {
+          rafId = requestAnimationFrame(animate);
         }
       });
 
       button.addEventListener('mouseleave', () => {
-        button.style.transform = '';
+        isHovering = false;
+        targetX = 0;
+        targetY = 0;
+
+        // RAF continues until animation settles naturally
+        if (!rafId) {
+          rafId = requestAnimationFrame(animate);
+        }
       });
     });
   },
 
   setupParallaxEffect() {
-    if (window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
-      window.addEventListener('scroll', () => {
-        const scrolled = window.pageYOffset;
-        const parallaxElements = document.querySelectorAll('.skill-card, .repo-card');
-        
-        parallaxElements.forEach((element, index) => {
-          const speed = 0.5 + (index * 0.1);
-          const yPos = -(scrolled * speed / 10);
-          element.style.transform = `translateY(${yPos}px)`;
-        });
+    // Respect user's motion preferences
+    if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) return;
+
+    const parallaxElements = document.querySelectorAll('.skill-card, .repo-card');
+    if (parallaxElements.length === 0) return;
+
+    // Pre-calculate element speeds to avoid DOM reads in the animation loop
+    const elementsWithSpeed = Array.from(parallaxElements).map((element, index) => ({
+      element,
+      speed: (0.5 + (index * 0.1)) / 10
+    }));
+
+    let ticking = false;
+    let lastScrollY = window.pageYOffset;
+
+    const updateParallax = () => {
+      const scrolled = window.pageYOffset;
+
+      // Batch all DOM writes together
+      elementsWithSpeed.forEach(({ element, speed }) => {
+        const yPos = -(scrolled * speed);
+        element.style.transform = `translateY(${yPos}px)`;
       });
-    }
+
+      ticking = false;
+      lastScrollY = scrolled;
+    };
+
+    const onScroll = () => {
+      // Skip if scroll position hasn't changed significantly (optional optimization)
+      const currentScrollY = window.pageYOffset;
+      if (Math.abs(currentScrollY - lastScrollY) < 1) return;
+
+      if (!ticking) {
+        requestAnimationFrame(updateParallax);
+        ticking = true;
+      }
+    };
+
+    // Use passive listener for better scroll performance
+    window.addEventListener('scroll', onScroll, { passive: true });
+
+    // Initial render
+    updateParallax();
   },
 
   setupSmoothScroll() {

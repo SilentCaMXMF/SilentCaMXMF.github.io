@@ -68,38 +68,48 @@ export class AnimationController {
      */
     loadAnimationPreference() {
         let savedPreference;
+        let animationsEnabled = true; // Default to enabled
+        let shouldPause = false;
         
         if (this.preferenceManager) {
             // Get from PreferenceManager
-            const animationsEnabled = this.preferenceManager.get('animations');
+            animationsEnabled = this.preferenceManager.get('animations');
             const reducedMotion = this.preferenceManager.get('reducedMotion');
             
             // Respect reduced motion preference
             if (reducedMotion) {
-                this.pauseAnimations();
-                return;
+                shouldPause = true;
             }
             
             savedPreference = animationsEnabled;
         } else {
             // Fallback to localStorage for backward compatibility
             savedPreference = localStorage.getItem(this.storageKey);
+            
+            // Default to enabled if not explicitly set
+            animationsEnabled = savedPreference !== 'false' && savedPreference !== false;
         }
         
         // Respect system reduced motion preference
         if (this.prefersReducedMotion) {
-            this.pauseAnimations();
-            return;
+            shouldPause = true;
         }
         
-        // Load saved preference or default to enabled
-        const animationsEnabled = savedPreference !== false && savedPreference !== 'false';
-        
-        if (animationsEnabled) {
-            this.resumeAnimations();
-        } else {
-            this.pauseAnimations();
-        }
+        // CRITICAL: Delay animation control to allow loading states to initialize
+        setTimeout(() => {
+            // Pause animations if reduced motion is preferred
+            if (shouldPause) {
+                this.pauseAnimations();
+                return;
+            }
+            
+            // Apply animation preference (default to enabled)
+            if (animationsEnabled !== false) {
+                this.resumeAnimations();
+            } else {
+                this.pauseAnimations();
+            }
+        }, 100); // Small delay to let LoadingStates enhance spinners first
     }
 
     /**
@@ -171,8 +181,8 @@ export class AnimationController {
      */
     pauseAnimations() {
         try {
-            // Add CSS class for animation control
-            document.documentElement.classList.add('animations-paused');
+            // Add specific CSS class for pausing non-essential animations only
+            document.documentElement.classList.add('animations-paused-non-essential');
             
             // Update CSS custom properties
             this.setAnimationSpeed(0);
@@ -198,7 +208,7 @@ export class AnimationController {
     resumeAnimations() {
         try {
             // Remove CSS class for animation control
-            document.documentElement.classList.remove('animations-paused');
+            document.documentElement.classList.remove('animations-paused-non-essential');
             
             // Reset CSS custom properties
             this.setAnimationSpeed(1);
@@ -243,13 +253,13 @@ export class AnimationController {
             
             // Update icon
             if (this.animationIcon) {
-                this.animationIcon.className = isPaused ? 'icon icon-play' : 'icon icon-pause';
+                this.animationIcon.className = isPaused ? 'fas fa-play' : 'fas fa-pause';
             }
         }
     }
 
     /**
-     * Pause all CSS animations
+     * Pause all CSS animations (except loading spinners)
      */
     pauseCSSAnimations() {
         const animatedElements = document.querySelectorAll('*');
@@ -258,8 +268,29 @@ export class AnimationController {
             const computedStyle = window.getComputedStyle(element);
             const animationName = computedStyle.animationName;
             
+            // Skip loading indicators - these should always animate
+            const isLoadingElement = element.classList.contains('spinner-border') || 
+                                    element.classList.contains('loading-spinner') ||
+                                    element.getAttribute('role') === 'status';
+            if (isLoadingElement) return;
+            
+            // Skip loading spinners and essential loading elements
             if (animationName && animationName !== 'none') {
-                element.style.animationPlayState = 'paused';
+                // Don't pause loading-related animations
+                const isLoadingElement = 
+                    element.classList.contains('spinner-border') ||
+                    element.classList.contains('loading-spinner') ||
+                    element.classList.contains('loading-spinner-enhanced') ||
+                    element.classList.contains('skeleton-loader') ||
+                    element.classList.contains('skeleton') ||
+                    element.getAttribute('role') === 'status' ||
+                    element.getAttribute('aria-live') === 'polite' ||
+                    element.closest('.loading-spinner') ||
+                    element.closest('[role="status"]');
+                
+                if (!isLoadingElement) {
+                    element.style.animationPlayState = 'paused';
+                }
             }
         });
     }
@@ -271,11 +302,9 @@ export class AnimationController {
         const animatedElements = document.querySelectorAll('*');
         
         animatedElements.forEach(element => {
-            const computedStyle = window.getComputedStyle(element);
-            const animationName = computedStyle.animationName;
-            
-            if (animationName && animationName !== 'none') {
-                element.style.animationPlayState = 'running';
+            // Clear any inline animation-play-state to let CSS take over
+            if (element.style.animationPlayState) {
+                element.style.animationPlayState = '';
             }
         });
     }

@@ -10,13 +10,13 @@ export class ThemeManager {
         this.themeIcon = null;
         this.currentTheme = 'light';
         this.initialized = false;
-        
+
         // Theme constants
         this.THEMES = {
             LIGHT: 'light',
             DARK: 'dark'
         };
-        
+
         // PreferenceManager integration
         this.preferenceManager = preferenceManager;
     }
@@ -31,9 +31,8 @@ export class ThemeManager {
             this.loadSavedTheme();
             this.setupPreferenceListener();
             this.initialized = true;
-            console.log('🎨 ThemeManager initialized');
         } catch (error) {
-            console.error('❌ ThemeManager initialization failed:', error);
+            console.error('ThemeManager initialization failed:', error);
             throw error;
         }
     }
@@ -150,8 +149,6 @@ export class ThemeManager {
         
         // Dispatch theme change event
         this.dispatchThemeChange(theme, previousTheme);
-        
-        console.log(`🌓 Theme changed to: ${theme}`);
     }
 
     /**
@@ -176,9 +173,9 @@ export class ThemeManager {
      */
     updateIcon(theme) {
         if (this.themeIcon) {
-            const iconClass = theme === this.THEMES.DARK 
-                ? 'icon icon-sun' 
-                : 'icon icon-moon';
+            const iconClass = theme === this.THEMES.DARK
+                ? 'fas fa-sun'
+                : 'fas fa-moon';
             this.themeIcon.className = iconClass;
         }
     }

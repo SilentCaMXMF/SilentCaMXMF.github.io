@@ -4,13 +4,14 @@
  * @version 1.0.0
  */
 
-const CACHE_NAME = 'portfolio-v1.0.0';
-const RUNTIME_CACHE = 'portfolio-runtime-v1.0.0';
+const CACHE_NAME = 'portfolio-v1.0.1';
+const RUNTIME_CACHE = 'portfolio-runtime-v1.0.1';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
     '/',
     '/index.html',
+    '/css/style.css',
     '/css/modern-animations.css',
     '/css/animations-optimized.css',
     '/css/accessibility-enhanced.css',
@@ -30,11 +31,12 @@ const STATIC_ASSETS = [
     '/js/modules/KeyboardShortcuts.js',
     '/js/modules/ErrorHandler.js',
     '/js/modules/CacheManager.js',
-    '/images/profile.webp',
-    '/images/profile-150x150.webp',
-    '/images/profile-300x300.webp',
-    '/images/profile-600x600.webp',
-    '/images/profile-800x800.webp'
+    '/img/drumming_server.png',
+    '/img/drumming_server16x16.png',
+    '/img/drumming_server32x32.png',
+    '/img/pedro_tipoGhibli_passe-320.webp',
+    '/img/pedro_tipoGhibli_passe-640.webp',
+    '/manifest.json'
 ];
 
 // GitHub API URLs to cache
@@ -90,11 +92,44 @@ self.addEventListener('activate', (event) => {
 });
 
 /**
+ * Helper function to check if request should be skipped
+ */
+function shouldSkipRequest(request) {
+    const url = request.url;
+    
+    // Skip extension requests
+    if (url.startsWith('chrome-extension://') || 
+        url.startsWith('moz-extension://') || 
+        url.startsWith('safari-extension://') ||
+        url.startsWith('edge-extension://') ||
+        url.startsWith('opera-extension://')) {
+        return true;
+    }
+    
+    // Skip non-HTTP(S) requests
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return true;
+    }
+    
+    // Skip data URLs, blob URLs, etc.
+    if (url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('file:')) {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
  * Fetch event - handle requests with cache strategies
  */
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
+
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return; // Let browser handle these directly
+    }
 
     // Handle GitHub API requests with stale-while-revalidate
     if (GITHUB_API_PATTERN.test(url.href)) {
@@ -135,6 +170,11 @@ function isImageRequest(url) {
  * Handle navigation requests with network-first strategy
  */
 async function handleNavigationRequest(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     try {
         // Try network first
         const networkResponse = await fetch(request);
@@ -164,6 +204,11 @@ async function handleNavigationRequest(request) {
  * Handle cache-first requests for static assets
  */
 async function handleCacheFirstRequest(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     const cachedResponse = await caches.match(request);
     
     if (cachedResponse) {
@@ -189,6 +234,11 @@ async function handleCacheFirstRequest(request) {
  * Handle image requests with cache-first strategy
  */
 async function handleImageRequest(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     const cachedResponse = await caches.match(request);
     
     if (cachedResponse) {
@@ -214,6 +264,11 @@ async function handleImageRequest(request) {
  * Handle stale-while-revalidate for API requests
  */
 async function handleStaleWhileRevalidate(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     const cache = await caches.open(RUNTIME_CACHE);
     const cachedResponse = await cache.match(request);
     
@@ -231,6 +286,11 @@ async function handleStaleWhileRevalidate(request) {
  * Handle network-first requests for dynamic content
  */
 async function handleNetworkFirstRequest(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     try {
         const networkResponse = await fetch(request);
         
