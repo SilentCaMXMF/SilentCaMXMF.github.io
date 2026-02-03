@@ -42,27 +42,7 @@
                 yearElement.textContent = new Date().getFullYear();
             }
 
-            // Initialize menu toggle
-            const menuButton = document.getElementById('menu-button');
-            const dropdownMenu = document.getElementById('dropdown-menu');
 
-            if (menuButton && dropdownMenu) {
-                menuButton.addEventListener('click', function(e) {
-                    const isVisible = dropdownMenu.classList.toggle('visible');
-                    this.setAttribute('aria-expanded', isVisible);
-                    e.stopPropagation();
-                });
-
-                document.addEventListener('click', function(e) {
-                    if (
-                        dropdownMenu.classList.contains('visible') &&
-                        !dropdownMenu.contains(e.target) &&
-                        e.target !== menuButton
-                    ) {
-                        dropdownMenu.classList.remove('visible');
-                    }
-                });
-            }
 
             // Initialize animation toggle
             const animationToggle = document.getElementById('animation-toggle');

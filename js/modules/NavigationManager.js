@@ -38,7 +38,6 @@ export class NavigationManager {
      * Cache DOM elements
      */
     cacheElements() {
-        this.menuButton = document.getElementById('menu-button');
         this.dropdownMenu = document.getElementById('dropdown-menu');
         this.mainNav = document.getElementById('main-nav');
         this.navigationLinks = document.querySelectorAll('nav a[href^="#"]');

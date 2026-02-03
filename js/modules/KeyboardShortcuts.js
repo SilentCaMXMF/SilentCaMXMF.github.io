@@ -251,12 +251,7 @@ export class KeyboardShortcuts {
      * Close modal or dropdown
      */
     closeModal() {
-        // Close mobile menu if open
-        const dropdownMenu = document.getElementById('dropdown-menu');
-        if (dropdownMenu?.classList.contains('visible')) {
-            const menuButton = document.getElementById('menu-button');
-            menuButton?.click();
-        }
+
         
         // Close any open modals
         const modals = document.querySelectorAll('.modal.show');

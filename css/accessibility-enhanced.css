@@ -131,7 +131,6 @@ textarea:focus-visible {
 /* Icon button focus enhancements */
 .icon-btn:focus-visible,
 .theme-toggle:focus-visible,
-#menu-button:focus-visible,
 #back-to-top:focus-visible,
 .animation-control:focus-visible,
 .featured-nav-btn:focus-visible {
@@ -208,7 +207,6 @@ nav ul li a {
 
 /* Icon buttons touch targets */
 .theme-toggle,
-#menu-button,
 #back-to-top,
 .animation-control,
 .featured-nav-btn {

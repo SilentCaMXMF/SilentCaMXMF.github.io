@@ -346,15 +346,7 @@ header h1 {
   font-size: 1.1rem;
 }
 
-#menu-button {
-  display: none;
-  background: none;
-  border: none;
-  color: white;
-  font-size: 1.8rem;
-  cursor: pointer;
-  padding: 5px;
-}
+
 
 /* Mobile Menu */
 #dropdown-menu {
@@ -1467,9 +1459,7 @@ section:not(:first-child) {
     display: none;
   }
   
-  #menu-button {
-    display: block;
-  }
+
   
   .header-content {
     flex-wrap: wrap;

@@ -76,10 +76,9 @@ export class MobileNavigation {
      * Cache DOM elements
      */
     cacheElements() {
-        this.menuButton = document.getElementById('menu-button');
         this.dropdownMenu = document.getElementById('dropdown-menu');
         
-        if (!this.menuButton || !this.dropdownMenu) {
+        if (!this.dropdownMenu) {
             throw new Error('Mobile navigation elements not found');
         }
     }
@@ -88,8 +87,7 @@ export class MobileNavigation {
      * Bind event listeners
      */
     bindEvents() {
-        // Basic click handler for menu toggle (works on all devices)
-        this.menuButton.addEventListener('click', (e) => this.handleClick(e));
+        // Mobile navigation is disabled - menu button removed
 
         // Click outside to close menu
         document.addEventListener('click', (e) => this.handleOutsideClick(e));
@@ -258,9 +256,7 @@ export class MobileNavigation {
         this.triggerHaptic('medium');
         
         // Dispatch tap event
-        this.dispatchGestureEvent(this.gestures.TAP, {
-            target: 'menu-button'
-        });
+
         
         // Announce to screen readers
         this.announceMenuState(isVisible);
@@ -279,9 +275,7 @@ export class MobileNavigation {
         this.triggerHaptic('heavy');
         
         // Dispatch long press event
-        this.dispatchGestureEvent(this.gestures.LONG_PRESS, {
-            target: 'menu-button'
-        });
+
     }
 
     /**
