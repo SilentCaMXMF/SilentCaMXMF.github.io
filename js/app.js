@@ -16,6 +16,7 @@ import { MobileNavigation } from './modules/MobileNavigation.js';
 import { KeyboardShortcuts } from './modules/KeyboardShortcuts.js';
 import { ErrorHandler } from './modules/ErrorHandler.js';
 import { CacheManager } from './modules/CacheManager.js';
+import { MicroInteractions } from './modules/MicroInteractions.js';
 
 // Mock classes for missing modules to prevent crashes
 class AnimationController {
@@ -189,6 +190,7 @@ class PortfolioApp {
             { name: 'gitHubRenderer', Module: GitHubRenderer, deps: [], critical: true },
             { name: 'loadingStates', Module: LoadingStates, deps: [], critical: false },
             { name: 'mobileNavigation', Module: MobileNavigation, deps: [], critical: false },
+            { name: 'microInteractions', Module: MicroInteractions, deps: ['preferenceManager'], critical: false },
             { name: 'animationController', Module: AnimationController, deps: ['preferenceManager'], critical: false },
             { name: 'scrollAnimations', Module: ScrollAnimations, deps: ['preferenceManager'], critical: false },
             { name: 'navigationManager', Module: NavigationManager, deps: ['scrollAnimations', 'loadingStates', 'mobileNavigation'], critical: false },
@@ -375,9 +377,9 @@ class PortfolioApp {
 
             // Setup scroll animations after content is loaded
             setTimeout(() => {
-                if (this.modules.scrollAnimations) {
-                    this.modules.scrollAnimations.animateSkillBars();
-                    this.modules.scrollAnimations.animateTimeline();
+                if (this.modules.microInteractions) {
+                    this.modules.microInteractions.animateSkillBars();
+                    this.modules.microInteractions.animateTimeline();
                 }
             }, 500);
 
