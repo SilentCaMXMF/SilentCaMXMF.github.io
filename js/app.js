@@ -12,13 +12,129 @@ import { PreferenceManager } from './modules/PreferenceManager.js';
 import { NavigationManager } from './modules/NavigationManager.js';
 import { GitHubAPI } from './modules/GitHubAPI.js';
 import { GitHubRenderer } from './modules/GitHubRenderer.js';
-import { AnimationController } from './modules/AnimationController.js';
-import { ScrollAnimations } from './modules/ScrollAnimations.js';
-import { LoadingStates } from './modules/LoadingStates.js';
 import { MobileNavigation } from './modules/MobileNavigation.js';
 import { KeyboardShortcuts } from './modules/KeyboardShortcuts.js';
 import { ErrorHandler } from './modules/ErrorHandler.js';
 import { CacheManager } from './modules/CacheManager.js';
+
+// Mock classes for missing modules to prevent crashes
+class AnimationController {
+    constructor(preferenceManager) {
+        this.preferenceManager = preferenceManager;
+        this.initialized = false;
+    }
+    
+    async initialize() {
+        this.initialized = true;
+        console.log('🎬 AnimationController mock initialized');
+    }
+    
+    pauseAnimations() {
+        console.log('⏸️ Animations paused (mock)');
+    }
+    
+    resumeAnimations() {
+        console.log('▶️ Animations resumed (mock)');
+    }
+}
+
+class ScrollAnimations {
+    constructor(preferenceManager) {
+        this.preferenceManager = preferenceManager;
+        this.initialized = false;
+    }
+    
+    async initialize() {
+        this.initialized = true;
+        console.log('📜 ScrollAnimations mock initialized');
+    }
+    
+    animateSkillBars() {
+        console.log('📊 Skill bars animated (mock)');
+        // Basic fallback animation for skill bars
+        const skillBars = document.querySelectorAll('.skill-progress');
+        skillBars.forEach(bar => {
+            if (bar.style.width) return; // Already animated
+            const width = bar.getAttribute('data-width') || bar.style.width || '0%';
+            bar.style.transition = 'width 1.5s ease-in-out';
+            setTimeout(() => {
+                bar.style.width = width;
+            }, 100);
+        });
+    }
+    
+    animateTimeline() {
+        console.log('📅 Timeline animated (mock)');
+        // Basic fallback animation for timeline
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        timelineItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                item.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    }
+}
+
+class LoadingStates {
+    constructor() {
+        this.initialized = false;
+    }
+    
+    async initialize() {
+        this.initialized = true;
+        console.log('⏳ LoadingStates mock initialized');
+    }
+    
+    showToast(message, type = 'info', duration = 3000) {
+        console.log(`🍞 Toast (${type}): ${message}`);
+        
+        // Create a simple toast notification
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: ${type === 'info' ? '#9ab891' : type === 'warning' ? '#f4a460' : '#e74c3c'};
+            color: #2c2c2c;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            font-family: system-ui, sans-serif;
+            font-size: 14px;
+            max-width: 300px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-in forwards';
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        }, duration);
+    }
+    
+    showLoading(element) {
+        if (element) {
+            element.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>';
+        }
+    }
+    
+    hideLoading(element, content) {
+        if (element && content !== undefined) {
+            element.innerHTML = content;
+        }
+    }
+}
 
 /**
  * Main Application Class
