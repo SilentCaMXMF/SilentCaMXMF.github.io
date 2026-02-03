@@ -3,9 +3,12 @@
   --primary-color: #2d7a4e;
   --secondary-color: #f4a460;
   --dark-bg: #2c3e50;
-  --light-text: #2c3e50;
-  --dark-text: #546e7a;
+  --light-text: #1a2a3a;
+  --dark-text: #37474f;
   --card-bg: #ffffff;
+  /* Added for better text hierarchy */
+  --secondary-text: #64748b;
+  --muted-text: #94a3b8;
   --overlay-opacity: 0.7;
   --section-padding: 80px 20px;
   --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
@@ -42,6 +45,8 @@
   --dark-bg: #1a1a1a;
   --light-text: #f0f0f0;
   --dark-text: #e0e0e0;
+  --secondary-text: #b8b8b8;
+  --muted-text: #9ca3af;
   --overlay-opacity: 0.8;
   --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   --text-shadow-color: rgba(0, 0, 0, 0.9);
@@ -735,7 +740,7 @@ section:not(:first-child) {
 
 .education-item p {
   margin-bottom: 5px;
-  opacity: 0.9;
+  color: var(--secondary-text);
 }
 
 .cert-link {
@@ -744,11 +749,11 @@ section:not(:first-child) {
   text-decoration: none;
   font-weight: 500;
   margin-top: 5px;
-  transition: opacity var(--transition-speed);
+  transition: color var(--transition-speed);
 }
 
 .cert-link:hover {
-  opacity: 0.8;
+  color: #1e5c33;
   text-decoration: underline;
 }
 
@@ -1249,7 +1254,7 @@ section:not(:first-child) {
   display: flex;
   gap: 15px;
   font-size: 0.9rem;
-  opacity: 0.7;
+  color: var(--secondary-text);
 }
 
 .repo-meta span {
@@ -1339,7 +1344,7 @@ section:not(:first-child) {
 }
 
 .copyright {
-  opacity: 0.7;
+  color: var(--muted-text);
   font-size: 0.9rem;
 }
 
