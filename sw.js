@@ -141,15 +141,15 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Handle static assets with cache-first strategy
+    // Handle static assets with network-first strategy during development
     if (STATIC_ASSETS.some(asset => url.pathname.endsWith(asset))) {
-        event.respondWith(handleCacheFirstRequest(request));
+        event.respondWith(handleNetworkFirstRequest(request));
         return;
     }
 
-    // Handle images with cache-first strategy
+    // Handle images with network-first strategy during development
     if (request.destination === 'image' || isImageRequest(url)) {
-        event.respondWith(handleImageRequest(request));
+        event.respondWith(handleNetworkFirstRequest(request));
         return;
     }
 
