@@ -227,15 +227,7 @@ export class KeyboardShortcuts {
         }
     }
 
-    /**
-     * Toggle animations
-     */
-    toggleAnimations() {
-        const animationToggle = document.getElementById('animation-toggle');
-        if (animationToggle) {
-            animationToggle.click();
-        }
-    }
+
 
     /**
      * Toggle theme

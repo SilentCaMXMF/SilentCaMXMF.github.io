@@ -44,32 +44,7 @@
 
 
 
-            // Initialize animation toggle
-            const animationToggle = document.getElementById('animation-toggle');
-            if (animationToggle) {
-                const animationIcon = animationToggle.querySelector('i');
 
-                function updateAnimationState() {
-                    const animationsPaused = localStorage.getItem('animationsPaused') === 'true';
-                    if (animationsPaused) {
-                        document.body.classList.add('animations-paused');
-                        document.documentElement.setAttribute('data-animations', 'paused');
-                        if (animationIcon) animationIcon.className = 'fas fa-play';
-                    } else {
-                        document.body.classList.remove('animations-paused');
-                        document.documentElement.setAttribute('data-animations', 'enabled');
-                        if (animationIcon) animationIcon.className = 'fas fa-pause';
-                    }
-                }
-
-                animationToggle.addEventListener('click', function() {
-                    const isPaused = document.body.classList.contains('animations-paused');
-                    localStorage.setItem('animationsPaused', (!isPaused).toString());
-                    updateAnimationState();
-                });
-
-                updateAnimationState();
-            }
 
             // Initialize skip links
             document.querySelectorAll('nav a[href^="#"]').forEach(function(anchor) {

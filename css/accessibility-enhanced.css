@@ -45,31 +45,7 @@
   transform: translateY(0);
 }
 
-/* Animation control button */
-.animation-control {
-  position: fixed;
-  bottom: 100px;
-  right: 30px;
-  background: var(--primary-color);
-  border: none;
-  border-radius: 50%;
-  width: 50px;
-  height: 50px;
-  cursor: pointer;
-  z-index: 1000;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  font-size: 1.2rem;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-}
 
-.animation-control:hover {
-  background: var(--secondary-color);
-  transform: scale(1.1);
-}
 
 /* High contrast mode support */
 @media (prefers-contrast: high) {
@@ -132,7 +108,6 @@ textarea:focus-visible {
 .icon-btn:focus-visible,
 .theme-toggle:focus-visible,
 #back-to-top:focus-visible,
-.animation-control:focus-visible,
 .featured-nav-btn:focus-visible {
   outline: 3px solid var(--focus-color, #4a9eff);
   outline-offset: 3px;
@@ -208,7 +183,6 @@ nav ul li a {
 /* Icon buttons touch targets */
 .theme-toggle,
 #back-to-top,
-.animation-control,
 .featured-nav-btn {
   min-width: 48px;
   min-height: 48px;
