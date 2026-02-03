@@ -111,8 +111,6 @@ export class MobileNavigation {
                 }
             }, { passive: false });
         }
-    }
-        }
 
         // Touch events for menu
         this.menuButton.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
