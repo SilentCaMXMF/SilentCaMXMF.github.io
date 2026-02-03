@@ -76,10 +76,15 @@ export class MobileNavigation {
      * Cache DOM elements
      */
     cacheElements() {
+        this.menuButton = document.getElementById('menu-button');
         this.dropdownMenu = document.getElementById('dropdown-menu');
         
         if (!this.dropdownMenu) {
-            throw new Error('Mobile navigation elements not found');
+            console.warn('Mobile navigation dropdown not found');
+        }
+        
+        if (!this.menuButton) {
+            console.warn('Mobile navigation menu button not found');
         }
     }
 
@@ -87,13 +92,26 @@ export class MobileNavigation {
      * Bind event listeners
      */
     bindEvents() {
-        // Mobile navigation is disabled - menu button removed
-
-        // Click outside to close menu
-        document.addEventListener('click', (e) => this.handleOutsideClick(e));
-
-        if (!this.isMobile) {
-            return;
+        // Only bind events if elements exist
+        if (this.menuButton) {
+            this.menuButton.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+            this.menuButton.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: true });
+        }
+        
+        if (this.dropdownMenu) {
+            // Touch events for dropdown
+            this.dropdownMenu.addEventListener('touchstart', (e) => this.handleMenuTouchStart(e), { passive: true });
+            this.dropdownMenu.addEventListener('touchmove', (e) => this.handleMenuTouchMove(e), { passive: true });
+            this.dropdownMenu.addEventListener('touchend', (e) => this.handleMenuTouchEnd(e), { passive: true });
+            
+            // Prevent default touch behaviors on menu
+            this.dropdownMenu.addEventListener('touchmove', (e) => {
+                if (this.isMenuOpen()) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
+    }
         }
 
         // Touch events for menu

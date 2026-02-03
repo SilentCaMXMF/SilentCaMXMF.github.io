@@ -18,7 +18,9 @@
                        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
                        img-src 'self' data: https:; 
                        connect-src 'self' https://api.github.com; 
-                       base-uri 'self';">
+                       worker-src 'self' blob:;
+                       base-uri 'self';
+                       upgrade-insecure-requests;">
         
         <meta name="description" content="Pedro Calado - Junior Software Engineer specializing in modern web development. View my portfolio of projects showcasing HTML, CSS, JavaScript, React, and responsive design skills. Available for opportunities in Lisbon, Portugal.">
         <meta name="keywords" content="Pedro Calado, software engineer, web developer, junior developer, portfolio, HTML5, CSS3, JavaScript, React, responsive web design, frontend developer, web development, Lisbon, Portugal, programming, Bootstrap, Git, modern web technologies">

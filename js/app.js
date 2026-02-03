@@ -51,14 +51,18 @@ class ScrollAnimations {
     
     animateSkillBars() {
         console.log('📊 Skill bars animated (mock)');
-        // Basic fallback animation for skill bars
-        const skillBars = document.querySelectorAll('.skill-progress');
+        // Basic fallback animation for skill bars - using correct class name
+        const skillBars = document.querySelectorAll('.skill-level');
         skillBars.forEach(bar => {
-            if (bar.style.width) return; // Already animated
-            const width = bar.getAttribute('data-width') || bar.style.width || '0%';
+            if (bar.style.width && bar.style.width !== '0%') return; // Already animated
+            const computedWidth = window.getComputedStyle(bar).width;
+            const targetWidth = computedWidth && computedWidth !== '0px' ? computedWidth : '0%';
+            
+            // Start from 0 and animate to target width
+            bar.style.width = '0%';
             bar.style.transition = 'width 1.5s ease-in-out';
             setTimeout(() => {
-                bar.style.width = width;
+                bar.style.width = targetWidth;
             }, 100);
         });
     }
@@ -177,34 +181,59 @@ class PortfolioApp {
      */
     async initializeModules() {
         const moduleConfigs = [
-            { name: 'lazyLoader', Module: LazyLoader, deps: [] },
-            { name: 'preferenceManager', Module: PreferenceManager, deps: [] },
-            { name: 'themeManager', Module: ThemeManager, deps: ['preferenceManager'] },
-            { name: 'cacheManager', Module: CacheManager, deps: [] },
-            { name: 'gitHubAPI', Module: GitHubAPI, deps: ['cacheManager'] },
-            { name: 'gitHubRenderer', Module: GitHubRenderer, deps: [] },
-            { name: 'animationController', Module: AnimationController, deps: ['preferenceManager'] },
-            { name: 'scrollAnimations', Module: ScrollAnimations, deps: ['preferenceManager'] },
-            { name: 'loadingStates', Module: LoadingStates, deps: [] },
-            { name: 'mobileNavigation', Module: MobileNavigation, deps: [] },
-            { name: 'navigationManager', Module: NavigationManager, deps: ['scrollAnimations', 'loadingStates', 'mobileNavigation'] },
-            { name: 'keyboardShortcuts', Module: KeyboardShortcuts, deps: ['navigationManager', 'preferenceManager'] }
+            { name: 'lazyLoader', Module: LazyLoader, deps: [], critical: false },
+            { name: 'preferenceManager', Module: PreferenceManager, deps: [], critical: false },
+            { name: 'cacheManager', Module: CacheManager, deps: [], critical: false },
+            { name: 'themeManager', Module: ThemeManager, deps: ['preferenceManager'], critical: false },
+            { name: 'gitHubAPI', Module: GitHubAPI, deps: ['cacheManager'], critical: true },
+            { name: 'gitHubRenderer', Module: GitHubRenderer, deps: [], critical: true },
+            { name: 'loadingStates', Module: LoadingStates, deps: [], critical: false },
+            { name: 'mobileNavigation', Module: MobileNavigation, deps: [], critical: false },
+            { name: 'animationController', Module: AnimationController, deps: ['preferenceManager'], critical: false },
+            { name: 'scrollAnimations', Module: ScrollAnimations, deps: ['preferenceManager'], critical: false },
+            { name: 'navigationManager', Module: NavigationManager, deps: ['scrollAnimations', 'loadingStates', 'mobileNavigation'], critical: false },
+            { name: 'keyboardShortcuts', Module: KeyboardShortcuts, deps: ['navigationManager', 'preferenceManager'], critical: false }
         ];
 
-        for (const config of moduleConfigs) {
+        // Initialize non-critical modules first
+        for (const config of moduleConfigs.filter(m => !m.critical)) {
             try {
-                const deps = config.deps.map(dep => this.modules[dep]);
-                this.modules[config.name] = new config.Module(...deps);
-                
-                if (typeof this.modules[config.name].initialize === 'function') {
-                    await this.modules[config.name].initialize();
-                }
-                
-                console.log(`📦 ${config.name} module initialized`);
+                await this.initializeModule(config);
             } catch (error) {
                 this.errorHandler.handleError(error, `Failed to initialize ${config.name} module`);
+                console.warn(`⚠️ Continuing without ${config.name} module`);
             }
         }
+
+        // Initialize critical modules
+        for (const config of moduleConfigs.filter(m => m.critical)) {
+            try {
+                await this.initializeModule(config);
+            } catch (error) {
+                this.errorHandler.handleError(error, `Critical: Failed to initialize ${config.name} module`);
+                throw error; // Re-throw critical errors
+            }
+        }
+    }
+
+    /**
+     * Initialize a single module
+     */
+    async initializeModule(config) {
+        // Check dependencies
+        const missingDeps = config.deps.filter(dep => !this.modules[dep]);
+        if (missingDeps.length > 0) {
+            throw new Error(`Missing dependencies for ${config.name}: ${missingDeps.join(', ')}`);
+        }
+
+        const deps = config.deps.map(dep => this.modules[dep]);
+        this.modules[config.name] = new config.Module(...deps);
+        
+        if (typeof this.modules[config.name].initialize === 'function') {
+            await this.modules[config.name].initialize();
+        }
+        
+        console.log(`📦 ${config.name} module initialized`);
     }
 
     /**
@@ -447,14 +476,28 @@ class PortfolioApp {
      * Destroy the application and cleanup
      */
     destroy() {
-        Object.values(this.modules).forEach(module => {
-            if (typeof module.destroy === 'function') {
-                module.destroy();
+        // Cleanup modules in reverse order
+        const moduleNames = Object.keys(this.modules).reverse();
+        
+        moduleNames.forEach(name => {
+            const module = this.modules[name];
+            if (module && typeof module.destroy === 'function') {
+                try {
+                    module.destroy();
+                    console.log(`🧹 Cleaned up ${name} module`);
+                } catch (error) {
+                    console.error(`❌ Error cleaning up ${name} module:`, error);
+                }
             }
         });
 
+        // Clear references
+        this.modules = {};
+        this.errorHandler = null;
+        this.cacheManager = null;
         this.initialized = false;
-        console.log('Portfolio app destroyed');
+        
+        console.log('🧹 Portfolio app destroyed and cleaned up');
     }
 
     /**

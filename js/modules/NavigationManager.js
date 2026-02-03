@@ -38,12 +38,17 @@ export class NavigationManager {
      * Cache DOM elements
      */
     cacheElements() {
+        this.menuButton = document.getElementById('menu-button');
         this.dropdownMenu = document.getElementById('dropdown-menu');
         this.mainNav = document.getElementById('main-nav');
         this.navigationLinks = document.querySelectorAll('nav a[href^="#"]');
         
         if (!this.menuButton || !this.dropdownMenu) {
-            throw new Error('Navigation elements not found');
+            console.warn('Navigation elements not found:', {
+                menuButton: !!this.menuButton,
+                dropdownMenu: !!this.dropdownMenu
+            });
+            // Don't throw error, just log warning to prevent crashes
         }
     }
 

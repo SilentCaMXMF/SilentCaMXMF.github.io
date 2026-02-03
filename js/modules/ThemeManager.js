@@ -44,8 +44,10 @@ export class ThemeManager {
         this.themeToggle = document.getElementById('theme-toggle');
         this.themeIcon = this.themeToggle?.querySelector('i');
         
-        if (!this.themeToggle || !this.themeIcon) {
-            throw new Error('Theme toggle elements not found');
+        if (!this.themeToggle) {
+            console.warn('Theme toggle button not found');
+        } else if (!this.themeIcon) {
+            console.warn('Theme toggle icon not found');
         }
     }
 
