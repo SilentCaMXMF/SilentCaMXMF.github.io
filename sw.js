@@ -15,19 +15,7 @@ const STATIC_ASSETS = [
     '/css/accessibility-enhanced.css',
     '/css/bootstrap-replacement.css',
     '/css/repo-display-options.css',
-    '/js/app.js',
-    '/js/modules/CacheManager.js',
-    '/js/modules/ErrorHandler.js',
-    '/js/modules/EventManager.js',
-    '/js/modules/GitHubAPI.js',
-    '/js/modules/GitHubRenderer.js',
-    '/js/modules/IconManager.js',
-    '/js/modules/KeyboardShortcuts.js',
-    '/js/modules/LazyLoader.js',
-    '/js/modules/MobileNavigation.js',
-    '/js/modules/NavigationManager.js',
-    '/js/modules/PreferenceManager.js',
-    '/js/modules/ThemeManager.js',
+    '/js/script.js',
     '/img/drumming_server.png',
     '/img/drumming_server16x16.png',
     '/img/drumming_server32x32.png',
@@ -43,23 +31,44 @@ const GITHUB_API_PATTERN = /https:\/\/api\.github\.com\/users\/SilentCaMXMF\/rep
 const IMAGE_EXTENSIONS = ['.png', '.jpg', '.jpeg', '.gif', '.svg', '.ico', '.webp'];
 
 /**
- * Install event - cache static assets
+ * Install event - cache static assets with individual requests
+ * Continues even if some assets fail to cache
  */
 self.addEventListener('install', (event) => {
     console.log('[Service Worker] Installing...');
     
     event.waitUntil(
         caches.open(CACHE_NAME)
-            .then((cache) => {
+            .then(async (cache) => {
                 console.log('[Service Worker] Caching static assets');
-                return cache.addAll(STATIC_ASSETS.map(url => new Request(url, { cache: 'reload' })));
+                
+                // Cache each asset individually to prevent addAll() from failing entirely
+                const cachePromises = STATIC_ASSETS.map(async (url) => {
+                    try {
+                        const request = new Request(url, { cache: 'reload' });
+                        const response = await fetch(request);
+                        if (response.ok) {
+                            await cache.put(request, response.clone());
+                            console.log('[Service Worker] Cached:', url);
+                        }
+                    } catch (error) {
+                        console.warn('[Service Worker] Failed to cache:', url, error.message);
+                        // Continue without failing - this asset will be fetched from network
+                    }
+                });
+                
+                // Wait for all cache attempts to complete (but don't fail if some fail)
+                await Promise.all(cachePromises);
+                
+                console.log('[Service Worker] Static assets caching completed');
             })
             .then(() => {
-                console.log('[Service Worker] Static assets cached');
                 return self.skipWaiting();
             })
             .catch((error) => {
-                console.error('[Service Worker] Install failed:', error);
+                console.error('[Service Worker] Install error:', error);
+                // Continue anyway - service worker will still work for network requests
+                return self.skipWaiting();
             })
     );
 });
