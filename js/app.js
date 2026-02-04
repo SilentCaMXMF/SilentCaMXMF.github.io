@@ -42,7 +42,7 @@ class PortfolioApp {
             console.log('✅ Portfolio App initialized successfully');
 
         } catch (error) {
-            this.errorHandler.handleError(error, 'App initialization failed');
+            console.error('App initialization failed:', error);
         }
     }
 
@@ -134,7 +134,6 @@ class PortfolioApp {
             console.error('Failed to start application:', error);
         }
     }
-    }
 
     /**
      * Register service worker for PWA functionality
@@ -160,7 +159,6 @@ class PortfolioApp {
                     })
                     .catch((error) => {
                         console.error('Service Worker registration failed:', error);
-                        this.errorHandler.logWarning('Service Worker registration failed', { error });
                     });
             });
         } else {
