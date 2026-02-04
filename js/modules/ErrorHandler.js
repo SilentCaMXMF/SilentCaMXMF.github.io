@@ -201,20 +201,41 @@ export class ErrorHandler {
         notification.className = 'error-notification';
         notification.setAttribute('role', 'alert');
         notification.setAttribute('aria-live', 'assertive');
-        
+
         const isReloadable = this.isReloadableError(errorData);
-        
-        notification.innerHTML = `
-            <div class="notification-content">
-                <h3>⚠️ Something went wrong</h3>
-                <p>${errorData.message}</p>
-                <div class="notification-actions">
-                    ${isReloadable ? '<button class="btn btn-primary" onclick="location.reload()">Reload Page</button>' : ''}
-                    <button class="btn btn-secondary" onclick="this.parentElement.parentElement.parentElement.remove()">Dismiss</button>
-                </div>
-            </div>
-        `;
-        
+
+        // SECURITY: Using DOM methods instead of innerHTML to prevent XSS
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'notification-content';
+
+        const heading = document.createElement('h3');
+        heading.textContent = '⚠️ Something went wrong';
+
+        const messageP = document.createElement('p');
+        messageP.textContent = errorData.message || 'An error occurred';
+
+        const actionsDiv = document.createElement('div');
+        actionsDiv.className = 'notification-actions';
+
+        if (isReloadable) {
+            const reloadBtn = document.createElement('button');
+            reloadBtn.className = 'btn btn-primary';
+            reloadBtn.textContent = 'Reload Page';
+            reloadBtn.addEventListener('click', () => location.reload());
+            actionsDiv.appendChild(reloadBtn);
+        }
+
+        const dismissBtn = document.createElement('button');
+        dismissBtn.className = 'btn btn-secondary';
+        dismissBtn.textContent = 'Dismiss';
+        dismissBtn.addEventListener('click', () => notification.remove());
+        actionsDiv.appendChild(dismissBtn);
+
+        contentDiv.appendChild(heading);
+        contentDiv.appendChild(messageP);
+        contentDiv.appendChild(actionsDiv);
+        notification.appendChild(contentDiv);
+
         // Add styles
         notification.style.cssText = `
             position: fixed;
@@ -229,9 +250,9 @@ export class ErrorHandler {
             max-width: 400px;
             border-left: 4px solid var(--focus-color, #4a9eff);
         `;
-        
+
         document.body.appendChild(notification);
-        
+
         // Auto-remove after 10 seconds
         setTimeout(() => {
             if (notification.parentElement) {

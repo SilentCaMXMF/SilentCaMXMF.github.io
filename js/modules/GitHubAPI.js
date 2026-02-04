@@ -130,14 +130,19 @@ export class GitHubAPI {
      * Fetch with retry logic
      */
     async fetchWithRetry(url, errorMessage, retries = 0) {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000);
+        
         try {
             const response = await fetch(url, {
                 headers: {
                     'Accept': 'application/vnd.github.v3+json',
                     'User-Agent': `Portfolio-App/${this.username}`
                 },
-                timeout: 10000
+                signal: controller.signal
             });
+
+            clearTimeout(timeoutId);
 
             if (!response.ok) {
                 throw new Error(`HTTP ${response.status}: ${response.statusText}`);
@@ -146,6 +151,12 @@ export class GitHubAPI {
             return await response.json();
 
         } catch (error) {
+            clearTimeout(timeoutId);
+            
+            if (error.name === 'AbortError') {
+                throw new Error(`${errorMessage}: Request timeout`);
+            }
+            
             if (retries < this.maxRetries) {
                 console.warn(`🔄 Retrying (${retries + 1}/${this.maxRetries}): ${errorMessage}`);
                 
@@ -253,14 +264,19 @@ export class GitHubAPI {
      * Check if API is available
      */
     async checkAPIStatus() {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
         try {
             const response = await fetch(`${this.baseURL}/rate_limit`, {
-                timeout: 5000
+                signal: controller.signal
             });
             
+            clearTimeout(timeoutId);
             return response.ok;
 
         } catch (error) {
+            clearTimeout(timeoutId);
             console.warn('⚠️ GitHub API status check failed:', error);
             return false;
         }

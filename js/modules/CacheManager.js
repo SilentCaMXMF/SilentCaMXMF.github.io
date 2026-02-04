@@ -134,13 +134,13 @@ export class CacheManager {
         }
 
         const now = Date.now();
-        const expiry = expiry || (now + this.config.defaultExpiry);
+        let finalExpiry = expiry || (now + this.config.defaultExpiry);
         const staleExpiry = now + this.config.staleDataExpiry;
 
         const cacheEntry = {
             data,
             timestamp: now,
-            expiry,
+            expiry: finalExpiry,
             staleExpiry,
             hits: 0
         };

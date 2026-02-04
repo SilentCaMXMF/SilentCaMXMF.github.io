@@ -3,6 +3,25 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        
+        <!-- Content Security Policy - Prevents XSS attacks and controls resource loading -->
+        <!-- Note: 'unsafe-inline' and 'unsafe-eval' are needed for current inline scripts/styles but should be refactored in future -->
+        <!-- 
+        NOTE: "SES Removing unpermitted intrinsics" warnings may appear in console from browser security extensions.
+        This is from third-party extensions (like Secure EcmaScript) and does NOT affect website functionality.
+        These warnings can be safely ignored as they're external to the website.
+        -->
+        <meta http-equiv="Content-Security-Policy" 
+              content="default-src 'self'; 
+                       script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
+                       style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
+                       font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
+                       img-src 'self' data: https:; 
+                       connect-src 'self' https://api.github.com; 
+                       worker-src 'self' blob:;
+                       base-uri 'self';
+                       upgrade-insecure-requests;">
+        
         <meta name="description" content="Pedro Calado - Junior Software Engineer specializing in modern web development. View my portfolio of projects showcasing HTML, CSS, JavaScript, React, and responsive design skills. Available for opportunities in Lisbon, Portugal.">
         <meta name="keywords" content="Pedro Calado, software engineer, web developer, junior developer, portfolio, HTML5, CSS3, JavaScript, React, responsive web design, frontend developer, web development, Lisbon, Portugal, programming, Bootstrap, Git, modern web technologies">
         <meta name="author" content="Pedro Calado">
@@ -36,42 +55,55 @@
         <!-- <link rel="alternate" hreflang="pt" href="https://silentcamxmf.github.io/pt/"> -->
         
         <title>Pedro Calado - Junior Software Engineer | Web Development Portfolio | Lisbon</title>
+
+        <!-- Font Awesome Icons -->
+        <!-- Font Awesome Solid and Brands (needed for tech icons) -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/brands.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
         <link rel="icon" href="./img/drumming_server.png" type="image/x-icon">
         <link rel="icon" type="image/png" sizes="32x32" href="./img/drumming_server32x32.png">
         <link rel="icon" type="image/png" sizes="16x16" href="./img/drumming_server16x16.png">
         <link rel="manifest" href="./manifest.json">
-        <meta name="theme-color" content="#9ab891">
+        <meta name="theme-color" content="#2d7a4e">
 
         <!-- Preload critical resources -->
-        <link rel="preload" href="./css/style.css" as="style">
-        <link rel="preload" href="./css/bootstrap-replacement.css" as="style">
-        <link rel="preload" href="./css/custom-icons.css" as="style">
-        <link rel="preload" href="./css/animations-optimized.css" as="style">
-        <link rel="preload" href="./css/accessibility-enhanced.css" as="style">
-        <link rel="preload" href="./css/modern-animations.css" as="style">
-        <link rel="preload" href="./css/loading-states.css" as="style">
-        <link rel="preload" href="./js/script.js" as="script">
+        <link rel="preload" href="./css/style.css" as="style" fetchpriority="high">
+        <link rel="preload" href="./css/accessibility-enhanced.css" as="style" fetchpriority="high">
+        <link rel="preload" href="./css/repo-display-options.css" as="style" fetchpriority="high">
         
-        <!-- Preload critical images -->
-        <link rel="preload" href="./img/pedro_tipoGhibli_passe-320.webp" as="image" type="image/webp">
-        <link rel="preload" href="./img/drumming_server.png" as="image" type="image/png">
+        <!-- Preload modern JavaScript (primary for modern browsers) -->
+        <link rel="preload" href="./js/app.js" as="script" fetchpriority="high" crossorigin="anonymous">
+        
+        <!-- Responsive preload for profile picture (most common size) -->
+        <link rel="preload" href="./img/pedro_tipoGhibli_passe-480.webp" 
+              as="image" 
+              type="image/webp" 
+              imagesizes="(max-width: 768px) 220px, (max-width: 992px) 300px, 380px"
+              imagesrcset="./img/pedro_tipoGhibli_passe-320.webp 320w,
+                         ./img/pedro_tipoGhibli_passe-480.webp 480w,
+                         ./img/pedro_tipoGhibli_passe-640.webp 640w"
+              fetchpriority="high">
         
         <!-- DNS prefetch for external resources -->
         <link rel="dns-prefetch" href="//api.github.com">
         <link rel="dns-prefetch" href="//fonts.googleapis.com">
+        <link rel="dns-prefetch" href="//cdnjs.cloudflare.com">
         
         <!-- Preconnect for critical external domains -->
         <link rel="preconnect" href="https://api.github.com" crossorigin>
+        <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
         
         <!-- Resource hints for future navigation -->
         <link rel="prefetch" href="#experience-section">
         <link rel="prefetch" href="#skills-section">
         <link rel="prefetch" href="#github-repos-section">
         
-        <!-- Critical CSS for faster initial render -->
-        <style>
-            :root{--primary-color:#9ab891;--secondary-color:#d4c4a8;--dark-bg:#2c2c2c;--light-text:#fff;--dark-text:#333;--focus-color:#4a9eff}*{box-sizing:border-box;margin:0;padding:0}html{scroll-behavior:smooth}body{font-family:Roboto,Open Sans,sans-serif;line-height:1.6;color:var(--dark-text);background:linear-gradient(135deg,var(--body-gradient-1),var(--body-gradient-2),var(--body-gradient-3),var(--body-gradient-4))}.container{max-width:1200px;margin:0 auto;padding:0 20px}.py-5{padding:3rem 0}.text-center{text-align:center}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.skip-link{position:absolute;top:-40px;left:6px;background:var(--primary-color);color:white;padding:8px;text-decoration:none;z-index:1000}.skip-link:focus{top:6px}[data-theme=dark]{--primary-color:#8aad82;--secondary-color:#c4b598;--dark-bg:#1a1a1a;--light-text:#f0f0f0;--dark-text:#e0e0e0;--focus-color:#5ab4ff}
-        </style>
+        <!-- Stylesheets -->
+        <link rel="stylesheet" href="./css/style.css">
+        <link rel="stylesheet" href="./css/accessibility-enhanced.css">
+        <link rel="stylesheet" href="./css/repo-display-options.css">
         
         <!-- Structured Data (JSON-LD) -->
         <script type="application/ld+json">
@@ -264,7 +296,7 @@
                     </nav>
                     <!-- Theme toggle button -->
                     <button id="theme-toggle" aria-label="Toggle dark mode" class="theme-toggle">
-                        <i class="icon icon-moon"></i>
+                        <i class="fas fa-moon"></i>
                     </button>
                     <!-- Mobile menu button -->
                     <button id="menu-button" aria-label="Toggle menu" aria-expanded="false">☰</button>
@@ -289,24 +321,30 @@
                 <h2 class="section-title">About Me</h2>
                 <div class="row align-items-center">
                     <!-- Profile Picture -->
-                    <div class="col-md-4 text-center mb-4 mb-md-0">
+                    <div class="col-12 col-md-5 col-lg-4 text-center mb-4 mb-md-0">
                         <picture>
-                            <source data-srcset="./img/pedro_tipoGhibli_passe-320.webp 320w,
+                            <source srcset="./img/pedro_tipoGhibli_passe-320.webp 320w,
                                     ./img/pedro_tipoGhibli_passe-480.webp 480w,
                                     ./img/pedro_tipoGhibli_passe-640.webp 640w"
                                 type="image/webp"
-                                sizes="(max-width: 768px) 180px, 250px">
-                            <source data-srcset="./img/pedro_tipoGhibli_passe-320.jpg 320w,
-                                    ./img/pedro_tipoGhibli_passe-480.jpg 480w,
-                                    ./img/pedro_tipoGhibli_passe-640.jpg 640w"
-                                type="image/jpeg"
-                                sizes="(max-width: 768px) 180px, 250px">
-                            <img data-src="./img/pedro_tipoGhibli_passe-640.jpg"
-                                src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 250 250'%3E%3C/svg%3E"
+                                sizes="(max-width: 768px) 220px, (max-width: 992px) 300px, 380px">
+                            <!-- Tablet -->
+                            <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w"
+                                type="image/webp"
+                                media="(min-width: 769px) and (max-width: 992px)"
+                                sizes="300px">
+                            <!-- Desktop -->
+                            <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w,
+                                    ./img/pedro_tipoGhibli_passe-640.webp 640w"
+                                type="image/webp"
+                                media="(min-width: 993px)"
+                                sizes="380px">
+                            <!-- Fallback -->
+                            <img src="./img/pedro_tipoGhibli_passe-640.jpg"
                                 alt="Pedro Calado Profile Picture"
-                                class="img-fluid rounded-circle profile-img lazy-loading"
-                                width="250"
-                                height="250">
+                                class="img-fluid rounded-circle profile-img loaded"
+                                width="450"
+                                height="450">
                         </picture>
                     </div>
                     <!-- Summary Text -->
@@ -410,20 +448,20 @@
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="education-card">
+                        <div class="education-card education-certifications">
                             <h3>Technical Certifications</h3>
-                            <div class="education-item">
+                            <div class="education-item has-certificate">
                                 <h4>Responsive Web Design</h4>
                                 <p>freeCodeCamp</p>
                                 <a href="https://www.freecodecamp.org/certification/fccf49151df-4d61-4fca-95e4-34786a2857ac/responsive-web-design" target="_blank" rel="noopener noreferrer" class="cert-link">View Certificate</a>
                             </div>
-                            <div class="education-item">
+                            <div class="education-item has-certificate">
                                 <h4>JavaScript Algorithms and Data Structures</h4>
                                 <p>freeCodeCamp</p>
                                 <a href="https://www.freecodecamp.org/certification/fccf49151df-4d61-4fca-95e4-34786a2857ac/javascript-algorithms-and-data-structures" target="_blank" rel="noopener noreferrer" class="cert-link">View Certificate</a>
                             </div>
-                            <div class="education-item">
-                                <h4>React and Redux (In Progress)</h4>
+                            <div class="education-item in-progress">
+                                <h4>React and Redux <span class="progress-indicator">(In Progress)</span></h4>
                                 <p>freeCodeCamp</p>
                             </div>
                         </div>
@@ -439,7 +477,7 @@
                          tabindex="0"
                          aria-label="HTML5 skill, intermediate level">
                         <div class="skill-icon" aria-hidden="true">
-                            <i class="icon icon-html5"></i>
+                            <i class="fab fa-html5"></i>
                         </div>
                         <h3>HTML5</h3>
                         <p aria-label="Skill level: intermediate">Intermediate</p>
@@ -457,7 +495,7 @@
                          tabindex="0"
                          aria-label="CSS3 skill, intermediate level">
                         <div class="skill-icon" aria-hidden="true">
-                            <i class="icon icon-css3-alt"></i>
+                            <i class="fab fa-css3-alt"></i>
                         </div>
                         <h3>CSS3</h3>
                         <p aria-label="Skill level: intermediate">Intermediate</p>
@@ -583,7 +621,7 @@
 
             <section id="featured-projects-section" class="container py-5">
                 <h2 class="section-title">Featured Projects</h2>
-                <div id="featured-loading-spinner" class="text-center my-4" role="status" aria-live="polite">
+                <div id="featured-loading-spinner" class="text-center my-4 loading-spinner-enhanced" role="status" aria-live="polite">
                     <div class="spinner-border" role="status">
                         <span class="visually-hidden">Loading featured projects...</span>
                     </div>
@@ -616,13 +654,20 @@
                     <div class="search-filter">
                         <label for="repo-filter" class="sr-only">Search projects</label>
                         <i class="fas fa-search" aria-hidden="true"></i>
-                        <input type="text" id="repo-filter" 
-                               placeholder="Search projects..." 
+                        <input type="text" id="repo-filter"
+                               placeholder="Search projects..."
                                aria-label="Search projects by name, description, or language"
                                aria-describedby="repo-filter-help">
                         <span id="repo-filter-help" class="sr-only">
                             Type to filter the list of projects below. You can search by project name, description, or programming language.
                         </span>
+                    </div>
+                    <div class="filter-group">
+                        <label for="language-filter" class="sr-only">Filter by programming language</label>
+                        <select id="language-filter" aria-label="Filter by programming language">
+                            <option value="">All Languages</option>
+                            <!-- Options populated dynamically -->
+                        </select>
                     </div>
                     <label for="repo-sort" class="sr-only">Sort projects</label>
                     <select id="repo-sort" aria-label="Sort projects by">
@@ -740,12 +785,9 @@
             <i class="fas fa-arrow-up"></i>
         </a>
 
-        <!-- Animation control button -->
-        <button id="animation-toggle" class="animation-control" aria-label="Pause animations" aria-pressed="false" title="Pause animations">
-            <i class="fas fa-pause"></i>
-        </button>
 
-        <!-- Link to modern modular JavaScript -->
+
+        <!-- Load modern modular JavaScript -->
         <script type="module" src="./js/app.js"></script>
         
         <!-- Fallback for browsers without ES modules support -->

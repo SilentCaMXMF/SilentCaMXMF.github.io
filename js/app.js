@@ -6,19 +6,140 @@
  * @since 2026-01-05
  */
 
-import { IconManager } from './modules/IconManager.js';
 import { LazyLoader } from './modules/LazyLoader.js';
 import { ThemeManager } from './modules/ThemeManager.js';
 import { PreferenceManager } from './modules/PreferenceManager.js';
 import { NavigationManager } from './modules/NavigationManager.js';
 import { GitHubAPI } from './modules/GitHubAPI.js';
-import { AnimationController } from './modules/AnimationController.js';
-import { ScrollAnimations } from './modules/ScrollAnimations.js';
-import { LoadingStates } from './modules/LoadingStates.js';
+import { GitHubRenderer } from './modules/GitHubRenderer.js';
 import { MobileNavigation } from './modules/MobileNavigation.js';
 import { KeyboardShortcuts } from './modules/KeyboardShortcuts.js';
 import { ErrorHandler } from './modules/ErrorHandler.js';
 import { CacheManager } from './modules/CacheManager.js';
+import { MicroInteractions } from './modules/MicroInteractions.js';
+
+// Mock classes for missing modules to prevent crashes
+class AnimationController {
+    constructor(preferenceManager) {
+        this.preferenceManager = preferenceManager;
+        this.initialized = false;
+    }
+    
+    async initialize() {
+        this.initialized = true;
+        console.log('🎬 AnimationController mock initialized');
+    }
+    
+    pauseAnimations() {
+        console.log('⏸️ Animations paused (mock)');
+    }
+    
+    resumeAnimations() {
+        console.log('▶️ Animations resumed (mock)');
+    }
+}
+
+class ScrollAnimations {
+    constructor(preferenceManager) {
+        this.preferenceManager = preferenceManager;
+        this.initialized = false;
+    }
+    
+    async initialize() {
+        this.initialized = true;
+        console.log('📜 ScrollAnimations mock initialized');
+    }
+    
+    animateSkillBars() {
+        console.log('📊 Skill bars animated (mock)');
+        // Basic fallback animation for skill bars - using correct class name
+        const skillBars = document.querySelectorAll('.skill-level');
+        skillBars.forEach(bar => {
+            if (bar.style.width && bar.style.width !== '0%') return; // Already animated
+            const computedWidth = window.getComputedStyle(bar).width;
+            const targetWidth = computedWidth && computedWidth !== '0px' ? computedWidth : '0%';
+            
+            // Start from 0 and animate to target width
+            bar.style.width = '0%';
+            bar.style.transition = 'width 1.5s ease-in-out';
+            setTimeout(() => {
+                bar.style.width = targetWidth;
+            }, 100);
+        });
+    }
+    
+    animateTimeline() {
+        console.log('📅 Timeline animated (mock)');
+        // Basic fallback animation for timeline
+        const timelineItems = document.querySelectorAll('.timeline-item');
+        timelineItems.forEach((item, index) => {
+            item.style.opacity = '0';
+            item.style.transform = 'translateY(20px)';
+            setTimeout(() => {
+                item.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
+                item.style.opacity = '1';
+                item.style.transform = 'translateY(0)';
+            }, index * 200);
+        });
+    }
+}
+
+class LoadingStates {
+    constructor() {
+        this.initialized = false;
+    }
+    
+    async initialize() {
+        this.initialized = true;
+        console.log('⏳ LoadingStates mock initialized');
+    }
+    
+    showToast(message, type = 'info', duration = 3000) {
+        console.log(`🍞 Toast (${type}): ${message}`);
+        
+        // Create a simple toast notification
+        const toast = document.createElement('div');
+        toast.style.cssText = `
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: ${type === 'info' ? '#9ab891' : type === 'warning' ? '#f4a460' : '#e74c3c'};
+            color: #2c2c2c;
+            padding: 12px 20px;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            z-index: 10000;
+            font-family: system-ui, sans-serif;
+            font-size: 14px;
+            max-width: 300px;
+            animation: slideIn 0.3s ease-out;
+        `;
+        toast.textContent = message;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.style.animation = 'slideOut 0.3s ease-in forwards';
+            setTimeout(() => {
+                if (document.body.contains(toast)) {
+                    document.body.removeChild(toast);
+                }
+            }, 300);
+        }, duration);
+    }
+    
+    showLoading(element) {
+        if (element) {
+            element.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>';
+        }
+    }
+    
+    hideLoading(element, content) {
+        if (element && content !== undefined) {
+            element.innerHTML = content;
+        }
+    }
+}
 
 /**
  * Main Application Class
@@ -50,7 +171,7 @@ class PortfolioApp {
             
             this.initialized = true;
             console.log('✅ Portfolio App initialized successfully');
-            
+
         } catch (error) {
             this.errorHandler.handleError(error, 'App initialization failed');
         }
@@ -61,34 +182,60 @@ class PortfolioApp {
      */
     async initializeModules() {
         const moduleConfigs = [
-            { name: 'iconManager', Module: IconManager, deps: [] },
-            { name: 'lazyLoader', Module: LazyLoader, deps: [] },
-            { name: 'preferenceManager', Module: PreferenceManager, deps: [] },
-            { name: 'themeManager', Module: ThemeManager, deps: ['preferenceManager'] },
-            { name: 'cacheManager', Module: CacheManager, deps: [] },
-            { name: 'gitHubAPI', Module: GitHubAPI, deps: ['cacheManager'] },
-            { name: 'animationController', Module: AnimationController, deps: ['preferenceManager'] },
-            { name: 'scrollAnimations', Module: ScrollAnimations, deps: ['preferenceManager'] },
-            { name: 'loadingStates', Module: LoadingStates, deps: [] },
-            { name: 'mobileNavigation', Module: MobileNavigation, deps: ['navigationManager'] },
-            { name: 'navigationManager', Module: NavigationManager, deps: ['scrollAnimations', 'loadingStates', 'mobileNavigation'] },
-            { name: 'keyboardShortcuts', Module: KeyboardShortcuts, deps: ['navigationManager', 'preferenceManager'] }
+            { name: 'lazyLoader', Module: LazyLoader, deps: [], critical: false },
+            { name: 'preferenceManager', Module: PreferenceManager, deps: [], critical: false },
+            { name: 'cacheManager', Module: CacheManager, deps: [], critical: false },
+            { name: 'themeManager', Module: ThemeManager, deps: ['preferenceManager'], critical: false },
+            { name: 'gitHubAPI', Module: GitHubAPI, deps: ['cacheManager'], critical: true },
+            { name: 'gitHubRenderer', Module: GitHubRenderer, deps: [], critical: true },
+            { name: 'loadingStates', Module: LoadingStates, deps: [], critical: false },
+            { name: 'mobileNavigation', Module: MobileNavigation, deps: [], critical: false },
+            { name: 'microInteractions', Module: MicroInteractions, deps: ['preferenceManager'], critical: false },
+            { name: 'animationController', Module: AnimationController, deps: ['preferenceManager'], critical: false },
+            { name: 'scrollAnimations', Module: ScrollAnimations, deps: ['preferenceManager'], critical: false },
+            { name: 'navigationManager', Module: NavigationManager, deps: ['scrollAnimations', 'loadingStates', 'mobileNavigation'], critical: false },
+            { name: 'keyboardShortcuts', Module: KeyboardShortcuts, deps: ['navigationManager', 'preferenceManager'], critical: false }
         ];
 
-        for (const config of moduleConfigs) {
+        // Initialize non-critical modules first
+        for (const config of moduleConfigs.filter(m => !m.critical)) {
             try {
-                const deps = config.deps.map(dep => this.modules[dep]);
-                this.modules[config.name] = new config.Module(...deps);
-                
-                if (typeof this.modules[config.name].initialize === 'function') {
-                    await this.modules[config.name].initialize();
-                }
-                
-                console.log(`📦 ${config.name} module initialized`);
+                await this.initializeModule(config);
             } catch (error) {
                 this.errorHandler.handleError(error, `Failed to initialize ${config.name} module`);
+                console.warn(`⚠️ Continuing without ${config.name} module`);
             }
         }
+
+        // Initialize critical modules
+        for (const config of moduleConfigs.filter(m => m.critical)) {
+            try {
+                await this.initializeModule(config);
+            } catch (error) {
+                this.errorHandler.handleError(error, `Critical: Failed to initialize ${config.name} module`);
+                throw error; // Re-throw critical errors
+            }
+        }
+    }
+
+    /**
+     * Initialize a single module
+     */
+    async initializeModule(config) {
+        // Check dependencies
+        const missingDeps = config.deps.filter(dep => !this.modules[dep]);
+        if (missingDeps.length > 0) {
+            throw new Error(`Missing dependencies for ${config.name}: ${missingDeps.join(', ')}`);
+        }
+
+        const deps = config.deps.map(dep => this.modules[dep]);
+        this.modules[config.name] = new config.Module(...deps);
+        
+        if (typeof this.modules[config.name].initialize === 'function') {
+            await this.modules[config.name].initialize();
+        }
+        
+        console.log(`📦 ${config.name} module initialized`);
     }
 
     /**
@@ -122,6 +269,9 @@ class PortfolioApp {
             // Setup performance monitoring
             this.setupPerformanceMonitoring();
             
+            // Show first-time user onboarding
+            this.showFirstTimeOnboarding();
+            
         } catch (error) {
             this.errorHandler.handleError(error, 'Failed to start application');
         }
@@ -135,14 +285,14 @@ class PortfolioApp {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then((registration) => {
-                        console.log('✅ Service Worker registered:', registration.scope);
-                        
+                        console.log('Service Worker registered:', registration.scope);
+
                         // Listen for updates
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('🔄 New service worker available');
+                                    console.log('New service worker available');
                                     // Notify user about update
                                     this.notifyUpdateAvailable();
                                 }
@@ -150,12 +300,12 @@ class PortfolioApp {
                         });
                     })
                     .catch((error) => {
-                        console.error('❌ Service Worker registration failed:', error);
+                        console.error('Service Worker registration failed:', error);
                         this.errorHandler.logWarning('Service Worker registration failed', { error });
                     });
             });
         } else {
-            console.log('⚠️ Service Workers not supported in this browser');
+            console.log('Service Workers not supported in this browser');
         }
     }
 
@@ -181,28 +331,33 @@ class PortfolioApp {
             gap: 12px;
             animation: slideIn 0.3s ease-out;
         `;
-        
-        notification.innerHTML = `
-            <span>A new version is available!</span>
-            <button id="update-btn" style="
-                background: #2c2c2c;
-                color: #9ab891;
-                border: none;
-                padding: 8px 16px;
-                border-radius: 4px;
-                cursor: pointer;
-                font-weight: 600;
-            ">Update</button>
+
+        // SECURITY: Using DOM methods instead of innerHTML
+        const messageSpan = document.createElement('span');
+        messageSpan.textContent = 'A new version is available!';
+
+        const updateBtn = document.createElement('button');
+        updateBtn.id = 'update-btn';
+        updateBtn.style.cssText = `
+            background: #2c2c2c;
+            color: #9ab891;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
         `;
-        
-        document.body.appendChild(notification);
-        
-        document.getElementById('update-btn').addEventListener('click', () => {
+        updateBtn.textContent = 'Update';
+        updateBtn.addEventListener('click', () => {
             if (navigator.serviceWorker.controller) {
                 navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
             }
             window.location.reload();
         });
+
+        notification.appendChild(messageSpan);
+        notification.appendChild(updateBtn);
+        document.body.appendChild(notification);
     }
 
     /**
@@ -210,21 +365,29 @@ class PortfolioApp {
      */
     async loadInitialData() {
         try {
-            // Load GitHub repositories
-            await this.modules.gitHubAPI.fetchRepos();
-            await this.modules.gitHubAPI.fetchFeaturedRepos();
-            
+            // Load GitHub repositories using modern API
+            const allRepos = await this.modules.gitHubAPI.fetchRepos();
+
+            // Initialize GitHub renderer
+            if (this.modules.gitHubRenderer) {
+                await this.modules.gitHubRenderer.initialize();
+                this.modules.gitHubRenderer.renderFeaturedReposFromData(allRepos);
+                this.modules.gitHubRenderer.renderReposFromData(allRepos);
+            }
+
             // Setup scroll animations after content is loaded
             setTimeout(() => {
-                if (this.modules.scrollAnimations) {
-                    this.modules.scrollAnimations.animateSkillBars();
-                    this.modules.scrollAnimations.animateTimeline();
+                if (this.modules.microInteractions) {
+                    this.modules.microInteractions.animateSkillBars();
+                    this.modules.microInteractions.animateTimeline();
                 }
             }, 500);
-            
-            console.log('📊 Initial data loaded successfully');
+
+            console.log('Initial data loading completed');
         } catch (error) {
             this.errorHandler.handleError(error, 'Failed to load initial data');
+            // Show error state in UI
+            this.showLoadError();
         }
     }
 
@@ -239,8 +402,8 @@ class PortfolioApp {
                     const perfData = performance.getEntriesByType('navigation')[0];
                     if (perfData) {
                         const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
-                        console.log(`⏱️ Page load time: ${loadTime}ms`);
-                        
+                        console.log(`Page load time: ${loadTime}ms`);
+
                         // Log performance metrics
                         if (loadTime > 3000) {
                             this.errorHandler.logWarning('Slow page load detected', { loadTime });
@@ -248,6 +411,59 @@ class PortfolioApp {
                     }
                 }, 0);
             });
+        }
+    }
+
+    /**
+     * Show loading error state
+     */
+    showLoadError() {
+        const featuredContainer = document.getElementById("featured-container");
+        const allProjectsContainer = document.getElementById("github-repos");
+
+        // Hide spinners
+        const featuredSpinner = document.getElementById("featured-loading-spinner");
+        const allProjectsSpinner = document.getElementById("loading-spinner");
+
+        if (featuredSpinner) featuredSpinner.style.display = 'none';
+        if (allProjectsSpinner) allProjectsSpinner.style.display = 'none';
+
+        // Show error messages - SECURITY: Using DOM methods instead of innerHTML
+        if (featuredContainer) {
+            featuredContainer.innerHTML = '';
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-warning';
+            alertDiv.setAttribute('role', 'alert');
+
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-exclamation-triangle';
+
+            alertDiv.appendChild(icon);
+            alertDiv.appendChild(document.createTextNode(' Failed to load featured projects. Please refresh the page.'));
+
+            featuredContainer.appendChild(alertDiv);
+            featuredContainer.style.display = 'block';
+        }
+
+        if (allProjectsContainer) {
+            allProjectsContainer.innerHTML = '';
+
+            const colDiv = document.createElement('div');
+            colDiv.className = 'col-12';
+
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'alert alert-danger';
+            alertDiv.setAttribute('role', 'alert');
+
+            const icon = document.createElement('i');
+            icon.className = 'fas fa-exclamation-triangle';
+
+            alertDiv.appendChild(icon);
+            alertDiv.appendChild(document.createTextNode(' Failed to load repositories. Please refresh the page.'));
+
+            colDiv.appendChild(alertDiv);
+            allProjectsContainer.appendChild(colDiv);
         }
     }
 
@@ -262,14 +478,53 @@ class PortfolioApp {
      * Destroy the application and cleanup
      */
     destroy() {
-        Object.values(this.modules).forEach(module => {
-            if (typeof module.destroy === 'function') {
-                module.destroy();
+        // Cleanup modules in reverse order
+        const moduleNames = Object.keys(this.modules).reverse();
+        
+        moduleNames.forEach(name => {
+            const module = this.modules[name];
+            if (module && typeof module.destroy === 'function') {
+                try {
+                    module.destroy();
+                    console.log(`🧹 Cleaned up ${name} module`);
+                } catch (error) {
+                    console.error(`❌ Error cleaning up ${name} module:`, error);
+                }
             }
         });
-        
+
+        // Clear references
+        this.modules = {};
+        this.errorHandler = null;
+        this.cacheManager = null;
         this.initialized = false;
-        console.log('🧹 Portfolio app destroyed');
+        
+        console.log('🧹 Portfolio app destroyed and cleaned up');
+    }
+
+    /**
+     * Show first-time user onboarding
+     * Displays helpful tips for new visitors
+     */
+    showFirstTimeOnboarding() {
+        // Check if user has visited before
+        if (localStorage.getItem('portfolio-visited')) {
+            return;
+        }
+        
+        // Mark as visited
+        localStorage.setItem('portfolio-visited', 'true');
+        
+        // Show welcome toast after a short delay
+        setTimeout(() => {
+            if (this.modules.loadingStates) {
+                this.modules.loadingStates.showToast(
+                    '💡 Tip: Press "P" to pause animations, "T" to toggle theme, "/" to search',
+                    'info',
+                    8000
+                );
+            }
+        }, 2000);
     }
 }
 
@@ -277,49 +532,114 @@ class PortfolioApp {
  * Application entry point
  */
 document.addEventListener('DOMContentLoaded', async () => {
+    console.log('DOM Content Loaded, starting initialization...');
+
     try {
+        // Test basic functionality first
+        console.log('Testing basic functionality...');
+
+        // Test module imports
+        console.log('Testing module imports...');
+        if (typeof PortfolioApp === 'undefined') {
+            throw new Error('PortfolioApp class is not defined');
+        }
+
         // Create and initialize app
+        console.log('Creating PortfolioApp instance...');
         window.portfolioApp = new PortfolioApp();
+
+        if (!window.portfolioApp) {
+            throw new Error('Failed to create PortfolioApp instance');
+        }
+
+        console.log('Initializing app...');
         await window.portfolioApp.initialize();
-        
-        // Make app available globally for debugging
-        if (process?.env?.NODE_ENV === 'development') {
+
+        // Make app available globally for debugging (v2)
+        if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             window.debugApp = window.portfolioApp;
         }
-        
+
+        console.log('Application initialization completed successfully');
+
     } catch (error) {
-        console.error('🚨 Failed to start portfolio application:', error);
-        
-        // Fallback: Show error message to user
-        document.body.innerHTML = `
-            <div style="
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                min-height: 100vh;
-                background: var(--dark-bg, #2c2c2c);
-                color: var(--light-text, #fff);
-                font-family: system-ui, sans-serif;
-                text-align: center;
-                padding: 20px;
-            ">
-                <div>
-                    <h1>⚠️ Application Error</h1>
-                    <p>Sorry, something went wrong loading the portfolio.</p>
-                    <button onclick="window.location.reload()" style="
-                        background: var(--primary-color, #9ab891);
-                        color: white;
-                        border: none;
-                        padding: 12px 24px;
-                        border-radius: 4px;
-                        cursor: pointer;
-                        font-size: 16px;
-                    ">
-                        Try Again
-                    </button>
-                </div>
-            </div>
+        console.error('Failed to start portfolio application:', error);
+        console.error('Error details:', {
+            message: error.message,
+            stack: error.stack,
+            name: error.name,
+            timestamp: new Date().toISOString()
+        });
+
+        // Fallback: Show error message to user with actual error details
+        // SECURITY: Using DOM methods instead of innerHTML to prevent XSS
+        const errorContainer = document.createElement('div');
+        errorContainer.style.cssText = `
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            background: var(--dark-bg, #2c2c2c);
+            color: var(--light-text, #fff);
+            font-family: system-ui, sans-serif;
+            text-align: center;
+            padding: 20px;
         `;
+
+        const contentDiv = document.createElement('div');
+        contentDiv.style.maxWidth = '600px';
+
+        const heading = document.createElement('h1');
+        heading.textContent = 'Application Error';
+
+        const errorP = document.createElement('p');
+        const strongError = document.createElement('strong');
+        strongError.textContent = 'Error: ';
+        errorP.appendChild(strongError);
+        errorP.appendChild(document.createTextNode(error.message || 'Unknown error'));
+
+        const typeP = document.createElement('p');
+        const strongType = document.createElement('strong');
+        strongType.textContent = 'Type: ';
+        typeP.appendChild(strongType);
+        typeP.appendChild(document.createTextNode(error.name || 'Unknown'));
+
+        const details = document.createElement('details');
+        details.style.cssText = 'margin: 20px 0; text-align: left;';
+
+        const summary = document.createElement('summary');
+        summary.textContent = 'Technical Details';
+
+        const pre = document.createElement('pre');
+        pre.style.cssText = 'background: rgba(0,0,0,0.1); padding: 10px; border-radius: 4px; overflow: auto; font-size: 12px; text-align: left;';
+        pre.textContent = error.stack || 'No stack trace available';
+
+        details.appendChild(summary);
+        details.appendChild(pre);
+
+        const button = document.createElement('button');
+        button.style.cssText = `
+            background: var(--primary-color, #9ab891);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-top: 20px;
+        `;
+        button.textContent = 'Try Again';
+        button.addEventListener('click', () => window.location.reload());
+
+        contentDiv.appendChild(heading);
+        contentDiv.appendChild(errorP);
+        contentDiv.appendChild(typeP);
+        contentDiv.appendChild(details);
+        contentDiv.appendChild(button);
+        errorContainer.appendChild(contentDiv);
+
+        document.body.innerHTML = '';
+        document.body.appendChild(errorContainer);
     }
 });
 

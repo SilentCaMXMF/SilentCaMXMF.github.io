@@ -51,9 +51,8 @@ export class MobileNavigation {
             this.bindEvents();
             this.setupMobileOptimizations();
             this.initialized = true;
-            console.log('📱 MobileNavigation initialized');
         } catch (error) {
-            console.error('❌ MobileNavigation initialization failed:', error);
+            console.error('MobileNavigation initialization failed:', error);
             throw error;
         }
     }
@@ -80,8 +79,12 @@ export class MobileNavigation {
         this.menuButton = document.getElementById('menu-button');
         this.dropdownMenu = document.getElementById('dropdown-menu');
         
-        if (!this.menuButton || !this.dropdownMenu) {
-            throw new Error('Mobile navigation elements not found');
+        if (!this.dropdownMenu) {
+            console.warn('Mobile navigation dropdown not found');
+        }
+        
+        if (!this.menuButton) {
+            console.warn('Mobile navigation menu button not found');
         }
     }
 
@@ -89,8 +92,24 @@ export class MobileNavigation {
      * Bind event listeners
      */
     bindEvents() {
-        if (!this.isMobile) {
-            return;
+        // Only bind events if elements exist
+        if (this.menuButton) {
+            this.menuButton.addEventListener('touchstart', (e) => this.handleTouchStart(e), { passive: true });
+            this.menuButton.addEventListener('touchend', (e) => this.handleTouchEnd(e), { passive: true });
+        }
+        
+        if (this.dropdownMenu) {
+            // Touch events for dropdown
+            this.dropdownMenu.addEventListener('touchstart', (e) => this.handleMenuTouchStart(e), { passive: true });
+            this.dropdownMenu.addEventListener('touchmove', (e) => this.handleMenuTouchMove(e), { passive: true });
+            this.dropdownMenu.addEventListener('touchend', (e) => this.handleMenuTouchEnd(e), { passive: true });
+            
+            // Prevent default touch behaviors on menu
+            this.dropdownMenu.addEventListener('touchmove', (e) => {
+                if (this.isMenuOpen()) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
         }
 
         // Touch events for menu
@@ -169,6 +188,32 @@ export class MobileNavigation {
     }
 
     /**
+     * Handle click on menu button
+     */
+    handleClick(e) {
+        const isVisible = this.dropdownMenu.classList.toggle('visible');
+        this.menuButton.setAttribute('aria-expanded', isVisible);
+        e.stopPropagation();
+
+        // Announce to screen readers
+        this.announceMenuState(isVisible);
+    }
+
+    /**
+     * Handle clicks outside the menu to close it
+     */
+    handleOutsideClick(e) {
+        if (
+            this.dropdownMenu.classList.contains('visible') &&
+            !this.dropdownMenu.contains(e.target) &&
+            e.target !== this.menuButton
+        ) {
+            this.dropdownMenu.classList.remove('visible');
+            this.menuButton.setAttribute('aria-expanded', 'false');
+        }
+    }
+
+    /**
      * Handle touch start
      */
     handleTouchStart(event) {
@@ -227,9 +272,7 @@ export class MobileNavigation {
         this.triggerHaptic('medium');
         
         // Dispatch tap event
-        this.dispatchGestureEvent(this.gestures.TAP, {
-            target: 'menu-button'
-        });
+
         
         // Announce to screen readers
         this.announceMenuState(isVisible);
@@ -248,11 +291,7 @@ export class MobileNavigation {
         this.triggerHaptic('heavy');
         
         // Dispatch long press event
-        this.dispatchGestureEvent(this.gestures.LONG_PRESS, {
-            target: 'menu-button'
-        });
-        
-        console.log('👆 Menu opened via long press');
+
     }
 
     /**
@@ -338,7 +377,6 @@ export class MobileNavigation {
         }
         
         this.dispatchGestureEvent(this.gestures.SWIPE_LEFT, { direction: 'left' });
-        console.log('👈 Swipe left detected');
     }
 
     /**
@@ -364,7 +402,6 @@ export class MobileNavigation {
         }
         
         this.dispatchGestureEvent(this.gestures.SWIPE_RIGHT, { direction: 'right' });
-        console.log('👉 Swipe right detected');
     }
 
     /**
@@ -420,11 +457,10 @@ export class MobileNavigation {
             console.warn('Swipe gestures only available on mobile devices');
             return false;
         }
-        
+
         document.body.addEventListener('touchstart', (e) => this.handleGlobalTouchStart(e), { passive: true });
         document.body.addEventListener('touchend', (e) => this.handleGlobalTouchEnd(e), { passive: true });
-        
-        console.log('👆 Swipe gestures enabled');
+
         return true;
     }
 
@@ -716,7 +752,5 @@ export class MobileNavigation {
         this.menuButton = null;
         this.dropdownMenu = null;
         this.initialized = false;
-        
-        console.log('🧹 MobileNavigation destroyed');
     }
 }

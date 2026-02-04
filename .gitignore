@@ -30,3 +30,6 @@ temp/
 
 # Documents symlink (if exists)
 Documents
+
+#Ai assistant files
+.opencode/

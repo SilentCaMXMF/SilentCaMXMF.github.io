@@ -65,8 +65,13 @@ export class LazyLoader {
             this.imageObserver.observe(img);
         });
 
-        // Observe picture elements
-        const lazyPictures = document.querySelectorAll('picture:has(img[data-src])');
+        // Observe picture elements (fallback for browsers without :has() support)
+        const allPictures = document.querySelectorAll('picture');
+        const lazyPictures = Array.from(allPictures).filter(picture => {
+            const img = picture.querySelector('img[data-src]');
+            return img !== null;
+        });
+        
         lazyPictures.forEach(picture => {
             const img = picture.querySelector('img[data-src]');
             if (img) {

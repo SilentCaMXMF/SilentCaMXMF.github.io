@@ -10,13 +10,13 @@ export class ThemeManager {
         this.themeIcon = null;
         this.currentTheme = 'light';
         this.initialized = false;
-        
+
         // Theme constants
         this.THEMES = {
             LIGHT: 'light',
             DARK: 'dark'
         };
-        
+
         // PreferenceManager integration
         this.preferenceManager = preferenceManager;
     }
@@ -31,9 +31,8 @@ export class ThemeManager {
             this.loadSavedTheme();
             this.setupPreferenceListener();
             this.initialized = true;
-            console.log('🎨 ThemeManager initialized');
         } catch (error) {
-            console.error('❌ ThemeManager initialization failed:', error);
+            console.error('ThemeManager initialization failed:', error);
             throw error;
         }
     }
@@ -45,8 +44,10 @@ export class ThemeManager {
         this.themeToggle = document.getElementById('theme-toggle');
         this.themeIcon = this.themeToggle?.querySelector('i');
         
-        if (!this.themeToggle || !this.themeIcon) {
-            throw new Error('Theme toggle elements not found');
+        if (!this.themeToggle) {
+            console.warn('Theme toggle button not found');
+        } else if (!this.themeIcon) {
+            console.warn('Theme toggle icon not found');
         }
     }
 
@@ -150,8 +151,6 @@ export class ThemeManager {
         
         // Dispatch theme change event
         this.dispatchThemeChange(theme, previousTheme);
-        
-        console.log(`🌓 Theme changed to: ${theme}`);
     }
 
     /**
@@ -176,9 +175,9 @@ export class ThemeManager {
      */
     updateIcon(theme) {
         if (this.themeIcon) {
-            const iconClass = theme === this.THEMES.DARK 
-                ? 'icon icon-sun' 
-                : 'icon icon-moon';
+            const iconClass = theme === this.THEMES.DARK
+                ? 'fas fa-sun'
+                : 'fas fa-moon';
             this.themeIcon.className = iconClass;
         }
     }

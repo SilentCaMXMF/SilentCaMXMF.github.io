@@ -4,37 +4,37 @@
  * @version 1.0.0
  */
 
-const CACHE_NAME = 'portfolio-v1.0.0';
-const RUNTIME_CACHE = 'portfolio-runtime-v1.0.0';
+const CACHE_NAME = 'portfolio-v1.0.1';
+const RUNTIME_CACHE = 'portfolio-runtime-v1.0.1';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
     '/',
     '/index.html',
-    '/css/modern-animations.css',
-    '/css/animations-optimized.css',
+    '/css/style.css',
     '/css/accessibility-enhanced.css',
     '/css/bootstrap-replacement.css',
-    '/css/custom-icons.css',
-    '/css/loading-states.css',
+    '/css/repo-display-options.css',
     '/js/app.js',
-    '/js/modules/IconManager.js',
-    '/js/modules/LazyLoader.js',
-    '/js/modules/ThemeManager.js',
-    '/js/modules/NavigationManager.js',
-    '/js/modules/GitHubAPI.js',
-    '/js/modules/AnimationController.js',
-    '/js/modules/ScrollAnimations.js',
-    '/js/modules/LoadingStates.js',
-    '/js/modules/MobileNavigation.js',
-    '/js/modules/KeyboardShortcuts.js',
-    '/js/modules/ErrorHandler.js',
     '/js/modules/CacheManager.js',
-    '/images/profile.webp',
-    '/images/profile-150x150.webp',
-    '/images/profile-300x300.webp',
-    '/images/profile-600x600.webp',
-    '/images/profile-800x800.webp'
+    '/js/modules/ErrorHandler.js',
+    '/js/modules/EventManager.js',
+    '/js/modules/GitHubAPI.js',
+    '/js/modules/GitHubRenderer.js',
+    '/js/modules/IconManager.js',
+    '/js/modules/KeyboardShortcuts.js',
+    '/js/modules/LazyLoader.js',
+    '/js/modules/MobileNavigation.js',
+    '/js/modules/NavigationManager.js',
+    '/js/modules/PreferenceManager.js',
+    '/js/modules/ThemeManager.js',
+    '/img/drumming_server.png',
+    '/img/drumming_server16x16.png',
+    '/img/drumming_server32x32.png',
+    '/img/pedro_tipoGhibli_passe-320.webp',
+    '/img/pedro_tipoGhibli_passe-480.webp',
+    '/img/pedro_tipoGhibli_passe-640.webp',
+    '/manifest.json'
 ];
 
 // GitHub API URLs to cache
@@ -90,11 +90,44 @@ self.addEventListener('activate', (event) => {
 });
 
 /**
+ * Helper function to check if request should be skipped
+ */
+function shouldSkipRequest(request) {
+    const url = request.url;
+    
+    // Skip extension requests
+    if (url.startsWith('chrome-extension://') || 
+        url.startsWith('moz-extension://') || 
+        url.startsWith('safari-extension://') ||
+        url.startsWith('edge-extension://') ||
+        url.startsWith('opera-extension://')) {
+        return true;
+    }
+    
+    // Skip non-HTTP(S) requests
+    if (!url.startsWith('http://') && !url.startsWith('https://')) {
+        return true;
+    }
+    
+    // Skip data URLs, blob URLs, etc.
+    if (url.startsWith('data:') || url.startsWith('blob:') || url.startsWith('file:')) {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
  * Fetch event - handle requests with cache strategies
  */
 self.addEventListener('fetch', (event) => {
     const { request } = event;
     const url = new URL(request.url);
+
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return; // Let browser handle these directly
+    }
 
     // Handle GitHub API requests with stale-while-revalidate
     if (GITHUB_API_PATTERN.test(url.href)) {
@@ -108,15 +141,15 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // Handle static assets with cache-first strategy
+    // Handle static assets with network-first strategy during development
     if (STATIC_ASSETS.some(asset => url.pathname.endsWith(asset))) {
-        event.respondWith(handleCacheFirstRequest(request));
+        event.respondWith(handleNetworkFirstRequest(request));
         return;
     }
 
-    // Handle images with cache-first strategy
+    // Handle images with network-first strategy during development
     if (request.destination === 'image' || isImageRequest(url)) {
-        event.respondWith(handleImageRequest(request));
+        event.respondWith(handleNetworkFirstRequest(request));
         return;
     }
 
@@ -135,6 +168,11 @@ function isImageRequest(url) {
  * Handle navigation requests with network-first strategy
  */
 async function handleNavigationRequest(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     try {
         // Try network first
         const networkResponse = await fetch(request);
@@ -164,6 +202,11 @@ async function handleNavigationRequest(request) {
  * Handle cache-first requests for static assets
  */
 async function handleCacheFirstRequest(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     const cachedResponse = await caches.match(request);
     
     if (cachedResponse) {
@@ -189,6 +232,11 @@ async function handleCacheFirstRequest(request) {
  * Handle image requests with cache-first strategy
  */
 async function handleImageRequest(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     const cachedResponse = await caches.match(request);
     
     if (cachedResponse) {
@@ -214,6 +262,11 @@ async function handleImageRequest(request) {
  * Handle stale-while-revalidate for API requests
  */
 async function handleStaleWhileRevalidate(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     const cache = await caches.open(RUNTIME_CACHE);
     const cachedResponse = await cache.match(request);
     
@@ -231,6 +284,11 @@ async function handleStaleWhileRevalidate(request) {
  * Handle network-first requests for dynamic content
  */
 async function handleNetworkFirstRequest(request) {
+    // Skip problematic requests
+    if (shouldSkipRequest(request)) {
+        return await fetch(request);
+    }
+    
     try {
         const networkResponse = await fetch(request);
         
