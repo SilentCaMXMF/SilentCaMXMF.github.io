@@ -4,20 +4,13 @@
  */
 
 export class GitHubAPI {
-    constructor(cacheManager) {
-        this.cacheManager = cacheManager;
+    constructor() {
         this.baseURL = 'https://api.github.com';
         this.username = 'SilentCaMXMF';
         this.cacheExpiry = 5 * 60 * 1000; // 5 minutes
         this.maxRetries = 3;
         this.retryDelay = 1000;
         this.initialized = false;
-        
-        // Cache keys
-        this.CACHE_KEYS = {
-            REPOS: 'github-repos-cache',
-            FEATURED: 'github-featured-cache'
-        };
     }
 
     /**
@@ -41,9 +34,38 @@ export class GitHubAPI {
         if (!this.username) {
             throw new Error('GitHub username is required');
         }
-        
-        if (!this.cacheManager) {
-            throw new Error('CacheManager is required');
+    }
+
+    /**
+     * Get cached data from localStorage
+     */
+    getCached(cacheKey) {
+        try {
+            const cached = localStorage.getItem(cacheKey);
+            if (!cached) return null;
+
+            const { data, timestamp } = JSON.parse(cached);
+            const isExpired = Date.now() - timestamp > this.cacheExpiry;
+
+            return isExpired ? null : { data, isExpired: false };
+        } catch (error) {
+            console.warn('Failed to get cached data:', error);
+            return null;
+        }
+    }
+
+    /**
+     * Set cached data in localStorage
+     */
+    setCached(cacheKey, data) {
+        try {
+            const cacheData = {
+                data,
+                timestamp: Date.now()
+            };
+            localStorage.setItem(cacheKey, JSON.stringify(cacheData));
+        } catch (error) {
+            console.warn('Failed to cache data:', error);
         }
     }
 
@@ -51,14 +73,14 @@ export class GitHubAPI {
      * Fetch all repositories with caching
      */
     async fetchRepos() {
-        const cacheKey = this.CACHE_KEYS.REPOS;
-        
+        const cacheKey = 'github-repos-cache';
+
         try {
             // Try to get from cache first
-            const cachedData = this.cacheManager.get(cacheKey);
-            if (cachedData && !this.cacheManager.isExpired(cacheKey)) {
+            const cached = this.getCached(cacheKey);
+            if (cached) {
                 console.log('📦 Using cached repos data');
-                return cachedData;
+                return cached.data;
             }
 
             // Fetch from API
@@ -68,8 +90,8 @@ export class GitHubAPI {
             );
 
             // Cache the results
-            this.cacheManager.set(cacheKey, repos, this.cacheExpiry);
-            
+            this.setCached(cacheKey, repos);
+
             console.log(`📊 Fetched ${repos.length} repositories`);
             return repos;
 
@@ -83,25 +105,25 @@ export class GitHubAPI {
      * Fetch featured repositories (top 5 with descriptions)
      */
     async fetchFeaturedRepos() {
-        const cacheKey = this.CACHE_KEYS.FEATURED;
-        
+        const cacheKey = 'github-featured-cache';
+
         try {
             // Try to get from cache first
-            const cachedData = this.cacheManager.get(cacheKey);
-            if (cachedData && !this.cacheManager.isExpired(cacheKey)) {
+            const cached = this.getCached(cacheKey);
+            if (cached) {
                 console.log('📦 Using cached featured repos data');
-                return cachedData;
+                return cached.data;
             }
 
             // Fetch all repos first
             const allRepos = await this.fetchRepos();
-            
+
             // Filter and sort for featured
             const featured = this.processFeaturedRepos(allRepos);
-            
+
             // Cache the results
-            this.cacheManager.set(cacheKey, featured, this.cacheExpiry);
-            
+            this.setCached(cacheKey, featured);
+
             console.log(`⭐ Fetched ${featured.length} featured repositories`);
             return featured;
 
@@ -175,23 +197,23 @@ export class GitHubAPI {
      */
     async fetchRepo(repoName) {
         const cacheKey = `github-repo-${repoName}`;
-        
+
         try {
             // Check cache first
-            const cachedData = this.cacheManager.get(cacheKey);
-            if (cachedData && !this.cacheManager.isExpired(cacheKey)) {
-                return cachedData;
+            const cached = this.getCached(cacheKey);
+            if (cached) {
+                return cached.data;
             }
 
             const url = `${this.baseURL}/repos/${this.username}/${repoName}`;
             const repo = await this.fetchWithRetry(
-                url, 
+                url,
                 `Failed to fetch repository ${repoName}`
             );
 
             // Cache for shorter time
-            this.cacheManager.set(cacheKey, repo, 2 * 60 * 1000); // 2 minutes
-            
+            this.setCached(cacheKey, repo);
+
             return repo;
 
         } catch (error) {
@@ -206,15 +228,15 @@ export class GitHubAPI {
     async searchRepos(query, language = null) {
         try {
             let url = `${this.baseURL}/search/repositories?q=${encodeURIComponent(query)}+user:${this.username}`;
-            
+
             if (language) {
                 url += `+language:${encodeURIComponent(language)}`;
             }
-            
+
             url += '&sort=updated&order=desc';
-            
+
             const data = await this.fetchWithRetry(url, `Failed to search repositories`);
-            
+
             return data.items || [];
 
         } catch (error) {
@@ -228,23 +250,23 @@ export class GitHubAPI {
      */
     async getUserProfile() {
         const cacheKey = 'github-user-profile';
-        
+
         try {
             // Check cache first
-            const cachedData = this.cacheManager.get(cacheKey);
-            if (cachedData && !this.cacheManager.isExpired(cacheKey)) {
-                return cachedData;
+            const cached = this.getCached(cacheKey);
+            if (cached) {
+                return cached.data;
             }
 
             const url = `${this.baseURL}/users/${this.username}`;
             const profile = await this.fetchWithRetry(
-                url, 
+                url,
                 'Failed to fetch user profile'
             );
 
             // Cache for longer time
-            this.cacheManager.set(cacheKey, profile, 30 * 60 * 1000); // 30 minutes
-            
+            this.setCached(cacheKey, profile);
+
             return profile;
 
         } catch (error) {
@@ -286,10 +308,10 @@ export class GitHubAPI {
      * Clear all cached data
      */
     clearCache() {
-        Object.values(this.CACHE_KEYS).forEach(key => {
-            this.cacheManager.delete(key);
-        });
-        
+        localStorage.removeItem('github-repos-cache');
+        localStorage.removeItem('github-featured-cache');
+        localStorage.removeItem('github-user-profile');
+
         console.log('🧹 GitHub API cache cleared');
     }
 
@@ -297,9 +319,8 @@ export class GitHubAPI {
      * Cleanup
      */
     destroy() {
-        this.cacheManager = null;
         this.initialized = false;
-        
+
         console.log('🧹 GitHubAPI destroyed');
     }
 }

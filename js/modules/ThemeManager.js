@@ -1,24 +1,21 @@
 /**
  * ThemeManager Module
  * Handles dark/light theme switching and persistence
- * Now integrated with PreferenceManager for unified preference management
  */
 
 export class ThemeManager {
-    constructor(preferenceManager = null) {
+    constructor() {
         this.themeToggle = null;
         this.themeIcon = null;
         this.currentTheme = 'light';
         this.initialized = false;
+        this.STORAGE_KEY = 'portfolio-theme';
 
         // Theme constants
         this.THEMES = {
             LIGHT: 'light',
             DARK: 'dark'
         };
-
-        // PreferenceManager integration
-        this.preferenceManager = preferenceManager;
     }
 
     /**
@@ -29,7 +26,6 @@ export class ThemeManager {
             this.cacheElements();
             this.bindEvents();
             this.loadSavedTheme();
-            this.setupPreferenceListener();
             this.initialized = true;
         } catch (error) {
             console.error('ThemeManager initialization failed:', error);
@@ -56,40 +52,20 @@ export class ThemeManager {
      */
     bindEvents() {
         this.themeToggle.addEventListener('click', () => this.toggleTheme());
-        
-        // Listen for system theme changes (only if not using PreferenceManager)
-        if (window.matchMedia && !this.preferenceManager) {
-            const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-            mediaQuery.addEventListener('change', (e) => {
-                this.setTheme(e.matches ? this.THEMES.DARK : this.THEMES.LIGHT);
-            });
-        }
+
+        // Listen for system theme changes
+        const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+        mediaQuery.addEventListener('change', (e) => {
+            this.setTheme(e.matches ? this.THEMES.DARK : this.THEMES.LIGHT);
+        });
     }
 
     /**
-     * Setup preference change listener
-     */
-    setupPreferenceListener() {
-        if (this.preferenceManager) {
-            this.preferenceManager.on('theme', (newTheme) => {
-                this.applyTheme(newTheme);
-            });
-        }
-    }
-
-    /**
-     * Load saved theme from preferenceManager or localStorage
+     * Load saved theme from localStorage
      */
     loadSavedTheme() {
-        let savedTheme;
-        
-        if (this.preferenceManager) {
-            savedTheme = this.preferenceManager.get('theme');
-        } else {
-            // Fallback to localStorage for backward compatibility
-            savedTheme = localStorage.getItem('portfolio-theme');
-        }
-        
+        const savedTheme = localStorage.getItem(this.STORAGE_KEY);
+
         if (savedTheme && Object.values(this.THEMES).includes(savedTheme)) {
             this.setTheme(savedTheme, { persist: false });
         } else {
@@ -103,10 +79,10 @@ export class ThemeManager {
      * Toggle between themes
      */
     toggleTheme() {
-        const newTheme = this.currentTheme === this.THEMES.DARK 
-            ? this.THEMES.LIGHT 
+        const newTheme = this.currentTheme === this.THEMES.DARK
+            ? this.THEMES.LIGHT
             : this.THEMES.DARK;
-        
+
         this.setTheme(newTheme, { persist: true });
     }
 
@@ -119,12 +95,9 @@ export class ThemeManager {
             return;
         }
 
-        // Persist to preferenceManager if available
-        if (options.persist !== false && this.preferenceManager) {
-            this.preferenceManager.set('theme', theme);
-        } else if (options.persist !== false) {
-            // Fallback to localStorage
-            localStorage.setItem('portfolio-theme', theme);
+        // Persist to localStorage
+        if (options.persist !== false) {
+            localStorage.setItem(this.STORAGE_KEY, theme);
         }
 
         this.applyTheme(theme);
@@ -161,12 +134,9 @@ export class ThemeManager {
     }
 
     /**
-     * Get theme from preferenceManager
+     * Get theme
      */
     getTheme() {
-        if (this.preferenceManager) {
-            return this.preferenceManager.get('theme');
-        }
         return this.getCurrentTheme();
     }
 
@@ -203,40 +173,17 @@ export class ThemeManager {
     }
 
     /**
-     * Get system theme preference
-     */
-    getSystemTheme() {
-        return window.matchMedia('(prefers-color-scheme: dark)').matches 
-            ? this.THEMES.DARK 
-            : this.THEMES.LIGHT;
-    }
-
-    /**
-     * Reset to system theme
-     */
-    resetToSystemTheme() {
-        if (this.preferenceManager) {
-            const systemTheme = this.getSystemTheme();
-            this.preferenceManager.set('theme', systemTheme);
-        } else {
-            localStorage.removeItem('portfolio-theme');
-            const systemTheme = this.getSystemTheme();
-            this.setTheme(systemTheme, { persist: false });
-        }
-    }
-
-    /**
      * Cleanup
      */
     destroy() {
         if (this.themeToggle) {
             this.themeToggle.removeEventListener('click', this.toggleTheme);
         }
-        
+
         this.themeToggle = null;
         this.themeIcon = null;
         this.initialized = false;
-        
+
         console.log('🧹 ThemeManager destroyed');
     }
 }

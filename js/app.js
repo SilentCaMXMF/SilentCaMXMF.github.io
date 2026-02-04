@@ -1,145 +1,16 @@
 /**
  * @file Portfolio Main Application
- * @description Modern ES6+ modular portfolio application with comprehensive error handling and performance optimization
- * @version 1.0.0
+ * @description Modern ES6+ modular portfolio application
+ * @version 2.0.0
  * @author Portfolio Development Team
- * @since 2026-01-05
+ * @since 2026-02-04
  */
 
-import { LazyLoader } from './modules/LazyLoader.js';
 import { ThemeManager } from './modules/ThemeManager.js';
-import { PreferenceManager } from './modules/PreferenceManager.js';
 import { NavigationManager } from './modules/NavigationManager.js';
 import { GitHubAPI } from './modules/GitHubAPI.js';
 import { GitHubRenderer } from './modules/GitHubRenderer.js';
 import { MobileNavigation } from './modules/MobileNavigation.js';
-import { KeyboardShortcuts } from './modules/KeyboardShortcuts.js';
-import { ErrorHandler } from './modules/ErrorHandler.js';
-import { CacheManager } from './modules/CacheManager.js';
-import { MicroInteractions } from './modules/MicroInteractions.js';
-
-// Mock classes for missing modules to prevent crashes
-class AnimationController {
-    constructor(preferenceManager) {
-        this.preferenceManager = preferenceManager;
-        this.initialized = false;
-    }
-    
-    async initialize() {
-        this.initialized = true;
-        console.log('🎬 AnimationController mock initialized');
-    }
-    
-    pauseAnimations() {
-        console.log('⏸️ Animations paused (mock)');
-    }
-    
-    resumeAnimations() {
-        console.log('▶️ Animations resumed (mock)');
-    }
-}
-
-class ScrollAnimations {
-    constructor(preferenceManager) {
-        this.preferenceManager = preferenceManager;
-        this.initialized = false;
-    }
-    
-    async initialize() {
-        this.initialized = true;
-        console.log('📜 ScrollAnimations mock initialized');
-    }
-    
-    animateSkillBars() {
-        console.log('📊 Skill bars animated (mock)');
-        // Basic fallback animation for skill bars - using correct class name
-        const skillBars = document.querySelectorAll('.skill-level');
-        skillBars.forEach(bar => {
-            if (bar.style.width && bar.style.width !== '0%') return; // Already animated
-            const computedWidth = window.getComputedStyle(bar).width;
-            const targetWidth = computedWidth && computedWidth !== '0px' ? computedWidth : '0%';
-            
-            // Start from 0 and animate to target width
-            bar.style.width = '0%';
-            bar.style.transition = 'width 1.5s ease-in-out';
-            setTimeout(() => {
-                bar.style.width = targetWidth;
-            }, 100);
-        });
-    }
-    
-    animateTimeline() {
-        console.log('📅 Timeline animated (mock)');
-        // Basic fallback animation for timeline
-        const timelineItems = document.querySelectorAll('.timeline-item');
-        timelineItems.forEach((item, index) => {
-            item.style.opacity = '0';
-            item.style.transform = 'translateY(20px)';
-            setTimeout(() => {
-                item.style.transition = 'opacity 0.6s ease-out, transform 0.6s ease-out';
-                item.style.opacity = '1';
-                item.style.transform = 'translateY(0)';
-            }, index * 200);
-        });
-    }
-}
-
-class LoadingStates {
-    constructor() {
-        this.initialized = false;
-    }
-    
-    async initialize() {
-        this.initialized = true;
-        console.log('⏳ LoadingStates mock initialized');
-    }
-    
-    showToast(message, type = 'info', duration = 3000) {
-        console.log(`🍞 Toast (${type}): ${message}`);
-        
-        // Create a simple toast notification
-        const toast = document.createElement('div');
-        toast.style.cssText = `
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            background: ${type === 'info' ? '#9ab891' : type === 'warning' ? '#f4a460' : '#e74c3c'};
-            color: #2c2c2c;
-            padding: 12px 20px;
-            border-radius: 6px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            z-index: 10000;
-            font-family: system-ui, sans-serif;
-            font-size: 14px;
-            max-width: 300px;
-            animation: slideIn 0.3s ease-out;
-        `;
-        toast.textContent = message;
-        
-        document.body.appendChild(toast);
-        
-        setTimeout(() => {
-            toast.style.animation = 'slideOut 0.3s ease-in forwards';
-            setTimeout(() => {
-                if (document.body.contains(toast)) {
-                    document.body.removeChild(toast);
-                }
-            }, 300);
-        }, duration);
-    }
-    
-    showLoading(element) {
-        if (element) {
-            element.innerHTML = '<div class="spinner-border spinner-border-sm" role="status"><span class="sr-only">Loading...</span></div>';
-        }
-    }
-    
-    hideLoading(element, content) {
-        if (element && content !== undefined) {
-            element.innerHTML = content;
-        }
-    }
-}
 
 /**
  * Main Application Class
@@ -149,8 +20,6 @@ class PortfolioApp {
     constructor() {
         this.modules = {};
         this.initialized = false;
-        this.errorHandler = new ErrorHandler();
-        this.cacheManager = new CacheManager();
     }
 
     /**
@@ -182,19 +51,11 @@ class PortfolioApp {
      */
     async initializeModules() {
         const moduleConfigs = [
-            { name: 'lazyLoader', Module: LazyLoader, deps: [], critical: false },
-            { name: 'preferenceManager', Module: PreferenceManager, deps: [], critical: false },
-            { name: 'cacheManager', Module: CacheManager, deps: [], critical: false },
-            { name: 'themeManager', Module: ThemeManager, deps: ['preferenceManager'], critical: false },
-            { name: 'gitHubAPI', Module: GitHubAPI, deps: ['cacheManager'], critical: true },
+            { name: 'themeManager', Module: ThemeManager, deps: [], critical: false },
+            { name: 'gitHubAPI', Module: GitHubAPI, deps: [], critical: true },
             { name: 'gitHubRenderer', Module: GitHubRenderer, deps: [], critical: true },
-            { name: 'loadingStates', Module: LoadingStates, deps: [], critical: false },
             { name: 'mobileNavigation', Module: MobileNavigation, deps: [], critical: false },
-            { name: 'microInteractions', Module: MicroInteractions, deps: ['preferenceManager'], critical: false },
-            { name: 'animationController', Module: AnimationController, deps: ['preferenceManager'], critical: false },
-            { name: 'scrollAnimations', Module: ScrollAnimations, deps: ['preferenceManager'], critical: false },
-            { name: 'navigationManager', Module: NavigationManager, deps: ['scrollAnimations', 'loadingStates', 'mobileNavigation'], critical: false },
-            { name: 'keyboardShortcuts', Module: KeyboardShortcuts, deps: ['navigationManager', 'preferenceManager'], critical: false }
+            { name: 'navigationManager', Module: NavigationManager, deps: ['mobileNavigation'], critical: false }
         ];
 
         // Initialize non-critical modules first
@@ -202,7 +63,7 @@ class PortfolioApp {
             try {
                 await this.initializeModule(config);
             } catch (error) {
-                this.errorHandler.handleError(error, `Failed to initialize ${config.name} module`);
+                console.error(`Failed to initialize ${config.name} module:`, error);
                 console.warn(`⚠️ Continuing without ${config.name} module`);
             }
         }
@@ -212,8 +73,8 @@ class PortfolioApp {
             try {
                 await this.initializeModule(config);
             } catch (error) {
-                this.errorHandler.handleError(error, `Critical: Failed to initialize ${config.name} module`);
-                throw error; // Re-throw critical errors
+                console.error(`Critical: Failed to initialize ${config.name} module:`, error);
+                throw error;
             }
         }
     }
@@ -244,37 +105,35 @@ class PortfolioApp {
     setupGlobalErrorHandling() {
         // Handle unhandled promise rejections
         window.addEventListener('unhandledrejection', (event) => {
-            this.errorHandler.handleError(event.reason, 'Unhandled promise rejection');
+            console.error('Unhandled promise rejection:', event.reason);
             event.preventDefault();
         });
 
         // Handle uncaught errors
         window.addEventListener('error', (event) => {
-            this.errorHandler.handleError(event.error, 'Uncaught error');
+            console.error('Uncaught error:', event.error);
             event.preventDefault();
         });
     }
 
     /**
-     * Start the application
+     * Start application
      */
     async start() {
         try {
             // Register service worker
             this.registerServiceWorker();
-            
+
             // Load initial data
             await this.loadInitialData();
-            
+
             // Setup performance monitoring
             this.setupPerformanceMonitoring();
-            
-            // Show first-time user onboarding
-            this.showFirstTimeOnboarding();
-            
+
         } catch (error) {
-            this.errorHandler.handleError(error, 'Failed to start application');
+            console.error('Failed to start application:', error);
         }
+    }
     }
 
     /**
@@ -365,7 +224,7 @@ class PortfolioApp {
      */
     async loadInitialData() {
         try {
-            // Load GitHub repositories using modern API
+            // Load GitHub repositories
             const allRepos = await this.modules.gitHubAPI.fetchRepos();
 
             // Initialize GitHub renderer
@@ -375,17 +234,9 @@ class PortfolioApp {
                 this.modules.gitHubRenderer.renderReposFromData(allRepos);
             }
 
-            // Setup scroll animations after content is loaded
-            setTimeout(() => {
-                if (this.modules.microInteractions) {
-                    this.modules.microInteractions.animateSkillBars();
-                    this.modules.microInteractions.animateTimeline();
-                }
-            }, 500);
-
             console.log('Initial data loading completed');
         } catch (error) {
-            this.errorHandler.handleError(error, 'Failed to load initial data');
+            console.error('Failed to load initial data:', error);
             // Show error state in UI
             this.showLoadError();
         }
@@ -404,9 +255,9 @@ class PortfolioApp {
                         const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
                         console.log(`Page load time: ${loadTime}ms`);
 
-                        // Log performance metrics
+                        // Log slow load warning
                         if (loadTime > 3000) {
-                            this.errorHandler.logWarning('Slow page load detected', { loadTime });
+                            console.warn('Slow page load detected:', { loadTime });
                         }
                     }
                 }, 0);
@@ -472,6 +323,32 @@ class PortfolioApp {
      */
     getModule(name) {
         return this.modules[name];
+    }
+
+    /**
+     * Destroy application and cleanup
+     */
+    destroy() {
+        // Cleanup modules in reverse order
+        const moduleNames = Object.keys(this.modules).reverse();
+
+        moduleNames.forEach(name => {
+            const module = this.modules[name];
+            if (module && typeof module.destroy === 'function') {
+                try {
+                    module.destroy();
+                    console.log(`🧹 Cleaned up ${name} module`);
+                } catch (error) {
+                    console.error(`❌ Error cleaning up ${name} module:`, error);
+                }
+            }
+        });
+
+        // Clear references
+        this.modules = {};
+        this.initialized = false;
+
+        console.log('🧹 Portfolio app destroyed and cleaned up');
     }
 
     /**
