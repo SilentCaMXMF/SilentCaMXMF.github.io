@@ -1,0 +1,22 @@
+/* Test Runner Styles */
+body {
+    font-family: 'Courier New', monospace;
+    margin: 20px;
+    background: #1a1a1a;
+    color: #00ff00;
+    font-size: 14px;
+}
+.test-results {
+    white-space: pre-line;
+    background: #000;
+    padding: 20px;
+    border-radius: 8px;
+    overflow: auto;
+    max-height: 80vh;
+}
+.status {
+    font-weight: bold;
+}
+.pass { color: #00ff00; }
+.fail { color: #ff0000; }
+.partial { color: #ffaa00; }

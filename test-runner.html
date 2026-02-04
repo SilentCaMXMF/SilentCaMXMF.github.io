@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Testing Suite</title>
+    <link rel="stylesheet" href="css/test-runner.css">
+</head>
+<body>
+    <h1>🧪 Portfolio Testing Suite</h1>
+    <div id="test-results" class="test-results">Initializing tests...</div>
+    
+    <script>
+        // Load the test script
+        const script = document.createElement('script');
+        script.src = 'test-portfolio.js';
+        script.onload = function() {
+            // Open the portfolio in a new window and run tests
+            const portfolioWindow = window.open('http://localhost:8000', 'portfolio', 'width=1200,height=800');
+            
+            portfolioWindow.addEventListener('load', () => {
+                // Inject test script into portfolio window
+                const testScript = portfolioWindow.document.createElement('script');
+                testScript.textContent = document.querySelector('script[src="test-portfolio.js"]').textContent;
+                portfolioWindow.document.body.appendChild(testScript);
+                
+                // Listen for test results
+                portfolioWindow.addEventListener('message', (event) => {
+                    if (event.data.type === 'test-results') {
+                        document.getElementById('test-results').innerHTML = 
+                            '<pre>' + JSON.stringify(event.data.results, null, 2) + '</pre>';
+                    }
+                });
+                
+                // Modify the tester to send results back
+                portfolioWindow.addEventListener('DOMContentLoaded', () => {
+                    const originalGenerateReport = portfolioWindow.portfolioTester.generateReport;
+                    portfolioWindow.portfolioTester.generateReport = async function() {
+                        const results = await originalGenerateReport.call(this);
+                        window.opener.postMessage({ type: 'test-results', results }, '*');
+                        return results;
+                    };
+                });
+            });
+        };
+        document.head.appendChild(script);
+    </script>
+</body>
+</html>
