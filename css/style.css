@@ -61,7 +61,7 @@
 }
 
 [data-theme="dark"] {
-  --primary-color: #8aad82;
+  --light-mode-text: #d4d4d4;
   --primary-color-rgb: 138, 173, 130;
   --secondary-color: #c4b598;
   --secondary-color-rgb: 196, 181, 152;
