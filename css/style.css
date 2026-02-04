@@ -1,11 +1,17 @@
 /* General Styles */
 :root {
   --primary-color: #2d7a4e;
+  --primary-color-rgb: 45, 122, 78;
   --secondary-color: #f4a460;
+  --secondary-color-rgb: 244, 164, 96;
   --dark-bg: #2c3e50;
+  --dark-bg-rgb: 44, 62, 80;
   --light-text: #1a2a3a;
+  --light-text-rgb: 26, 42, 58;
   --dark-text: #37474f;
+  --dark-text-rgb: 55, 71, 79;
   --card-bg: #ffffff;
+  --card-bg-rgb: 255, 255, 255;
   /* Added for better text hierarchy */
   --secondary-text: #64748b;
   --muted-text: #94a3b8;
@@ -25,6 +31,13 @@
   --section-overlay: rgba(0, 0, 0, 0.03);
   /* Focus color for accessibility */
   --focus-color: #4a9eff;
+  
+  /* Light mode text color */
+  --light-mode-text: #5D4037;
+  
+  /* Theme toggle colors for light mode */
+  --theme-toggle-color: #5D4037;
+  --theme-toggle-border: #5D4037;
   
   /* Micro-interaction colors */
   --ripple-color: rgba(255, 255, 255, 0.6);
@@ -49,10 +62,17 @@
 
 [data-theme="dark"] {
   --primary-color: #8aad82;
+  --primary-color-rgb: 138, 173, 130;
   --secondary-color: #c4b598;
+  --secondary-color-rgb: 196, 181, 152;
   --dark-bg: #1a1a1a;
+  --dark-bg-rgb: 26, 26, 26;
   --light-text: #f0f0f0;
+  --light-text-rgb: 240, 240, 240;
   --dark-text: #e0e0e0;
+  --dark-text-rgb: 224, 224, 224;
+  --card-bg: #1a1a1a;
+  --card-bg-rgb: 26, 26, 26;
   --secondary-text: #b8b8b8;
   --muted-text: #9ca3af;
   --overlay-opacity: 0.8;
@@ -67,6 +87,10 @@
   --skill-bg: rgba(60, 60, 60, 0.2);
   --section-overlay: rgba(0, 0, 0, 0.6);
   --focus-color: #5ab4ff;
+  
+  /* Theme toggle colors for dark mode */
+  --theme-toggle-color: #ffffff;
+  --theme-toggle-border: #ffffff;
   
   /* Micro-interaction colors */
   --ripple-color: rgba(138, 173, 130, 0.6);
@@ -120,7 +144,7 @@ body::before {
 
 /* Enhanced typography hierarchy */
 .section-title {
-  color: #fff;
+  color: var(--light-mode-text);
   text-shadow: var(--text-shadow);
   letter-spacing: -0.02em;
   font-weight: 700;
@@ -128,7 +152,7 @@ body::before {
 }
 
 .summary-content .lead {
-  color: #fff;
+  color: var(--light-mode-text);
   text-shadow: var(--text-shadow);
   font-weight: 300;
   letter-spacing: 0.01em;
@@ -149,7 +173,7 @@ body::before {
 .contact-info,
 .contact-info a,
 .social-links a {
-  color: #fff;
+  color: var(--light-mode-text);
   text-shadow: var(--text-shadow);
 }
 
@@ -280,7 +304,7 @@ header, main, footer, section {
   top: -40px;
   left: 0;
   background: var(--dark-bg);
-  color: white;
+  color: var(--light-mode-text);
   padding: 8px;
   z-index: 100;
   transition: top 0.3s;
@@ -366,8 +390,8 @@ header h1 {
 
 .theme-toggle {
   background: rgba(255, 255, 255, 0.15);
-  border: 2px solid #ffffff;
-  color: #ffffff;
+  border: 2px solid var(--theme-toggle-border);
+  color: var(--theme-toggle-color);
   border-radius: 50%;
   width: 40px;
   height: 40px;
@@ -1303,6 +1327,9 @@ section:not(:first-child) {
 }
 
 .repo-card {
+  /* Fallback for browsers without color-mix support */
+  background: rgba(var(--card-bg-rgb), 0.95);
+  /* Modern browsers with color-mix */
   background: color-mix(in srgb, var(--card-bg) 95%, var(--section-overlay) 5%);
   border-radius: 12px;
   overflow: hidden;
@@ -1310,7 +1337,10 @@ section:not(:first-child) {
   box-shadow: var(--card-shadow);
   height: 100%;
   display: flex;
-  flex-direction: column;
+flex-direction: column;
+  /* Fallback for browsers without color-mix support */
+  border: 1px solid rgba(var(--primary-color-rgb), 0.1);
+  /* Modern browsers with color-mix */
   border: 1px solid color-mix(in srgb, var(--primary-color) 10%, transparent 90%);
   position: relative;
 }
