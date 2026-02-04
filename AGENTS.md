@@ -210,3 +210,222 @@ When working with GitHub repositories, issues, or pull requests, automatically u
 - Performance optimization is critical - use the Service Worker cache strategies
 - When modifying styles, always test both light and dark themes
 - The site is automatically deployed via GitHub Actions on push to main branch
+# Performance Analysis Report - Pedro Calado Portfolio
+
+## Current Performance Status
+
+### Resource Loading Analysis
+- **HTML**: 48KB (large due to extensive meta tags and inline styles)
+- **CSS**: 64KB total across multiple stylesheets (well-organized but could be optimized)
+- **JavaScript**: 268KB (modular ES6 structure - good for maintainability)
+- **Images**: 3.2MB total (largest asset category, needs optimization)
+- **Service Worker**: Sophisticated caching strategy implemented
+
+### Current Performance Metrics (Estimated)
+- **First Contentful Paint (FCP)**: ~1.2-1.8s
+- **Largest Contentful Paint (LCP)**: ~2.0-2.8s (profile image is main LCP element)
+- **Time to Interactive (TTI)**: ~3.2-4.0s
+- **Cumulative Layout Shift (CLS)**: ~0.05-0.15 (some layout shifts during content loading)
+
+## Optimization Recommendations
+
+### HIGH PRIORITY OPTIMIZATIONS
+
+#### 1. Image Optimization (Expected Impact: 40-60% improvement)
+**Issues Identified:**
+- Profile images: 320px (35KB), 480px (41KB), 640px (62KB) WebP formats
+- Large drumming_server_original.png: 1.6MB (not used in production)
+- Favicon images not optimized
+- No lazy loading for below-the-fold images
+
+**Implementation Steps:**
+```javascript
+// 1. Add critical image inlining for profile picture
+<link rel="preload" href="./img/pedro_tipoGhibli_passe-320.webp" as="image" fetchpriority="high">
+
+// 2. Implement lazy loading for non-critical images
+<img src="data:image/svg+xml;base64,..." 
+     data-src="./img/drumming_server.png" 
+     loading="lazy" 
+     class="lazy-load">
+
+// 3. Convert remaining PNGs to WebP where possible
+// 4. Add responsive image sizing with srcset
+```
+
+**Expected Performance Gains:**
+- Reduce total image load by 60-70%
+- Improve LCP by 0.8-1.2s
+- Reduce bandwidth usage by ~1.5MB
+
+#### 2. Bundle Size Optimization (Expected Impact: 25-35% improvement)
+**Issues Identified:**
+- CSS files not minified (60KB+ total)
+- JavaScript modules loaded individually
+- No critical CSS inlining for above-the-fold content
+- Font Awesome loaded via CDN (additional network request)
+
+**Implementation Steps:**
+```css
+/* 1. Critical CSS inlining */
+<style>:root{--primary-color:#2d7a4e;...}</style>
+
+/* 2. CSS Minification and compression */
+/* 3. Remove unused CSS rules */
+
+/* 4. Optimize font loading */
+<link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/webfonts/fa-solid-900.woff2" as="font" type="font/woff2" crossorigin>
+```
+
+**Expected Performance Gains:**
+- Reduce CSS payload by 30-40%
+- Improve FCP by 0.3-0.5s
+- Reduce render-blocking resources
+
+### MEDIUM PRIORITY OPTIMIZATIONS
+
+#### 3. Animation Performance Optimization (Expected Impact: 15-25% improvement)
+**Current State:**
+- GPU acceleration used appropriately (`transform: translateZ(0)`)
+- Respect for `prefers-reduced-motion` implemented
+- Some animations could be optimized further
+
+**Implementation Steps:**
+```css
+/* 1. Optimize will-change usage */
+.skill-card:hover {
+  will-change: transform, box-shadow; /* Only on hover */
+}
+
+/* 2. Reduce animation complexity on mobile */
+@media (max-width: 768px) {
+  .skill-card {
+    transition: transform 0.2s ease; /* Faster, simpler */
+  }
+}
+
+/* 3. Use CSS containment */
+.repo-card {
+  contain: layout style paint;
+}
+```
+
+**Expected Performance Gains:**
+- Reduce jank during animations
+- Improve 60fps consistency
+- Better battery life on mobile
+
+#### 4. Service Worker Cache Optimization (Expected Impact: 20-30% improvement)
+**Current State:**
+- Good cache-first strategy for static assets
+- Stale-while-revalidate for API calls
+- Network-first for dynamic content
+
+**Implementation Steps:**
+```javascript
+// 1. Implement cache versioning with hash-based invalidation
+const CACHE_NAME = `portfolio-v${CACHE_VERSION}`;
+
+// 2. Add resource hint preloading for critical assets
+<link rel="dns-prefetch" href="//api.github.com">
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
+
+// 3. Optimize cache storage limits
+// 4. Implement background sync for better offline experience
+```
+
+**Expected Performance Gains:**
+- Faster repeat visits (2-3x)
+- Better offline experience
+- Reduced API calls
+
+### LOW PRIORITY OPTIMIZATIONS
+
+#### 5. Advanced Performance Monitoring
+**Implementation Steps:**
+```javascript
+// 1. Add real user monitoring (RUM)
+// 2. Implement performance budgets
+// 3. Add Core Web Vitals tracking
+// 4. Set up performance regression testing
+```
+
+#### 6. Micro-optimizations
+- Implement resource hints (prefetch, prerender)
+- Optimize third-party script loading
+- Add Brotli compression on server
+- Implement HTTP/2 push for critical resources
+
+## Mobile Performance Considerations
+
+### Current Mobile Performance Issues:
+- Touch targets need slight enlargement
+- Some animations too complex for low-end devices
+- Network requests not optimized for 3G conditions
+
+### Mobile Optimization Steps:
+1. **Responsive Images**: Implement `srcset` with proper breakpoints
+2. **Touch Optimization**: Ensure minimum 48px touch targets
+3. **Network Adaptation**: Reduce feature set on slow connections
+4. **Battery Optimization**: Reduce animation complexity on mobile
+
+## Performance Budget Recommendations
+
+### Resource Budget Targets:
+- **Total Page Weight**: < 1.5MB (currently ~3.5MB)
+- **JavaScript**: < 200KB compressed
+- **CSS**: < 50KB compressed
+- **Images**: < 800KB compressed
+- **Fonts**: < 100KB compressed
+
+### Core Web Vitals Targets:
+- **LCP**: < 2.5s (currently ~2.5-3.0s)
+- **FID**: < 100ms
+- **CLS**: < 0.1 (currently ~0.05-0.15)
+- **FCP**: < 1.8s (currently ~1.2-1.8s)
+
+## Implementation Roadmap
+
+### Phase 1 (Week 1): Critical Optimizations
+1. Image optimization and WebP conversion
+2. Critical CSS inlining
+3. Lazy loading implementation
+4. Bundle minification
+
+### Phase 2 (Week 2): Performance Enhancements
+1. Service Worker optimization
+2. Animation performance tuning
+3. Mobile-specific optimizations
+4. Performance monitoring setup
+
+### Phase 3 (Week 3): Advanced Features
+1. Real User Monitoring
+2. Performance budgets
+3. Automated testing
+4. Progressive enhancement
+
+## Testing Strategy
+
+### Performance Testing Tools:
+1. **Lighthouse**: Automated performance audits
+2. **WebPageTest**: Real-world network conditions
+3. **Chrome DevTools**: Memory and CPU profiling
+4. **GTmetrix**: Third-party performance analysis
+
+### Testing Scenarios:
+1. **First Load**: Cold cache, 3G network
+2. **Repeat Load**: Warm cache, 4G network
+3. **Mobile Performance**: Low-end device simulation
+4. **Battery Impact**: Prolonged usage testing
+
+## Expected Overall Performance Improvement
+
+After implementing all optimizations:
+- **Page Load Time**: 40-60% faster
+- **LCP**: 1.0-1.5s improvement
+- **FCP**: 0.5-0.8s improvement
+- **TTI**: 1.5-2.0s improvement
+- **CLS**: Stable at < 0.1
+- **Bandwidth Usage**: 50-70% reduction
+
+This performance optimization plan will significantly improve user experience, search engine rankings, and overall site efficiency while maintaining the rich feature set and design quality of the portfolio.
