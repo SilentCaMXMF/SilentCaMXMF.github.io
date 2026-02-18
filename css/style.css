@@ -238,9 +238,6 @@ body::before {
 
 /* Enhanced contrast for key elements */
 .highlight-box {
-  /* Fallback for browsers without color-mix support */
-  background: rgba(255, 255, 255, 0.95);
-  border: 1px solid rgba(45, 122, 78, 0.2);
   /* Modern browsers with color-mix */
   background: color-mix(in srgb, var(--card-bg) 95%, var(--section-overlay) 5%);
   border-left: 4px solid var(--primary-color);
@@ -433,8 +430,6 @@ header h1 {
   transition: transform 0.4s ease;
   padding-top: 60px;
   height: auto;
-  /* Fallback for browsers without color-mix support */
-  border: 1px solid rgba(45, 122, 78, 0.15);
   /* Modern browsers with color-mix */
   border: 1px solid color-mix(in srgb, var(--primary-color) 15%, transparent 85%);
 }
@@ -799,9 +794,6 @@ section:not(:first-child) {
 
 /* Education Section */
 .education-card {
-  /* Fallback for browsers without color-mix support */
-  background: rgba(255, 255, 255, 0.9);
-  border: 1px solid rgba(45, 122, 78, 0.1);
   /* Modern browsers with color-mix */
   background: color-mix(in srgb, var(--card-bg) 90%, var(--section-overlay) 10%);
   padding: 25px;
@@ -1245,8 +1237,6 @@ section:not(:first-child) {
   left: 15px;
   top: 50%;
   transform: translateY(-50%);
-  /* Fallback for browsers without color-mix support */
-  color: rgba(44, 62, 80, 0.6);
   /* Modern browsers with color-mix */
   color: color-mix(in srgb, var(--light-text) 60%, transparent 40%);
 }
@@ -1260,8 +1250,6 @@ section:not(:first-child) {
   width: 100%;
   padding: 10px 15px 10px 40px;
   background: var(--card-bg);
-  /* Fallback for browsers without color-mix support */
-  border: 1px solid rgba(44, 62, 80, 0.2);
   /* Modern browsers with color-mix */
   border: 1px solid color-mix(in srgb, var(--light-text) 20%, transparent 80%);
   border-radius: 5px;
@@ -1280,8 +1268,6 @@ section:not(:first-child) {
 
 #repo-sort {
   background: var(--card-bg);
-  /* Fallback for browsers without color-mix support */
-  border: 1px solid rgba(44, 62, 80, 0.2);
   /* Modern browsers with color-mix */
   border: 1px solid color-mix(in srgb, var(--light-text) 20%, transparent 80%);
   color: var(--light-text);
@@ -1301,8 +1287,6 @@ section:not(:first-child) {
 
 #language-filter {
   background: var(--card-bg);
-  /* Fallback for browsers without color-mix support */
-  border: 1px solid rgba(44, 62, 80, 0.2);
   /* Modern browsers with color-mix */
   border: 1px solid color-mix(in srgb, var(--light-text) 20%, transparent 80%);
   color: var(--light-text);
@@ -1327,8 +1311,6 @@ section:not(:first-child) {
 }
 
 .repo-card {
-  /* Fallback for browsers without color-mix support */
-  background: rgba(var(--card-bg-rgb), 0.95);
   /* Modern browsers with color-mix */
   background: color-mix(in srgb, var(--card-bg) 95%, var(--section-overlay) 5%);
   border-radius: 12px;
@@ -1337,9 +1319,7 @@ section:not(:first-child) {
   box-shadow: var(--card-shadow);
   height: 100%;
   display: flex;
-flex-direction: column;
-  /* Fallback for browsers without color-mix support */
-  border: 1px solid rgba(var(--primary-color-rgb), 0.1);
+ flex-direction: column;
   /* Modern browsers with color-mix */
   border: 1px solid color-mix(in srgb, var(--primary-color) 10%, transparent 90%);
   position: relative;
@@ -1359,9 +1339,6 @@ flex-direction: column;
 
 .repo-card:hover {
   transform: translateY(-8px) scale(1.02);
-  /* Fallback for browsers without color-mix support */
-  box-shadow: 0 15px 40px rgba(45, 122, 78, 0.25);
-  border-color: rgba(45, 122, 78, 0.3);
   /* Modern browsers with color-mix */
   box-shadow: 0 15px 40px color-mix(in srgb, var(--primary-color) 25%, transparent 75%);
   border-color: color-mix(in srgb, var(--primary-color) 30%, transparent 70%);

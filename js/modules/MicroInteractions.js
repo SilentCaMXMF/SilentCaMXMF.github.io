@@ -49,8 +49,6 @@ export class MicroInteractions {
      */
     async initialize() {
         try {
-            console.log('🎬 Initializing micro-interactions...');
-            
             // Initialize performance monitoring
             this.initPerformanceMonitoring();
             
@@ -94,7 +92,6 @@ export class MicroInteractions {
             this.initToastNotifications();
             
             this.initialized = true;
-            console.log('✅ Micro-interactions initialized successfully');
             
         } catch (error) {
             console.error('❌ Failed to initialize micro-interactions:', error);
@@ -2157,7 +2154,6 @@ export class MicroInteractions {
         window.removeEventListener('scroll', this.handleScroll);
         
         this.initialized = false;
-        console.log('🧹 Micro-interactions cleaned up');
     }
 }
 

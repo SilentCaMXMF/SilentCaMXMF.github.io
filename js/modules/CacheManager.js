@@ -54,7 +54,6 @@ export class CacheManager {
             this.loadFromStorage();
             this.cleanupExpired();
             this.initialized = true;
-            console.log('💾 CacheManager initialized');
         } catch (error) {
             console.error('❌ CacheManager initialization failed:', error);
             throw error;
@@ -70,7 +69,6 @@ export class CacheManager {
             if (stored) {
                 const data = JSON.parse(stored);
                 this.cache = new Map(Object.entries(data));
-                console.log(`📦 Loaded ${this.cache.size} cached items from storage`);
             }
         } catch (error) {
             console.warn('⚠️ Failed to load cache from storage:', error);
@@ -153,7 +151,6 @@ export class CacheManager {
         this.cache.set(key, cacheEntry);
         this.saveToStorage();
 
-        console.log(`💾 Cached data for key: ${key}`);
         return true;
     }
 
@@ -177,7 +174,6 @@ export class CacheManager {
         
         if (deleted) {
             this.saveToStorage();
-            console.log(`🗑️ Deleted cache entry: ${key}`);
         }
         
         return deleted;
@@ -191,7 +187,6 @@ export class CacheManager {
         this.cache.clear();
         this.saveToStorage();
         
-        console.log(`🧹 Cleared ${size} cache entries`);
         return size;
     }
 
@@ -214,7 +209,6 @@ export class CacheManager {
 
         if (cleaned > 0) {
             this.saveToStorage();
-            console.log(`🧹 Cleaned up ${cleaned} expired cache entries`);
         }
 
         return cleaned;
@@ -236,7 +230,6 @@ export class CacheManager {
 
         if (leastUsedKey) {
             this.cache.delete(leastUsedKey);
-            console.log(`🚮 Evicted least used cache entry: ${leastUsedKey}`);
         }
     }
 
@@ -329,7 +322,6 @@ export class CacheManager {
 
         if (compressed > 0) {
             this.saveToStorage();
-            console.log(`🗜️ Compressed cache, removed ${compressed} stale entries`);
         }
 
         return compressed;
@@ -355,7 +347,6 @@ export class CacheManager {
                 this.cache = new Map(Object.entries(cacheData.data));
                 this.saveToStorage();
                 
-                console.log(`📥 Imported ${this.cache.size} cache entries`);
                 return true;
             }
             
@@ -373,7 +364,5 @@ export class CacheManager {
         this.saveToStorage();
         this.cache.clear();
         this.initialized = false;
-        
-        console.log('🧹 CacheManager destroyed');
     }
 }

@@ -12,7 +12,6 @@
         eval('const x = () => {}; const y = { x };');
     } catch (e) {
         // ES modules not supported - use legacy mode
-        console.log('Browser does not support ES modules, using legacy mode');
 
         // Initialize legacy theme toggle
         document.addEventListener('DOMContentLoaded', function() {

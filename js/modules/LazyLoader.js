@@ -24,7 +24,6 @@ export class LazyLoader {
             this.createObservers();
             this.observeElements();
             this.initialized = true;
-            console.log('🖼️ LazyLoader initialized');
         } catch (error) {
             console.error('❌ LazyLoader initialization failed:', error);
             throw error;
@@ -79,8 +78,6 @@ export class LazyLoader {
             }
             this.pictureObserver.observe(picture);
         });
-
-        console.log(`🔍 Found ${lazyImages.length} images and ${lazyPictures.length} pictures for lazy loading`);
     }
 
     /**
@@ -98,8 +95,6 @@ export class LazyLoader {
                 img.classList.add('loaded');
                 img.classList.remove('lazy-loading');
                 observer.unobserve(img);
-                
-                console.log(`📷 Loaded image: ${src}`);
             };
             
             newImg.onerror = () => {
@@ -143,7 +138,6 @@ export class LazyLoader {
                 }
             }
             
-            console.log(`🖼️ Loaded picture element`);
         } catch (error) {
             console.error('❌ Error loading picture:', error);
             observer.unobserve(picture);
@@ -185,6 +179,5 @@ export class LazyLoader {
         }
         
         this.initialized = false;
-        console.log('🧹 LazyLoader destroyed');
     }
 }

@@ -4,6 +4,19 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         
+        <!-- CRITICAL: Apply theme immediately to prevent flash of wrong theme -->
+        <script>
+            (function() {
+                var theme = localStorage.getItem('portfolio-theme');
+                if (!theme) {
+                    theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+                }
+                if (theme === 'dark' || theme === 'light') {
+                    document.documentElement.setAttribute('data-theme', theme);
+                }
+            })();
+        </script>
+        
         <!-- Content Security Policy - Prevents XSS attacks and controls resource loading -->
         <!-- Note: 'unsafe-inline' and 'unsafe-eval' are needed for current inline scripts/styles but should be refactored in future -->
         <!-- 
@@ -13,8 +26,8 @@
         -->
         <meta http-equiv="Content-Security-Policy" 
               content="default-src 'self'; 
-                       script-src 'self' 'unsafe-inline' 'unsafe-eval'; 
-                       style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com; 
+                       script-src 'self' 'unsafe-inline'; 
+                       style-src 'self' 'unsafe-inline' https://cdnjs.cloudflare.com https://fonts.googleapis.com https://cdn.jsdelivr.net; 
                        font-src 'self' https://cdnjs.cloudflare.com https://fonts.gstatic.com; 
                        img-src 'self' data: https:; 
                        connect-src 'self' https://api.github.com; 
@@ -61,6 +74,9 @@
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/solid.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/brands.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/fontawesome.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
+
+        <!-- Bootstrap CSS Framework -->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" crossorigin="anonymous" referrerpolicy="no-referrer">
 
         <link rel="icon" href="./img/drumming_server.png" type="image/x-icon">
         <link rel="icon" type="image/png" sizes="32x32" href="./img/drumming_server32x32.png">
@@ -328,18 +344,6 @@
                                     ./img/pedro_tipoGhibli_passe-640.webp 640w"
                                 type="image/webp"
                                 sizes="(max-width: 768px) 220px, (max-width: 992px) 300px, 380px">
-                            <!-- Tablet -->
-                            <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w"
-                                type="image/webp"
-                                media="(min-width: 769px) and (max-width: 992px)"
-                                sizes="300px">
-                            <!-- Desktop -->
-                            <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w,
-                                    ./img/pedro_tipoGhibli_passe-640.webp 640w"
-                                type="image/webp"
-                                media="(min-width: 993px)"
-                                sizes="380px">
-                            <!-- Fallback -->
                             <img src="./img/pedro_tipoGhibli_passe-640.jpg"
                                 alt="Pedro Calado Profile Picture"
                                 class="img-fluid rounded-circle profile-img loaded"

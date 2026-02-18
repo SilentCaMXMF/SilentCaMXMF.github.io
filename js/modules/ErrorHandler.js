@@ -35,7 +35,6 @@ export class ErrorHandler {
         try {
             this.setupGlobalErrorHandling();
             this.initialized = true;
-            console.log('🚨 ErrorHandler initialized');
         } catch (error) {
             console.error('❌ ErrorHandler initialization failed:', error);
             throw error;
@@ -139,8 +138,6 @@ export class ErrorHandler {
             case this.SEVERITY.LOW:
                 console.info(logMessage, errorData);
                 break;
-            default:
-                console.log(logMessage, errorData);
         }
         
         // Log stack trace if available
@@ -343,7 +340,6 @@ export class ErrorHandler {
     clearErrorLog() {
         this.errorLog = [];
         localStorage.removeItem('error-reports');
-        console.log('🧹 Error log cleared');
     }
 
     /**
@@ -412,7 +408,5 @@ export class ErrorHandler {
     destroy() {
         this.errorLog = [];
         this.initialized = false;
-        
-        console.log('🧹 ErrorHandler destroyed');
     }
 }

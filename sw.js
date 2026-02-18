@@ -4,8 +4,8 @@
  * @version 1.0.0
  */
 
-const CACHE_NAME = 'portfolio-v1.0.1';
-const RUNTIME_CACHE = 'portfolio-runtime-v1.0.1';
+const CACHE_NAME = 'portfolio-v1.0.2';
+const RUNTIME_CACHE = 'portfolio-runtime-v1.0.2';
 
 // Static assets to cache on install
 const STATIC_ASSETS = [
@@ -13,9 +13,9 @@ const STATIC_ASSETS = [
     '/index.html',
     '/css/style.css',
     '/css/accessibility-enhanced.css',
-    '/css/bootstrap-replacement.css',
     '/css/repo-display-options.css',
     '/js/app.js',
+    '/js/script.js',
     '/js/modules/CacheManager.js',
     '/js/modules/ErrorHandler.js',
     '/js/modules/EventManager.js',
@@ -28,9 +28,19 @@ const STATIC_ASSETS = [
     '/js/modules/NavigationManager.js',
     '/js/modules/PreferenceManager.js',
     '/js/modules/ThemeManager.js',
+    '/js/modules/MicroInteractions.js',
+    '/js/modules/ErrorBoundary.js',
     '/img/drumming_server.png',
     '/img/drumming_server16x16.png',
     '/img/drumming_server32x32.png',
+    '/img/drumming_server64x64.png',
+    '/img/drumming_server128x128.png',
+    '/img/drumming_server256x256.png',
+    '/img/drumming_server16x16.webp',
+    '/img/drumming_server32x32.webp',
+    '/img/drumming_server64x64.webp',
+    '/img/drumming_server128x128.webp',
+    '/img/drumming_server256x256.webp',
     '/img/pedro_tipoGhibli_passe-320.webp',
     '/img/pedro_tipoGhibli_passe-480.webp',
     '/img/pedro_tipoGhibli_passe-640.webp',

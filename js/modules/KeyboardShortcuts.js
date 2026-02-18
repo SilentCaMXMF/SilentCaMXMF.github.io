@@ -72,7 +72,6 @@ export class KeyboardShortcuts {
             this.bindEvents();
             this.createHelpModal();
             this.initialized = true;
-            console.log('⌨️ KeyboardShortcuts initialized');
         } catch (error) {
             console.error('❌ KeyboardShortcuts initialization failed:', error);
             throw error;
@@ -481,7 +480,5 @@ export class KeyboardShortcuts {
         this.shortcuts.clear();
         this.enabled = false;
         this.initialized = false;
-        
-        console.log('🧹 KeyboardShortcuts destroyed');
     }
 }

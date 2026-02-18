@@ -121,8 +121,12 @@ export class GitHubRenderer {
         const sortSelect = document.getElementById(this.options.sortSelectId);
 
         if (filterInput) {
+            let debounceTimer;
             filterInput.addEventListener('input', () => {
-                this.applyFilters();
+                clearTimeout(debounceTimer);
+                debounceTimer = setTimeout(() => {
+                    this.applyFilters();
+                }, 300);
             });
         }
 
@@ -303,8 +307,17 @@ export class GitHubRenderer {
         const nextBtn = document.getElementById('featured-next');
 
         if (prevBtn && nextBtn) {
-            prevBtn.addEventListener('click', () => this.showPreviousFeatured());
-            nextBtn.addEventListener('click', () => this.showNextFeatured());
+            // Remove existing listeners to prevent memory leaks
+            const newPrevBtn = prevBtn.cloneNode(true);
+            prevBtn.parentNode.replaceChild(newPrevBtn, prevBtn);
+            
+            const newNextBtn = nextBtn.cloneNode(true);
+            nextBtn.parentNode.replaceChild(newNextBtn, nextBtn);
+            
+            // Add fresh listeners
+            newPrevBtn.addEventListener('click', () => this.showPreviousFeatured());
+            newNextBtn.addEventListener('click', () => this.showNextFeatured());
+            
             this.updateNavigationButtons();
         }
     }
@@ -316,6 +329,8 @@ export class GitHubRenderer {
         if (this.currentFeaturedIndex > 0) {
             this.currentFeaturedIndex--;
             this.renderFeaturedRepos();
+            // Force synchronous state update before updating buttons
+            this.updateFeaturedCounter();
             this.updateNavigationButtons();
             this.eventManager.emit('featuredNavigate', { index: this.currentFeaturedIndex });
         }
@@ -328,6 +343,8 @@ export class GitHubRenderer {
         if (this.currentFeaturedIndex < this.featuredRepos.length - 1) {
             this.currentFeaturedIndex++;
             this.renderFeaturedRepos();
+            // Force synchronous state update before updating buttons  
+            this.updateFeaturedCounter();
             this.updateNavigationButtons();
             this.eventManager.emit('featuredNavigate', { index: this.currentFeaturedIndex });
         }
@@ -359,7 +376,11 @@ export class GitHubRenderer {
     updateFeaturedCounter() {
         const counter = document.getElementById('featured-counter');
         if (counter) {
-            counter.textContent = `${this.currentFeaturedIndex + 1} / ${this.featuredRepos.length}`;
+            if (this.featuredRepos.length === 0) {
+                counter.textContent = '0 / 0';
+            } else {
+                counter.textContent = `${this.currentFeaturedIndex + 1} / ${this.featuredRepos.length}`;
+            }
         }
     }
 
@@ -566,18 +587,6 @@ export class GitHubRenderer {
     }
 
     /**
-     * Filter repositories by search query (legacy method - use applyFilters instead)
-     */
-    filterRepos(repos, query) {
-        const lower = query.toLowerCase();
-        const filtered = repos.filter(repo =>
-            repo.name.toLowerCase().includes(lower) ||
-            (repo.description && repo.description.toLowerCase().includes(lower))
-        );
-        return this.sortReposList(filtered);
-    }
-
-    /**
      * Sort repositories by selected criteria
      */
     sortRepos(repos) {
@@ -601,15 +610,6 @@ export class GitHubRenderer {
             }
             return 0;
         });
-    }
-
-    /**
-     * Escape HTML to prevent XSS
-     */
-    escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
     }
 
     /**

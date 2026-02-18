@@ -44,7 +44,6 @@ export class IconManager {
         try {
             this.replaceFontIcons();
             this.initialized = true;
-            console.log('🎨 IconManager initialized');
         } catch (error) {
             console.error('❌ IconManager initialization failed:', error);
             throw error;
@@ -62,8 +61,6 @@ export class IconManager {
                 element.className = customClass;
             });
         });
-
-        console.log(`🔄 Replaced ${Object.keys(this.iconMappings).length} icon types`);
     }
 
     /**

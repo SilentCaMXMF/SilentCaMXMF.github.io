@@ -40,6 +40,9 @@ export class MobileNavigation {
         
         // Haptic feedback
         this.hapticSupported = this.checkHapticSupport();
+        
+        // Focus trap setup flag
+        this.focusTrapSetup = false;
     }
 
     /**
@@ -195,6 +198,12 @@ export class MobileNavigation {
         this.menuButton.setAttribute('aria-expanded', isVisible);
         e.stopPropagation();
 
+        // Setup focus trap and focus first item when menu opens
+        if (isVisible) {
+            this.setupFocusTrap();
+            this.focusFirstMenuItem();
+        }
+
         // Announce to screen readers
         this.announceMenuState(isVisible);
     }
@@ -268,6 +277,12 @@ export class MobileNavigation {
         const isVisible = this.dropdownMenu.classList.toggle('visible');
         this.menuButton.setAttribute('aria-expanded', isVisible);
         
+        // Setup focus trap and focus first item when menu opens
+        if (isVisible) {
+            this.setupFocusTrap();
+            this.focusFirstMenuItem();
+        }
+        
         // Haptic feedback
         this.triggerHaptic('medium');
         
@@ -276,8 +291,6 @@ export class MobileNavigation {
         
         // Announce to screen readers
         this.announceMenuState(isVisible);
-        
-        console.log(`👆 Menu ${isVisible ? 'opened' : 'closed'} via tap`);
     }
 
     /**
@@ -414,6 +427,10 @@ export class MobileNavigation {
         
         // Add ripple effect
         this.addRippleEffect(this.menuButton);
+        
+        // Setup focus trap and focus first item
+        this.setupFocusTrap();
+        this.focusFirstMenuItem();
         
         setTimeout(() => {
             this.dropdownMenu.classList.remove('long-press-animation');
@@ -570,6 +587,54 @@ export class MobileNavigation {
         document.body.style.overflow = '';
         
         this.dispatchGestureEvent(this.gestures.TAP, { action: 'close-menu' });
+    }
+
+    /**
+     * Setup focus trap for mobile menu accessibility
+     * Traps Tab key within menu and allows Escape to close
+     */
+    setupFocusTrap() {
+        // Prevent duplicate setup
+        if (this.focusTrapSetup) return;
+        
+        const menu = document.getElementById('dropdown-menu');
+        const menuLinks = menu?.querySelectorAll('a');
+        if (!menu || !menuLinks.length) return;
+
+        const firstLink = menuLinks[0];
+        const lastLink = menuLinks[menuLinks.length - 1];
+
+        menu.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                if (e.shiftKey) {
+                    if (document.activeElement === firstLink) {
+                        e.preventDefault();
+                        lastLink.focus();
+                    }
+                } else {
+                    if (document.activeElement === lastLink) {
+                        e.preventDefault();
+                        firstLink.focus();
+                    }
+                }
+            }
+            if (e.key === 'Escape') {
+                this.closeMenu();
+                document.getElementById('menu-button')?.focus();
+            }
+        });
+        
+        this.focusTrapSetup = true;
+    }
+
+    /**
+     * Focus first menu item when menu opens
+     */
+    focusFirstMenuItem() {
+        const menuLinks = this.dropdownMenu?.querySelectorAll('a');
+        if (menuLinks && menuLinks.length > 0) {
+            menuLinks[0].focus();
+        }
     }
 
     /**

@@ -86,7 +86,6 @@ export class PreferenceManager {
             this.loadPreferences();
             this.setupSystemPreferences();
             this.initialized = true;
-            console.log('⚙️ PreferenceManager initialized');
         } catch (error) {
             console.error('❌ PreferenceManager initialization failed:', error);
             throw error;
@@ -110,8 +109,6 @@ export class PreferenceManager {
         } else {
             this.preferences = this.getDefaults();
         }
-        
-        console.log('📋 Loaded preferences:', this.preferences);
     }
 
     /**
@@ -265,8 +262,6 @@ export class PreferenceManager {
             const value = this.preferences[key];
             listeners.forEach(callback => callback(value, this.preferences[key]));
         }
-        
-        console.log('🔄 Preferences reset to defaults');
     }
 
     /**
@@ -404,6 +399,5 @@ export class PreferenceManager {
     destroy() {
         this.listeners.clear();
         this.initialized = false;
-        console.log('🧹 PreferenceManager destroyed');
     }
 }

@@ -27,7 +27,6 @@ export class GitHubAPI {
         try {
             this.validateConfiguration();
             this.initialized = true;
-            console.log('🐙 GitHubAPI initialized');
         } catch (error) {
             console.error('❌ GitHubAPI initialization failed:', error);
             throw error;
@@ -55,9 +54,16 @@ export class GitHubAPI {
         
         try {
             // Try to get from cache first
-            const cachedData = this.cacheManager.get(cacheKey);
+            let cachedData;
+            try {
+                cachedData = this.cacheManager.get(cacheKey);
+            } catch (cacheError) {
+                // Corrupted cache data - clear and continue to fetch
+                this.cacheManager.delete(cacheKey);
+                cachedData = null;
+            }
+            
             if (cachedData && !this.cacheManager.isExpired(cacheKey)) {
-                console.log('📦 Using cached repos data');
                 return cachedData;
             }
 
@@ -70,7 +76,6 @@ export class GitHubAPI {
             // Cache the results
             this.cacheManager.set(cacheKey, repos, this.cacheExpiry);
             
-            console.log(`📊 Fetched ${repos.length} repositories`);
             return repos;
 
         } catch (error) {
@@ -89,7 +94,6 @@ export class GitHubAPI {
             // Try to get from cache first
             const cachedData = this.cacheManager.get(cacheKey);
             if (cachedData && !this.cacheManager.isExpired(cacheKey)) {
-                console.log('📦 Using cached featured repos data');
                 return cachedData;
             }
 
@@ -102,7 +106,6 @@ export class GitHubAPI {
             // Cache the results
             this.cacheManager.set(cacheKey, featured, this.cacheExpiry);
             
-            console.log(`⭐ Fetched ${featured.length} featured repositories`);
             return featured;
 
         } catch (error) {
@@ -171,36 +174,6 @@ export class GitHubAPI {
     }
 
     /**
-     * Fetch single repository details
-     */
-    async fetchRepo(repoName) {
-        const cacheKey = `github-repo-${repoName}`;
-        
-        try {
-            // Check cache first
-            const cachedData = this.cacheManager.get(cacheKey);
-            if (cachedData && !this.cacheManager.isExpired(cacheKey)) {
-                return cachedData;
-            }
-
-            const url = `${this.baseURL}/repos/${this.username}/${repoName}`;
-            const repo = await this.fetchWithRetry(
-                url, 
-                `Failed to fetch repository ${repoName}`
-            );
-
-            // Cache for shorter time
-            this.cacheManager.set(cacheKey, repo, 2 * 60 * 1000); // 2 minutes
-            
-            return repo;
-
-        } catch (error) {
-            console.error(`❌ Error fetching repository ${repoName}:`, error);
-            throw error;
-        }
-    }
-
-    /**
      * Search repositories
      */
     async searchRepos(query, language = null) {
@@ -230,8 +203,16 @@ export class GitHubAPI {
         const cacheKey = 'github-user-profile';
         
         try {
-            // Check cache first
-            const cachedData = this.cacheManager.get(cacheKey);
+            // Try to get from cache first
+            let cachedData;
+            try {
+                cachedData = this.cacheManager.get(cacheKey);
+            } catch (cacheError) {
+                // Corrupted cache data - clear and continue to fetch
+                this.cacheManager.delete(cacheKey);
+                cachedData = null;
+            }
+            
             if (cachedData && !this.cacheManager.isExpired(cacheKey)) {
                 return cachedData;
             }
@@ -261,36 +242,12 @@ export class GitHubAPI {
     }
 
     /**
-     * Check if API is available
-     */
-    async checkAPIStatus() {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
-        try {
-            const response = await fetch(`${this.baseURL}/rate_limit`, {
-                signal: controller.signal
-            });
-            
-            clearTimeout(timeoutId);
-            return response.ok;
-
-        } catch (error) {
-            clearTimeout(timeoutId);
-            console.warn('⚠️ GitHub API status check failed:', error);
-            return false;
-        }
-    }
-
-    /**
      * Clear all cached data
      */
     clearCache() {
         Object.values(this.CACHE_KEYS).forEach(key => {
             this.cacheManager.delete(key);
         });
-        
-        console.log('🧹 GitHub API cache cleared');
     }
 
     /**
@@ -299,7 +256,5 @@ export class GitHubAPI {
     destroy() {
         this.cacheManager = null;
         this.initialized = false;
-        
-        console.log('🧹 GitHubAPI destroyed');
     }
 }

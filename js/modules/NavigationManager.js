@@ -27,7 +27,6 @@ export class NavigationManager {
             this.setupSmoothScrolling();
             this.setupScrollSpy();
             this.initialized = true;
-            console.log('🧭 NavigationManager initialized');
         } catch (error) {
             console.error('❌ NavigationManager initialization failed:', error);
             throw error;
@@ -232,7 +231,6 @@ export class NavigationManager {
             // Announce to screen readers
             this.announceNavigation(sectionId);
             
-            console.log(`🧭 Navigated to section: ${sectionId}`);
             return true;
             
         } catch (error) {
@@ -366,7 +364,5 @@ export class NavigationManager {
         this.mainNav = null;
         this.navigationLinks = [];
         this.initialized = false;
-        
-        console.log('🧹 NavigationManager destroyed');
     }
 }

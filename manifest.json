@@ -12,21 +12,39 @@
   "dir": "ltr",
   "icons": [
     {
-      "src": "/img/pedro_tipoGhibli_passe-320.webp",
-      "sizes": "320x320",
+      "src": "/img/drumming_server16x16.webp",
+      "sizes": "16x16",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/drumming_server32x32.webp",
+      "sizes": "32x32",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/drumming_server64x64.webp",
+      "sizes": "64x64",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/drumming_server128x128.webp",
+      "sizes": "128x128",
+      "type": "image/webp",
+      "purpose": "any"
+    },
+    {
+      "src": "/img/drumming_server256x256.webp",
+      "sizes": "256x256",
       "type": "image/webp",
       "purpose": "any maskable"
     },
     {
-      "src": "/img/pedro_tipoGhibli_passe-480.webp",
-      "sizes": "480x480",
-      "type": "image/webp",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "/img/pedro_tipoGhibli_passe-640.webp",
-      "sizes": "640x640",
-      "type": "image/webp",
+      "src": "/img/drumming_server.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
@@ -38,9 +56,9 @@
   ],
   "screenshots": [
     {
-      "src": "/img/pedro_tipoGhibli_passe-640.webp",
-      "sizes": "640x640",
-      "type": "image/webp",
+      "src": "/img/drumming_server.png",
+      "sizes": "512x512",
+      "type": "image/png",
       "form_factor": "wide"
     }
   ],
@@ -52,8 +70,8 @@
       "url": "/#github-repos-section",
       "icons": [
         {
-          "src": "/img/pedro_tipoGhibli_passe-320.webp",
-          "sizes": "320x320"
+          "src": "/img/drumming_server64x64.webp",
+          "sizes": "64x64"
         }
       ]
     },
@@ -64,8 +82,8 @@
       "url": "/#skills-section",
       "icons": [
         {
-          "src": "/img/pedro_tipoGhibli_passe-320.webp",
-          "sizes": "320x320"
+          "src": "/img/drumming_server64x64.webp",
+          "sizes": "64x64"
         }
       ]
     },
@@ -76,8 +94,8 @@
       "url": "/#contacts",
       "icons": [
         {
-          "src": "/img/pedro_tipoGhibli_passe-320.webp",
-          "sizes": "320x320"
+          "src": "/img/drumming_server64x64.webp",
+          "sizes": "64x64"
         }
       ]
     }

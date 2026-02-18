@@ -23,18 +23,52 @@ export class ThemeManager {
 
     /**
      * Initialize theme manager
+     * IMPORTANT: Apply theme synchronously BEFORE first paint to prevent flash
      */
     initialize() {
         try {
+            // CRITICAL: Apply theme synchronously BEFORE any async operations or DOM queries
+            // This prevents the theme flash on page load
+            this.applyThemeImmediately();
+
+            // Now proceed with normal initialization
             this.cacheElements();
             this.bindEvents();
-            this.loadSavedTheme();
             this.setupPreferenceListener();
+            
+            // Sync the toggle icon after DOM is ready
+            this.updateIcon(this.currentTheme);
+            
             this.initialized = true;
         } catch (error) {
             console.error('ThemeManager initialization failed:', error);
             throw error;
         }
+    }
+
+    /**
+     * Apply theme synchronously from localStorage - MUST be called before first paint
+     * Reads from localStorage directly without any DOM queries
+     */
+    applyThemeImmediately() {
+        let theme;
+        
+        if (this.preferenceManager) {
+            theme = this.preferenceManager.get('theme');
+        } else {
+            // Fallback to localStorage for backward compatibility
+            theme = localStorage.getItem('portfolio-theme');
+        }
+        
+        // Validate theme, fallback to system preference
+        if (!theme || !Object.values(this.THEMES).includes(theme)) {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            theme = prefersDark ? this.THEMES.DARK : this.THEMES.LIGHT;
+        }
+        
+        // Apply theme to document IMMEDIATELY - before any rendering
+        document.documentElement.setAttribute('data-theme', theme);
+        this.currentTheme = theme;
     }
 
     /**
@@ -236,7 +270,5 @@ export class ThemeManager {
         this.themeToggle = null;
         this.themeIcon = null;
         this.initialized = false;
-        
-        console.log('🧹 ThemeManager destroyed');
     }
 }

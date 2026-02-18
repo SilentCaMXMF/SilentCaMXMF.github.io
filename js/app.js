@@ -27,15 +27,14 @@ class AnimationController {
     
     async initialize() {
         this.initialized = true;
-        console.log('🎬 AnimationController mock initialized');
     }
     
     pauseAnimations() {
-        console.log('⏸️ Animations paused (mock)');
+        // Animations paused
     }
     
     resumeAnimations() {
-        console.log('▶️ Animations resumed (mock)');
+        // Animations resumed
     }
 }
 
@@ -47,11 +46,10 @@ class ScrollAnimations {
     
     async initialize() {
         this.initialized = true;
-        console.log('📜 ScrollAnimations mock initialized');
     }
     
     animateSkillBars() {
-        console.log('📊 Skill bars animated (mock)');
+        // Skill bars animated
         // Basic fallback animation for skill bars - using correct class name
         const skillBars = document.querySelectorAll('.skill-level');
         skillBars.forEach(bar => {
@@ -69,7 +67,7 @@ class ScrollAnimations {
     }
     
     animateTimeline() {
-        console.log('📅 Timeline animated (mock)');
+        // Timeline animated
         // Basic fallback animation for timeline
         const timelineItems = document.querySelectorAll('.timeline-item');
         timelineItems.forEach((item, index) => {
@@ -91,11 +89,9 @@ class LoadingStates {
     
     async initialize() {
         this.initialized = true;
-        console.log('⏳ LoadingStates mock initialized');
     }
     
     showToast(message, type = 'info', duration = 3000) {
-        console.log(`🍞 Toast (${type}): ${message}`);
         
         // Create a simple toast notification
         const toast = document.createElement('div');
@@ -158,8 +154,6 @@ class PortfolioApp {
      */
     async initialize() {
         try {
-            console.log('🚀 Initializing Portfolio App...');
-            
             // Initialize modules in order of dependency
             await this.initializeModules();
             
@@ -170,7 +164,6 @@ class PortfolioApp {
             this.start();
             
             this.initialized = true;
-            console.log('✅ Portfolio App initialized successfully');
 
         } catch (error) {
             this.errorHandler.handleError(error, 'App initialization failed');
@@ -234,8 +227,6 @@ class PortfolioApp {
         if (typeof this.modules[config.name].initialize === 'function') {
             await this.modules[config.name].initialize();
         }
-        
-        console.log(`📦 ${config.name} module initialized`);
     }
 
     /**
@@ -285,14 +276,11 @@ class PortfolioApp {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
                     .then((registration) => {
-                        console.log('Service Worker registered:', registration.scope);
-
                         // Listen for updates
                         registration.addEventListener('updatefound', () => {
                             const newWorker = registration.installing;
                             newWorker.addEventListener('statechange', () => {
                                 if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('New service worker available');
                                     // Notify user about update
                                     this.notifyUpdateAvailable();
                                 }
@@ -305,7 +293,7 @@ class PortfolioApp {
                     });
             });
         } else {
-            console.log('Service Workers not supported in this browser');
+            // Service Workers not supported in this browser
         }
     }
 
@@ -357,7 +345,11 @@ class PortfolioApp {
 
         notification.appendChild(messageSpan);
         notification.appendChild(updateBtn);
-        document.body.appendChild(notification);
+        
+        // Null check before appending to body
+        if (document.body) {
+            document.body.appendChild(notification);
+        }
     }
 
     /**
@@ -382,8 +374,6 @@ class PortfolioApp {
                     this.modules.microInteractions.animateTimeline();
                 }
             }, 500);
-
-            console.log('Initial data loading completed');
         } catch (error) {
             this.errorHandler.handleError(error, 'Failed to load initial data');
             // Show error state in UI
@@ -402,7 +392,6 @@ class PortfolioApp {
                     const perfData = performance.getEntriesByType('navigation')[0];
                     if (perfData) {
                         const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
-                        console.log(`Page load time: ${loadTime}ms`);
 
                         // Log performance metrics
                         if (loadTime > 3000) {
@@ -486,7 +475,6 @@ class PortfolioApp {
             if (module && typeof module.destroy === 'function') {
                 try {
                     module.destroy();
-                    console.log(`🧹 Cleaned up ${name} module`);
                 } catch (error) {
                     console.error(`❌ Error cleaning up ${name} module:`, error);
                 }
@@ -498,8 +486,6 @@ class PortfolioApp {
         this.errorHandler = null;
         this.cacheManager = null;
         this.initialized = false;
-        
-        console.log('🧹 Portfolio app destroyed and cleaned up');
     }
 
     /**
@@ -507,13 +493,18 @@ class PortfolioApp {
      * Displays helpful tips for new visitors
      */
     showFirstTimeOnboarding() {
-        // Check if user has visited before
-        if (localStorage.getItem('portfolio-visited')) {
+        // Only show on first visit (not on new tabs or page refreshes)
+        if (sessionStorage.getItem('portfolio-onboarding-shown')) {
             return;
         }
         
-        // Mark as visited
-        localStorage.setItem('portfolio-visited', 'true');
+        // Check if this is a fresh navigation (not a reload or back-forward)
+        const navType = window.performance?.getEntriesByType('navigation')[0]?.type;
+        if (navType === 'reload' || navType === 'back_forward') {
+            return;
+        }
+        
+        sessionStorage.setItem('portfolio-onboarding-shown', 'true');
         
         // Show welcome toast after a short delay
         setTimeout(() => {
@@ -532,35 +523,27 @@ class PortfolioApp {
  * Application entry point
  */
 document.addEventListener('DOMContentLoaded', async () => {
-    console.log('DOM Content Loaded, starting initialization...');
-
     try {
         // Test basic functionality first
-        console.log('Testing basic functionality...');
 
         // Test module imports
-        console.log('Testing module imports...');
         if (typeof PortfolioApp === 'undefined') {
             throw new Error('PortfolioApp class is not defined');
         }
 
         // Create and initialize app
-        console.log('Creating PortfolioApp instance...');
         window.portfolioApp = new PortfolioApp();
 
         if (!window.portfolioApp) {
             throw new Error('Failed to create PortfolioApp instance');
         }
 
-        console.log('Initializing app...');
         await window.portfolioApp.initialize();
 
         // Make app available globally for debugging (v2)
         if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
             window.debugApp = window.portfolioApp;
         }
-
-        console.log('Application initialization completed successfully');
 
     } catch (error) {
         console.error('Failed to start portfolio application:', error);
