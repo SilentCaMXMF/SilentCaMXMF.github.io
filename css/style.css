@@ -2,42 +2,73 @@
 :root {
   --primary-color: #2d7a4e;
   --primary-color-rgb: 45, 122, 78;
-  --secondary-color: #f4a460;
-  --secondary-color-rgb: 244, 164, 96;
+  --secondary-color: #c47d3e;
+  --secondary-color-rgb: 196, 125, 62;
   --dark-bg: #2c3e50;
   --dark-bg-rgb: 44, 62, 80;
-  --light-text: #1a2a3a;
-  --light-text-rgb: 26, 42, 58;
-  --dark-text: #37474f;
-  --dark-text-rgb: 55, 71, 79;
+  --light-text: #0f172a;
+  --light-text-rgb: 15, 23, 42;
+  --dark-text: #1e293b;
+  --dark-text-rgb: 30, 41, 59;
   --card-bg: #ffffff;
   --card-bg-rgb: 255, 255, 255;
-  /* Added for better text hierarchy */
-  --secondary-text: #64748b;
-  --muted-text: #94a3b8;
+  /* Fixed text colors for proper WCAG AA contrast in light mode */
+  --secondary-text: #334155;
+  --muted-text: #475569;
   --overlay-opacity: 0.7;
   --section-padding: 80px 20px;
-  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.08);
+  --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   --transition-speed: 0.3s;
-  --text-shadow-color: rgba(0, 0, 0, 0.15);
-  --text-shadow: 0 2px 8px var(--text-shadow-color);
-  --body-gradient-1: #f8f9fa;
-  --body-gradient-2: #e9ecef;
-  --body-gradient-3: #dee2e6;
-  --body-gradient-4: #ced4da;
-  --body-gradient-accent: rgba(45, 122, 78, 0.1);
-  --timeline-bg: rgba(244, 164, 96, 0.1);
-  --skill-bg: rgba(45, 122, 78, 0.08);
-  --section-overlay: rgba(0, 0, 0, 0.03);
+  --text-shadow-color: transparent;
+  --text-shadow: none;
+  --body-gradient-1: #f8fafc;
+  --body-gradient-2: #f1f5f9;
+  --body-gradient-3: #e2e8f0;
+  --body-gradient-4: #cbd5e1;
+  --body-gradient-accent: rgba(45, 122, 78, 0.08);
+  --timeline-bg: rgba(45, 122, 78, 0.08);
+  --skill-bg: rgba(45, 122, 78, 0.06);
+  --section-overlay: rgba(0, 0, 0, 0.02);
   /* Focus color for accessibility */
-  --focus-color: #4a9eff;
+  --focus-color: #2563eb;
+  /* Skill bar background - visible in light mode */
+  --skill-bar-bg: rgba(0, 0, 0, 0.1);
+  /* Card border color for light mode */
+  --card-border: rgba(0, 0, 0, 0.08);
+  /* Shimmer/gradient background for animations */
+  --shimmer-bg: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0.06) 25%,
+    rgba(0, 0, 0, 0.1) 50%,
+    rgba(0, 0, 0, 0.06) 75%
+  );
+  /* Featured section background - light mode */
+  --featured-bg: rgba(0, 0, 0, 0.06);
+  /* Repo footer background - light mode */
+  --repo-footer-bg: rgba(0, 0, 0, 0.06);
+  /* Section even overlay - light mode */
+  --section-even-overlay: rgba(0, 0, 0, 0.02);
+  /* Header box shadow - light mode */
+  --header-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  /* Featured card backgrounds */
+  --featured-card-bg: #ffffff;
+  --featured-header-bg: #f8fafc;
+  --featured-footer-bg: #f1f5f9;
+  /* Featured card accent colors */
+  --featured-border: #ffd700;
+  --featured-accent: #b8960f;
+  /* Featured card text */
+  --featured-text: #0f172a;
+  --featured-meta-bg: #e2e8f0;
+  /* Section border color */
+  --section-border: rgba(0, 0, 0, 0.05);
   
-  /* Light mode text color */
-  --light-mode-text: #5D4037;
+  /* Light mode text color - now using high contrast dark blue */
+  --light-mode-text: #0f172a;
   
   /* Theme toggle colors for light mode */
-  --theme-toggle-color: #5D4037;
-  --theme-toggle-border: #5D4037;
+  --theme-toggle-color: #0f172a;
+  --theme-toggle-border: #0f172a;
   
   /* Micro-interaction colors */
   --ripple-color: rgba(255, 255, 255, 0.6);
@@ -78,6 +109,7 @@
   --overlay-opacity: 0.8;
   --card-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
   --text-shadow-color: rgba(0, 0, 0, 0.9);
+  --text-shadow: 0 2px 8px var(--text-shadow-color);
   --body-gradient-1: #0d1f0d;
   --body-gradient-2: #1a2a1a;
   --body-gradient-3: #141f29;
@@ -99,6 +131,72 @@
   --toast-success: #22c55e;
   --toast-warning: #f59e0b;
   --toast-error: #ef4444;
+  /* Skill bar background - visible in dark mode */
+  --skill-bar-bg: rgba(255, 255, 255, 0.1);
+  /* Card border color for dark mode */
+  --card-border: rgba(255, 255, 255, 0.08);
+  /* Shimmer/gradient background for animations */
+  --shimmer-bg: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.1) 25%,
+    rgba(255, 255, 255, 0.2) 50%,
+    rgba(255, 255, 255, 0.1) 75%
+  );
+  /* Featured section background - dark mode */
+  --featured-bg: rgba(0, 0, 0, 0.6);
+  /* Repo footer background - dark mode */
+  --repo-footer-bg: rgba(0, 0, 0, 0.3);
+  /* Section even overlay - dark mode */
+  --section-even-overlay: rgba(0, 0, 0, 0.3);
+  /* Header box shadow - dark mode */
+  --header-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  /* Featured card backgrounds - dark mode */
+  --featured-card-bg: rgba(0, 0, 0, 0.6);
+  --featured-header-bg: rgba(0, 0, 0, 0.5);
+  --featured-footer-bg: rgba(0, 0, 0, 0.5);
+  /* Featured card accent colors - dark mode */
+  --featured-border: #ffd700;
+  --featured-accent: #b8960f;
+  /* Featured card text - dark mode */
+  --featured-text: #e2e8f0;
+  --featured-meta-bg: rgba(0, 0, 0, 0.4);
+  /* Section border color - dark mode */
+  --section-border: rgba(255, 255, 255, 0.05);
+}
+
+/* Restore text-shadow for dark mode only */
+[data-theme="dark"] body {
+  text-shadow: var(--text-shadow);
+}
+
+[data-theme="dark"] .section-title,
+[data-theme="dark"] .summary-content .lead,
+[data-theme="dark"] .highlight-box,
+[data-theme="dark"] .highlight-box h3,
+[data-theme="dark"] .highlight-box li,
+[data-theme="dark"] .highlight-box p,
+[data-theme="dark"] .timeline-content,
+[data-theme="dark"] .timeline-content h3,
+[data-theme="dark"] .timeline-content h4,
+[data-theme="dark"] .repo-card,
+[data-theme="dark"] .repo-name,
+[data-theme="dark"] .repo-description,
+[data-theme="dark"] .repo-link,
+[data-theme="dark"] .contact-info,
+[data-theme="dark"] .contact-info a,
+[data-theme="dark"] .social-links a {
+  text-shadow: var(--text-shadow);
+}
+
+[data-theme="dark"] .education-card h3,
+[data-theme="dark"] .education-item h4,
+[data-theme="dark"] .education-item p {
+  text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+}
+
+[data-theme="dark"] a:hover,
+[data-theme="dark"] a:focus {
+  text-shadow: var(--text-shadow);
 }
 
 * {
@@ -123,7 +221,6 @@ body {
   background-size: 200% 200%;
   background-attachment: fixed, fixed, fixed, scroll;
   overflow-x: hidden;
-  text-shadow: var(--text-shadow);
   min-height: 100vh;
 }
 
@@ -145,7 +242,6 @@ body::before {
 /* Enhanced typography hierarchy */
 .section-title {
   color: var(--light-mode-text);
-  text-shadow: var(--text-shadow);
   letter-spacing: -0.02em;
   font-weight: 700;
   position: relative;
@@ -153,7 +249,6 @@ body::before {
 
 .summary-content .lead {
   color: var(--light-mode-text);
-  text-shadow: var(--text-shadow);
   font-weight: 300;
   letter-spacing: 0.01em;
   line-height: 1.7;
@@ -174,25 +269,21 @@ body::before {
 .contact-info a,
 .social-links a {
   color: var(--light-mode-text);
-  text-shadow: var(--text-shadow);
 }
 
 /* Education section specific colors - enhanced contrast in light mode */
 .education-card h3 {
   color: #0f172a; /* Deep blue-black - 15.2:1 contrast on white */
-  text-shadow: 0 1px 2px rgba(255,255,255,0.8);
   font-weight: 700;
 }
 
 .education-item h4 {
   color: #1e293b; /* Dark slate - 12.4:1 contrast on white */
-  text-shadow: 0 1px 1px rgba(255,255,255,0.6);
   font-weight: 600;
 }
 
 .education-item p {
-  color: #334155; /* Medium slate - 8.9:1 contrast on white */
-  text-shadow: 0 1px 1px rgba(255,255,255,0.3);
+  color: #475569; /* Medium slate - meets 4.5:1 */
   font-weight: 500;
 }
 
@@ -272,8 +363,7 @@ body::before {
 }
 
 a:hover, a:focus {
-  color: #ffe066;
-  text-shadow: var(--text-shadow);
+  color: var(--primary-color);
 }
 
 
@@ -324,14 +414,14 @@ header, main, footer, section {
 
 /* Header Styles */
 header {
-  background: #2c3e50;
+  background: var(--dark-bg);
   -webkit-backdrop-filter: blur(10px);
   backdrop-filter: blur(10px);
   padding: 8px 0;
   position: sticky;
   top: 0;
   z-index: 1000;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: var(--header-shadow);
   border-bottom: 2px solid var(--primary-color);
 }
 
@@ -498,12 +588,12 @@ section::before {
 
 /* Alternate section overlays for depth */
 section:nth-child(even)::before {
-  background: linear-gradient(135deg, var(--section-overlay), rgba(0, 0, 0, 0.3));
+  background: linear-gradient(135deg, var(--section-overlay), var(--section-even-overlay));
 }
 
 /* Add subtle border between sections */
 section:not(:first-child) {
-  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid var(--section-border);
 }
 
 .section-title {
@@ -986,7 +1076,7 @@ section:not(:first-child) {
 .skill-bar {
   width: 100%;
   height: 8px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--skill-bar-bg);
   border-radius: 4px;
   margin-top: 15px;
   overflow: hidden;
@@ -1022,7 +1112,7 @@ section:not(:first-child) {
 
 /* Featured Projects Section */
 .featured-wrapper {
-  background: rgba(0, 0, 0, 0.6);
+  background: var(--featured-bg);
   border-radius: 10px;
   padding: 40px 20px;
   margin-bottom: 40px;
@@ -1044,11 +1134,11 @@ section:not(:first-child) {
 }
 
 .repo-card.featured {
-  border: 3px solid #ffd700;
-  background: rgba(0, 0, 0, 0.6);
+  border: 3px solid var(--featured-border);
+  background: var(--featured-card-bg);
   position: relative;
   overflow: visible;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
 }
 
@@ -1059,24 +1149,24 @@ section:not(:first-child) {
   left: 0;
   width: 100%;
   height: 5px;
-  background: linear-gradient(90deg, #ffd700, #ffec8b, #ffd700);
+  background: linear-gradient(90deg, var(--featured-border), var(--featured-accent), var(--featured-border));
   border-radius: 5px 5px 0 0;
 }
 
 .repo-card.featured:hover {
   transform: translateY(-5px);
-  box-shadow: 0 15px 30px rgba(255, 215, 0, 0.4);
-  border-color: #ffec8b;
+  box-shadow: 0 15px 30px rgba(255, 215, 0, 0.25);
+  border-color: var(--featured-accent);
 }
 
 .repo-card.featured .repo-header {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--featured-header-bg);
   border-bottom: 2px solid rgba(255, 215, 0, 0.3);
   padding: 25px;
 }
 
 .repo-card.featured .repo-name {
-  color: #ffd700;
+  color: var(--featured-border);
   font-weight: 700;
   font-size: 1.6rem;
   margin-bottom: 10px;
@@ -1089,7 +1179,7 @@ section:not(:first-child) {
 }
 
 .repo-card.featured .repo-meta {
-  background: rgba(0, 0, 0, 0.4);
+  background: var(--featured-meta-bg);
   padding: 15px 20px;
   font-size: 1rem;
 }
@@ -1099,7 +1189,7 @@ section:not(:first-child) {
 }
 
 .repo-card.featured .repo-footer {
-  background: rgba(0, 0, 0, 0.5);
+  background: var(--featured-footer-bg);
   padding: 20px;
 }
 
@@ -1107,7 +1197,7 @@ section:not(:first-child) {
   font-weight: 700;
   font-size: 1.1rem;
   padding: 12px 24px;
-  background: linear-gradient(135deg, #ffd700, #ffec8b);
+  background: linear-gradient(135deg, var(--featured-border), var(--featured-accent));
   color: #333;
   border-radius: 5px;
   display: inline-block;
@@ -1115,7 +1205,7 @@ section:not(:first-child) {
 }
 
 .repo-card.featured .repo-link:hover {
-  background: linear-gradient(135deg, #ffec8b, #ffd700);
+  background: linear-gradient(135deg, var(--featured-accent), var(--featured-border));
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(255, 215, 0, 0.3);
 }
@@ -1365,7 +1455,7 @@ flex-direction: column;
 
 .repo-header {
   padding: 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--card-border);
 }
 
 .repo-name {
@@ -1394,7 +1484,7 @@ flex-direction: column;
 .repo-footer {
   margin-top: auto;
   padding: 15px 20px;
-  background: rgba(0, 0, 0, 0.3);
+  background: var(--repo-footer-bg);
   display: flex;
   justify-content: space-between;
 }
@@ -1837,7 +1927,7 @@ select:focus-visible {
 .skill-bar {
   position: relative;
   overflow: hidden;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--skill-bar-bg);
   border-radius: 10px;
   height: 12px;
   box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -2064,12 +2154,7 @@ select:focus-visible {
 .skeleton-card {
   position: relative;
   overflow: hidden;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0.1) 25%,
-    rgba(255, 255, 255, 0.2) 50%,
-    rgba(255, 255, 255, 0.1) 75%
-  );
+  background: var(--shimmer-bg);
   background-size: 200% 100%;
   animation: skeleton-loading 1.5s infinite;
 }
@@ -2342,7 +2427,7 @@ select:focus-visible {
 .loading-progress-bar {
   width: 100%;
   height: 3px;
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--skill-bar-bg);
   border-radius: 3px;
   overflow: hidden;
   margin-top: 15px;

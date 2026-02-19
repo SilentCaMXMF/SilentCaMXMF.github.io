@@ -67,7 +67,7 @@ textarea:focus-visible {
     top: -40px;
     left: 6px;
     background: var(--primary-color, #2d7a4e);
-    color: #5D4037;
+    color: #ffffff;
     padding: 8px 16px;
     text-decoration: none;
     border-radius: 4px;
@@ -226,7 +226,7 @@ textarea:focus-visible {
     z-index: 9999;
     padding: 10px 20px;
     background: var(--primary-color, #2d7a4e);
-    color: #5D4037;
+    color: #ffffff;
     text-decoration: none;
     border-radius: 4px;
     font-weight: 600;
@@ -541,7 +541,7 @@ th {
     top: 10px;
     right: 10px;
     background: rgba(0, 0, 0, 0.8);
-    color: #5D4037;
+    color: #ffffff;
     padding: 10px;
     border-radius: 4px;
     z-index: 10000;
@@ -554,9 +554,9 @@ th {
     width: 100%;
     margin: 5px 0;
     padding: 5px 10px;
-    border: 1px solid #5D4037;
+    border: 1px solid #ffffff;
     background: transparent;
-    color: #5D4037;
+    color: #ffffff;
     cursor: pointer;
 }
 
