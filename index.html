@@ -69,12 +69,7 @@
         <meta name="theme-color" content="#2d7a4e">
 
         <!-- Preload critical resources -->
-        <link rel="preload" href="./css/style.css" as="style" fetchpriority="high">
-        <link rel="preload" href="./css/accessibility-enhanced.css" as="style" fetchpriority="high">
-        <link rel="preload" href="./css/repo-display-options.css" as="style" fetchpriority="high">
-        
-        <!-- Preload JavaScript -->
-        <link rel="preload" href="./js/script.js" as="script" fetchpriority="high">
+        <!-- CSS is loaded synchronously below, no preload needed -->
         
         <!-- Responsive preload for profile picture (most common size) -->
         <link rel="preload" href="./img/pedro_tipoGhibli_passe-480.webp" 
@@ -731,6 +726,21 @@
                 <div id="no-repos-message" class="text-center mt-4" role="status" aria-live="assertive" style="display: none;">
                     <p>No projects found matching your criteria.</p>
                 </div>
+                
+                <!-- Fallback for users without JavaScript -->
+                <noscript>
+                    <div class="container py-4">
+                        <div class="alert alert-info" role="alert">
+                            <i class="fas fa-info-circle" aria-hidden="true"></i>
+                            <strong>JavaScript Required</strong>
+                            <p class="mb-0">This section loads projects dynamically from GitHub. To view my projects, please:</p>
+                            <ul class="mb-0 mt-2">
+                                <li>Enable JavaScript in your browser, or</li>
+                                <li><a href="https://github.com/SilentCaMXMF" target="_blank" rel="noopener noreferrer">View my GitHub profile directly</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </noscript>
             </section>
         </main>
 

@@ -10,16 +10,37 @@
     // ========================================
     // STATE MANAGEMENT (Simple and flat)
     // ========================================
+    // Configuration constants
+    const CONFIG = {
+        CACHE_DURATION_MS: 5 * 60 * 1000,
+        GITHUB_REPOS_PER_PAGE: 100,
+        FEATURED_REPOS_COUNT: 5,
+        DEBOUNCE_DELAY_MS: 300,
+        SCROLL_TO_TOP_THRESHOLD: 300
+    };
+
     const state = {
         repos: [],
         filteredRepos: [],
         featuredRepos: [],
-        currentTheme: localStorage.getItem('theme') || 'light',
+        currentTheme: getStoredTheme(),
         currentLanguage: 'all',
         currentSort: 'name',
         featuredIndex: 0,
         isLoading: true
     };
+
+    // AbortController for fetch requests
+    let currentAbortController = null;
+
+    function getStoredTheme() {
+        try {
+            return localStorage.getItem('theme') || 'light';
+        } catch (e) {
+            console.warn('Storage unavailable:', e);
+            return 'light';
+        }
+    }
 
     // ========================================
     // DOM ELEMENTS (Cache for performance)
@@ -109,7 +130,11 @@
     function toggleTheme() {
         state.currentTheme = state.currentTheme === 'light' ? 'dark' : 'light';
         document.documentElement.setAttribute('data-theme', state.currentTheme);
-        localStorage.setItem('theme', state.currentTheme);
+        try {
+            localStorage.setItem('theme', state.currentTheme);
+        } catch (e) {
+            console.warn('Storage unavailable:', e);
+        }
         updateThemeIcon();
     }
 
@@ -172,26 +197,34 @@
                 }
             }
 
-            // Keyboard shortcuts
+            // Keyboard shortcuts (ignore if modifier keys are pressed)
+            if (e.ctrlKey || e.metaKey || e.altKey) return;
+
+            // Theme toggle with 'T'
             if (e.key === 't' || e.key === 'T') {
-                if (!e.ctrlKey && !e.metaKey && !e.altKey) {
-                    toggleTheme();
-                }
+                toggleTheme();
             }
 
             // Pause animations with 'P'
             if (e.key === 'p' || e.key === 'P') {
-                if (!e.ctrlKey && !e.metaKey && !e.altKey) {
-                    toggleAnimations();
-                }
+                toggleAnimations();
             }
+
+            // Carousel navigation (only when visible)
+            if (!elements.featuredContainer || elements.featuredContainer.style.display === 'none') return;
+            if (e.key === 'ArrowLeft') navigateFeatured(-1);
+            if (e.key === 'ArrowRight') navigateFeatured(1);
         });
     }
 
     function toggleAnimations() {
         const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
         document.documentElement.classList.toggle('animations-reduced', !prefersReduced);
-        localStorage.setItem('animations-reduced', !prefersReduced);
+        try {
+            localStorage.setItem('animations-reduced', !prefersReduced);
+        } catch (e) {
+            console.warn('Storage unavailable:', e);
+        }
     }
 
     // ========================================
@@ -202,14 +235,7 @@
 
         elements.featuredPrev.addEventListener('click', () => navigateFeatured(-1));
         elements.featuredNext.addEventListener('click', () => navigateFeatured(1));
-
-        // Keyboard navigation for carousel
-        document.addEventListener('keydown', (e) => {
-            if (!elements.featuredContainer || elements.featuredContainer.style.display === 'none') return;
-
-            if (e.key === 'ArrowLeft') navigateFeatured(-1);
-            if (e.key === 'ArrowRight') navigateFeatured(1);
-        });
+        // Keyboard navigation moved to initKeyboardNavigation to avoid duplicate listeners
     }
 
     function navigateFeatured(direction) {
@@ -233,8 +259,8 @@
         const description = repo.description || 'No description available';
         const stars = repo.stargazers_count || 0;
         const language = repo.language || 'Unknown';
-        const url = repo.html_url;
-        const homepage = repo.homepage;
+        const url = isValidUrl(repo.html_url) ? repo.html_url : '#';
+        const homepage = isValidUrl(repo.homepage) ? repo.homepage : null;
 
         return `
             <div class="featured-card">
@@ -294,9 +320,20 @@
     // ========================================
     // GITHUB REPOSITORIES
     // ========================================
+    /**
+     * Fetches GitHub repositories with caching and abort support
+     * @async
+     * @returns {Promise<void>}
+     */
     async function loadGitHubRepos() {
         showLoading();
         showFeaturedLoading();
+
+        // Cancel previous request if exists
+        if (currentAbortController) {
+            currentAbortController.abort();
+        }
+        currentAbortController = new AbortController();
 
         try {
             // Check cache first
@@ -308,7 +345,10 @@
             }
 
             // Fetch from GitHub API
-            const response = await fetch('https://api.github.com/users/SilentCaMXMF/repos?per_page=100&sort=updated');
+            const response = await fetch(
+                `https://api.github.com/users/SilentCaMXMF/repos?per_page=${CONFIG.GITHUB_REPOS_PER_PAGE}&sort=updated`,
+                { signal: currentAbortController.signal }
+            );
 
             if (!response.ok) {
                 throw new Error(`GitHub API error: ${response.status}`);
@@ -322,6 +362,10 @@
             handleReposLoaded(repos);
 
         } catch (error) {
+            if (error.name === 'AbortError') {
+                console.log('Fetch aborted');
+                return;
+            }
             console.error('Failed to load repos:', error);
             showError();
         }
@@ -332,7 +376,9 @@
         state.repos = repos.sort((a, b) => new Date(b.updated_at) - new Date(a.updated_at));
 
         // Filter repos with descriptions for better UX
-        state.featuredRepos = state.repos.filter(repo => repo.description && repo.description.length > 10).slice(0, 5);
+        state.featuredRepos = state.repos
+            .filter(repo => repo.description && repo.description.length > 10)
+            .slice(0, CONFIG.FEATURED_REPOS_COUNT);
 
         // Prepare filtered repos
         filterRepos();
@@ -430,8 +476,8 @@
         const forks = repo.forks_count || 0;
         const language = repo.language || 'Unknown';
         const updated = new Date(repo.updated_at).toLocaleDateString();
-        const url = repo.html_url;
-        const homepage = repo.homepage;
+        const url = isValidUrl(repo.html_url) ? repo.html_url : '#';
+        const homepage = isValidUrl(repo.homepage) ? repo.homepage : null;
 
         return `
             <div class="col-md-6 col-lg-4">
@@ -479,7 +525,7 @@
                 debounceTimer = setTimeout(() => {
                     filterRepos();
                     renderRepos();
-                }, 300);
+                }, CONFIG.DEBOUNCE_DELAY_MS);
             });
         }
 
@@ -503,6 +549,10 @@
     // ========================================
     // CACHING
     // ========================================
+    /**
+     * Retrieves cached repositories from localStorage
+     * @returns {Array|null} Cached repos or null if expired/invalid
+     */
     function getCachedRepos() {
         try {
             const cached = localStorage.getItem('github_repos');
@@ -511,8 +561,8 @@
             const data = JSON.parse(cached);
             const now = Date.now();
 
-            // Cache valid for 5 minutes
-            if (now - data.timestamp > 5 * 60 * 1000) {
+            // Cache valid for configured duration
+            if (now - data.timestamp > CONFIG.CACHE_DURATION_MS) {
                 localStorage.removeItem('github_repos');
                 return null;
             }
@@ -523,6 +573,10 @@
         }
     }
 
+    /**
+     * Caches repositories in localStorage
+     * @param {Array} repos - Array of repository objects
+     */
     function cacheRepos(repos) {
         try {
             const data = {
@@ -531,7 +585,7 @@
             };
             localStorage.setItem('github_repos', JSON.stringify(data));
         } catch (e) {
-            console.warn('Failed to cache repos:', e);
+            console.warn('Storage unavailable:', e);
         }
     }
 
@@ -584,11 +638,31 @@
     // ========================================
     // UTILITIES
     // ========================================
+    /**
+     * Escapes HTML entities to prevent XSS
+     * @param {string} text - Text to escape
+     * @returns {string} Escaped HTML
+     */
     function escapeHtml(text) {
         if (!text) return '';
         const div = document.createElement('div');
         div.textContent = text;
         return div.innerHTML;
+    }
+
+    /**
+     * Validates if a URL is safe to use
+     * @param {string} url - URL to validate
+     * @returns {boolean} True if URL is valid and safe
+     */
+    function isValidUrl(url) {
+        if (!url) return false;
+        try {
+            const parsed = new URL(url);
+            return parsed.protocol === 'https:' || parsed.protocol === 'http:';
+        } catch {
+            return false;
+        }
     }
 
     function getLanguageColor(language) {
@@ -620,7 +694,7 @@
         if (!elements.backToTop) return;
 
         window.addEventListener('scroll', () => {
-            if (window.scrollY > 300) {
+            if (window.scrollY > CONFIG.SCROLL_TO_TOP_THRESHOLD) {
                 elements.backToTop.classList.add('show');
             } else {
                 elements.backToTop.classList.remove('show');
