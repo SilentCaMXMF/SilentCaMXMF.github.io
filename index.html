@@ -315,37 +315,8 @@
             <section id="summary-section" class="container py-5">
                 <h2 class="section-title" style="display: block; text-align: center;">About Me</h2>
                 <div class="row" style="display: flex !important; flex-wrap: wrap !important;">
-                    <!-- Profile Picture -->
-                    <div class="col-12 col-md-4" style="flex: 0 0 33.333333% !important; max-width: 33.333333% !important;">
-                        <div class="text-center">
-                            <picture>
-                                <source srcset="./img/pedro_tipoGhibli_passe-320.webp 320w,
-                                        ./img/pedro_tipoGhibli_passe-480.webp 480w,
-                                        ./img/pedro_tipoGhibli_passe-640.webp 640w"
-                                    type="image/webp"
-                                    sizes="(max-width: 768px) 220px, (max-width: 992px) 300px, 380px">
-                                <!-- Tablet -->
-                                <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w"
-                                    type="image/webp"
-                                    media="(min-width: 769px) and (max-width: 992px)"
-                                    sizes="300px">
-                                <!-- Desktop -->
-                                <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w,
-                                        ./img/pedro_tipoGhibli_passe-640.webp 640w"
-                                    type="image/webp"
-                                    media="(min-width: 993px)"
-                                    sizes="380px">
-                                <!-- Fallback -->
-                                <img src="./img/pedro_tipoGhibli_passe-640.jpg"
-                                    alt="Pedro Calado Profile Picture"
-                                    class="img-fluid rounded-circle profile-img loaded"
-                                    width="280"
-                                    height="280">
-                            </picture>
-                        </div>
-                    </div>
                     <!-- Summary Text - First part next to picture -->
-                    <div class="col-md-8" style="flex: 0 0 66.666667% !important; max-width: 66.666667% !important;">
+                    <div class="col-md-8" style="flex: 0 0 66.666667% !important; max-width: 66.666667% !important; order: 1;">
                         <div class="summary-content">
                             <p class="lead">Passionate Junior Software Engineer with diverse experience transitioning into tech</p>
                             
@@ -362,14 +333,40 @@
                             </div>
                         </div>
                     </div>
+                    <!-- Profile Picture -->
+                    <div class="col-md-4" style="flex: 0 0 33.333333% !important; max-width: 33.333333% !important; order: 2;">
+                        <div class="text-center">
+                            <picture>
+                                <source srcset="./img/pedro_tipoGhibli_passe-320.webp 320w,
+                                        ./img/pedro_tipoGhibli_passe-480.webp 480w,
+                                        ./img/pedro_tipoGhibli_passe-640.webp 640w"
+                                    type="image/webp"
+                                    sizes="(max-width: 768px) 220px, (max-width: 992px) 300px, 380px">
+                                <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w"
+                                    type="image/webp"
+                                    media="(min-width: 769px) and (max-width: 992px)"
+                                    sizes="300px">
+                                <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w,
+                                        ./img/pedro_tipoGhibli_passe-640.webp 640w"
+                                    type="image/webp"
+                                    media="(min-width: 993px)"
+                                    sizes="380px">
+                                <img src="./img/pedro_tipoGhibli_passe-640.jpg"
+                                    alt="Pedro Calado Profile Picture"
+                                    class="img-fluid rounded-circle profile-img loaded"
+                                    width="280"
+                                    height="280">
+                            </picture>
+                        </div>
+                    </div>
                 </div>
                 <!-- Remaining content below both picture and text -->
                 <div class="row mt-4">
                     <div class="col-12">
                         <div class="summary-content">
-                            <p class="highlight-box p">After years in cultural project management, I'm pursuing my passion for technology and software development. My diverse background gives me unique perspectives on problem-solving and user experience.</p>
+                            <p>After years in cultural project management, I'm pursuing my passion for technology and software development. My diverse background gives me unique perspectives on problem-solving and user experience.</p>
                             
-                            <p class="highlight-box p">Currently expanding my skills in modern JavaScript frameworks and looking for opportunities to contribute to meaningful projects.</p>
+                            <p>Currently expanding my skills in modern JavaScript frameworks and looking for opportunities to contribute to meaningful projects.</p>
                             
                             <div class="cta-buttons">
                                 <a href="#contacts" class="btn btn-primary">Contact Me</a>
