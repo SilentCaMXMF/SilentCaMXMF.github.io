@@ -314,36 +314,38 @@
         <main id="main-content">
             <section id="summary-section" class="container py-5">
                 <h2 class="section-title" style="display: block; text-align: center;">About Me</h2>
-                <div class="row align-items-start">
+                <div class="row" style="display: flex !important; flex-wrap: wrap !important;">
                     <!-- Profile Picture -->
-                    <div class="col-12 col-md-3 text-center mb-4 mb-md-0">
-                        <picture>
-                            <source srcset="./img/pedro_tipoGhibli_passe-320.webp 320w,
-                                    ./img/pedro_tipoGhibli_passe-480.webp 480w,
-                                    ./img/pedro_tipoGhibli_passe-640.webp 640w"
-                                type="image/webp"
-                                sizes="(max-width: 768px) 220px, (max-width: 992px) 300px, 380px">
-                            <!-- Tablet -->
-                            <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w"
-                                type="image/webp"
-                                media="(min-width: 769px) and (max-width: 992px)"
-                                sizes="300px">
-                            <!-- Desktop -->
-                            <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w,
-                                    ./img/pedro_tipoGhibli_passe-640.webp 640w"
-                                type="image/webp"
-                                media="(min-width: 993px)"
-                                sizes="380px">
-                            <!-- Fallback -->
-                            <img src="./img/pedro_tipoGhibli_passe-640.jpg"
-                                alt="Pedro Calado Profile Picture"
-                                class="img-fluid rounded-circle profile-img loaded"
-                                width="450"
-                                height="450">
-                        </picture>
+                    <div class="col-12 col-md-4" style="flex: 0 0 33.333333% !important; max-width: 33.333333% !important;">
+                        <div class="text-center">
+                            <picture>
+                                <source srcset="./img/pedro_tipoGhibli_passe-320.webp 320w,
+                                        ./img/pedro_tipoGhibli_passe-480.webp 480w,
+                                        ./img/pedro_tipoGhibli_passe-640.webp 640w"
+                                    type="image/webp"
+                                    sizes="(max-width: 768px) 220px, (max-width: 992px) 300px, 380px">
+                                <!-- Tablet -->
+                                <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w"
+                                    type="image/webp"
+                                    media="(min-width: 769px) and (max-width: 992px)"
+                                    sizes="300px">
+                                <!-- Desktop -->
+                                <source srcset="./img/pedro_tipoGhibli_passe-480.webp 480w,
+                                        ./img/pedro_tipoGhibli_passe-640.webp 640w"
+                                    type="image/webp"
+                                    media="(min-width: 993px)"
+                                    sizes="380px">
+                                <!-- Fallback -->
+                                <img src="./img/pedro_tipoGhibli_passe-640.jpg"
+                                    alt="Pedro Calado Profile Picture"
+                                    class="img-fluid rounded-circle profile-img loaded"
+                                    width="280"
+                                    height="280">
+                            </picture>
+                        </div>
                     </div>
                     <!-- Summary Text - First part next to picture -->
-                    <div class="col-md-9">
+                    <div class="col-md-8" style="flex: 0 0 66.666667% !important; max-width: 66.666667% !important;">
                         <div class="summary-content">
                             <p class="lead">Passionate Junior Software Engineer with diverse experience transitioning into tech</p>
                             
