@@ -123,7 +123,7 @@
         const isExpanded = elements.menuButton.getAttribute('aria-expanded') === 'true';
         elements.menuButton.setAttribute('aria-expanded', !isExpanded);
         elements.menuButton.setAttribute('aria-label', !isExpanded ? 'Close menu' : 'Toggle menu');
-        elements.dropdownMenu.hidden = isExpanded;
+        elements.dropdownMenu.classList.toggle('visible');
     }
 
     function handleSmoothScroll(e) {
@@ -135,9 +135,9 @@
             e.preventDefault();
             targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-            if (elements.dropdownMenu && elements.dropdownMenu.hidden === false) {
+            if (elements.dropdownMenu && elements.dropdownMenu.classList.contains('visible')) {
                 elements.menuButton.setAttribute('aria-expanded', 'false');
-                elements.dropdownMenu.hidden = true;
+                elements.dropdownMenu.classList.remove('visible');
             }
         }
     }
@@ -145,9 +145,9 @@
     function initKeyboardNavigation() {
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (elements.dropdownMenu && elements.dropdownMenu.hidden === false) {
+                if (elements.dropdownMenu && elements.dropdownMenu.classList.contains('visible')) {
                     elements.menuButton.setAttribute('aria-expanded', 'false');
-                    elements.dropdownMenu.hidden = true;
+                    elements.dropdownMenu.classList.remove('visible');
                     elements.menuButton.focus();
                 }
             }
