@@ -616,30 +616,121 @@
 
             <section id="featured-projects-section" class="container py-5">
                 <h2 class="section-title">Featured Projects</h2>
-                <div id="featured-loading-spinner" class="text-center my-4 loading-spinner-enhanced" role="status" aria-live="polite">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading featured projects...</span>
-                    </div>
-                </div>
                 
-                <div id="featured-container" class="featured-wrapper" style="display: none;" role="region" aria-label="Featured project carousel">
-                    <!-- Skeleton loader for featured project -->
-                    <div id="featured-skeleton" class="featured-skeleton skeleton-card" aria-hidden="true">
-                        <div class="skeleton skeleton-title" style="width: 70%;"></div>
-                        <div class="skeleton skeleton-text"></div>
-                        <div class="skeleton skeleton-text" style="width: 80%;"></div>
-                        <div class="skeleton skeleton-text" style="width: 60%;"></div>
-                    </div>
-                    <div id="featured-project" class="featured-project-content"></div>
-                    <div class="featured-navigation" role="navigation" aria-label="Featured project navigation">
-                        <button id="featured-prev" class="featured-nav-btn" aria-label="Previous project" aria-disabled="false">
-                            <i class="fas fa-chevron-left" aria-hidden="true"></i>
-                        </button>
-                        <span id="featured-counter" class="featured-counter" aria-live="polite" aria-atomic="true">1 / 5</span>
-                        <button id="featured-next" class="featured-nav-btn" aria-label="Next project" aria-disabled="false">
-                            <i class="fas fa-chevron-right" aria-hidden="true"></i>
-                        </button>
-                    </div>
+                <!-- Static Featured Projects Grid -->
+                <div class="featured-projects-grid" role="region" aria-label="Featured projects gallery">
+                    
+                    <!-- Lofersil E-commerce -->
+                    <article class="project-card">
+                        <div class="project-thumbnail">
+                            <img src="img/projects/lofersil-thumb-800.webp" 
+                                 srcset="img/projects/lofersil-thumb-400.webp 400w, img/projects/lofersil-thumb-800.webp 800w"
+                                 sizes="(max-width: 768px) 100vw, 50vw"
+                                 alt="Lofersil E-commerce Store"
+                                 loading="lazy"
+                                 width="800"
+                                 height="450">
+                        </div>
+                        <div class="project-info">
+                            <h3>Lofersil Store</h3>
+                            <p>Modern e-commerce platform with product showcase, shopping cart, and responsive design.</p>
+                            <div class="tech-tags">
+                                <span class="tech-tag">React</span>
+                                <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">CSS3</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://lofersil.vercel.app/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                                    <i class="fas fa-external-link-alt"></i> Live Demo
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Portfolio Website -->
+                    <article class="project-card">
+                        <div class="project-thumbnail">
+                            <img src="img/projects/portfolio-thumb-800.webp" 
+                                 srcset="img/projects/portfolio-thumb-400.webp 400w, img/projects/portfolio-thumb-800.webp 800w"
+                                 sizes="(max-width: 768px) 100vw, 50vw"
+                                 alt="Personal Portfolio Website"
+                                 loading="lazy"
+                                 width="800"
+                                 height="450">
+                        </div>
+                        <div class="project-info">
+                            <h3>Personal Portfolio</h3>
+                            <p>Responsive portfolio website showcasing projects, skills, and professional experience.</p>
+                            <div class="tech-tags">
+                                <span class="tech-tag">HTML5</span>
+                                <span class="tech-tag">CSS3</span>
+                                <span class="tech-tag">JavaScript</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://silentcamxmf.github.io" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                                    <i class="fas fa-external-link-alt"></i> Live Demo
+                                </a>
+                                <a href="https://github.com/SilentCaMXMF/SilentCaMXMF.github.io" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
+                                    <i class="fab fa-github"></i> Code
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- Netse Music -->
+                    <article class="project-card">
+                        <div class="project-thumbnail">
+                            <img src="img/projects/netse-thumb-800.webp" 
+                                 srcset="img/projects/netse-thumb-400.webp 400w, img/projects/netse-thumb-800.webp 800w"
+                                 sizes="(max-width: 768px) 100vw, 50vw"
+                                 alt="Netse Music Group Website"
+                                 loading="lazy"
+                                 width="800"
+                                 height="450">
+                        </div>
+                        <div class="project-info">
+                            <h3>Netse - Music Group</h3>
+                            <p>Official website for Portuguese music group featuring event calendar and multimedia content.</p>
+                            <div class="tech-tags">
+                                <span class="tech-tag">HTML5</span>
+                                <span class="tech-tag">CSS3</span>
+                                <span class="tech-tag">JavaScript</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="http://www.netse.pt/" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                                    <i class="fas fa-external-link-alt"></i> Live Demo
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
+                    <!-- FreeAI4All -->
+                    <article class="project-card">
+                        <div class="project-thumbnail">
+                            <img src="img/projects/freeai4all-thumb-800.webp" 
+                                 srcset="img/projects/freeai4all-thumb-400.webp 400w, img/projects/freeai4all-thumb-800.webp 800w"
+                                 sizes="(max-width: 768px) 100vw, 50vw"
+                                 alt="FreeAI4All AI Tools Platform"
+                                 loading="lazy"
+                                 width="800"
+                                 height="450">
+                        </div>
+                        <div class="project-info">
+                            <h3>FreeAI4All</h3>
+                            <p>Open-source AI tools platform providing free access to various artificial intelligence services.</p>
+                            <div class="tech-tags">
+                                <span class="tech-tag">Python</span>
+                                <span class="tech-tag">FastAPI</span>
+                                <span class="tech-tag">Docker</span>
+                            </div>
+                            <div class="project-links">
+                                <a href="https://freeai4all.duckdns.org" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
+                                    <i class="fas fa-external-link-alt"></i> Live Demo
+                                </a>
+                            </div>
+                        </div>
+                    </article>
+
                 </div>
             </section>
 

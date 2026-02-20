@@ -26,7 +26,6 @@
         currentTheme: getStoredTheme(),
         currentLanguage: 'all',
         currentSort: 'name',
-        featuredIndex: 0,
         isLoading: true
     };
 
@@ -53,11 +52,8 @@
         repoFilter: null,
         languageFilter: null,
         repoSort: null,
-        featuredContainer: null,
-        featuredProject: null,
-        featuredPrev: null,
-        featuredNext: null,
-        featuredCounter: null,
+        featuredGrid: null,
+        featuredEmpty: null,
         featuredLoadingSpinner: null,
         loadingSpinner: null,
         githubRepos: null,
@@ -100,11 +96,8 @@
         elements.repoFilter = document.getElementById('repo-filter');
         elements.languageFilter = document.getElementById('language-filter');
         elements.repoSort = document.getElementById('repo-sort');
-        elements.featuredContainer = document.getElementById('featured-container');
-        elements.featuredProject = document.getElementById('featured-project');
-        elements.featuredPrev = document.getElementById('featured-prev');
-        elements.featuredNext = document.getElementById('featured-next');
-        elements.featuredCounter = document.getElementById('featured-counter');
+        elements.featuredGrid = document.getElementById('featured-grid');
+        elements.featuredEmpty = document.getElementById('featured-empty');
         elements.featuredLoadingSpinner = document.getElementById('featured-loading-spinner');
         elements.loadingSpinner = document.getElementById('loading-spinner');
         elements.githubRepos = document.getElementById('github-repos');
@@ -210,10 +203,7 @@
                 toggleAnimations();
             }
 
-            // Carousel navigation (only when visible)
-            if (!elements.featuredContainer || elements.featuredContainer.style.display === 'none') return;
-            if (e.key === 'ArrowLeft') navigateFeatured(-1);
-            if (e.key === 'ArrowRight') navigateFeatured(1);
+            // Carousel navigation removed - using static grid now
         });
     }
 
@@ -228,83 +218,195 @@
     }
 
     // ========================================
-    // FEATURED CAROUSEL
+    // FEATURED PROJECTS GRID (Replaced Carousel)
     // ========================================
     function initFeaturedCarousel() {
-        if (!elements.featuredPrev || !elements.featuredNext) return;
-
-        elements.featuredPrev.addEventListener('click', () => navigateFeatured(-1));
-        elements.featuredNext.addEventListener('click', () => navigateFeatured(1));
-        // Keyboard navigation moved to initKeyboardNavigation to avoid duplicate listeners
+        // No longer needed - grid is static now
+        // Keeping function for compatibility
     }
 
     function navigateFeatured(direction) {
-        if (state.featuredRepos.length === 0) return;
-
-        state.featuredIndex = (state.featuredIndex + direction + state.featuredRepos.length) % state.featuredRepos.length;
-        renderFeatured();
+        // No longer needed - grid is static now
     }
 
     function renderFeatured() {
-        if (!elements.featuredProject || state.featuredRepos.length === 0) return;
+        if (!elements.featuredGrid || state.featuredRepos.length === 0) return;
 
-        const repo = state.featuredRepos[state.featuredIndex];
-        const html = createFeaturedCardHTML(repo);
-        elements.featuredProject.innerHTML = html;
-        updateFeaturedCounter();
-        updateFeaturedButtons();
+        const html = state.featuredRepos.map((repo, index) => createFeaturedCardHTML(repo, index)).join('');
+        elements.featuredGrid.innerHTML = html;
     }
 
-    function createFeaturedCardHTML(repo) {
+    /**
+     * Creates HTML for a featured project card with thumbnail
+     * @param {Object} repo - Repository object
+     * @param {number} index - Index for animation delay
+     * @returns {string} HTML string
+     */
+    function createFeaturedCardHTML(repo, index) {
         const description = repo.description || 'No description available';
         const stars = repo.stargazers_count || 0;
+        const forks = repo.forks_count || 0;
         const language = repo.language || 'Unknown';
         const url = isValidUrl(repo.html_url) ? repo.html_url : '#';
         const homepage = isValidUrl(repo.homepage) ? repo.homepage : null;
 
+        // Generate tech tags based on language and common technologies
+        const tags = generateTechTags(repo);
+
+        // Get a gradient background for thumbnail based on repo name
+        const gradient = getRepoGradient(repo.name);
+
         return `
-            <div class="featured-card">
-                <h3 class="featured-title">${escapeHtml(repo.name)}</h3>
-                <p class="featured-description">${escapeHtml(description)}</p>
-                <div class="featured-meta">
-                    <span class="featured-language"><i class="fas fa-code"></i> ${escapeHtml(language)}</span>
-                    <span class="featured-stars"><i class="fas fa-star"></i> ${stars}</span>
+            <article class="featured-card" style="animation-delay: ${index * 0.1}s;" aria-label="${escapeHtml(repo.name)} project">
+                <div class="featured-card-thumbnail" style="background: ${gradient};">
+                    ${homepage ? `
+                        <img src="${homepage}" 
+                             alt="${escapeHtml(repo.name)} preview" 
+                             loading="lazy"
+                             onerror="this.style.display='none'">
+                    ` : ''}
+                    ${!homepage ? `
+                        <div style="display: flex; align-items: center; justify-content: center; height: 100%;">
+                            <i class="fas fa-project-diagram" style="font-size: 3rem; color: rgba(255,255,255,0.3);"></i>
+                        </div>
+                    ` : ''}
                 </div>
-                <div class="featured-links">
-                    <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" class="btn btn-primary">
-                        <i class="fab fa-github"></i> View on GitHub
-                    </a>
-                    ${homepage ? `<a href="${escapeHtml(homepage)}" target="_blank" rel="noopener noreferrer" class="btn btn-outline-primary">
-                        <i class="fas fa-external-link-alt"></i> Live Demo
-                    </a>` : ''}
+                <div class="featured-card-content">
+                    <h3 class="featured-card-title">${escapeHtml(repo.name)}</h3>
+                    <p class="featured-card-description">${escapeHtml(description)}</p>
+                    
+                    <div class="featured-card-tags" role="list" aria-label="Technologies used">
+                        ${tags.map(tag => `
+                            <span class="featured-tag" role="listitem">
+                                <i class="${tag.icon}" aria-hidden="true"></i>
+                                ${escapeHtml(tag.name)}
+                            </span>
+                        `).join('')}
+                    </div>
+                    
+                    <div class="featured-card-actions">
+                        <a href="${escapeHtml(url)}" 
+                           target="_blank" 
+                           rel="noopener noreferrer" 
+                           class="btn btn-primary"
+                           aria-label="View ${escapeHtml(repo.name)} code on GitHub">
+                            <i class="fab fa-github" aria-hidden="true"></i> Code
+                        </a>
+                        ${homepage ? `
+                            <a href="${escapeHtml(homepage)}" 
+                               target="_blank" 
+                               rel="noopener noreferrer" 
+                               class="btn btn-outline"
+                               aria-label="View ${escapeHtml(repo.name)} live demo">
+                                <i class="fas fa-external-link-alt" aria-hidden="true"></i> Live
+                            </a>
+                        ` : ''}
+                    </div>
                 </div>
-            </div>
+                ${stars > 0 ? `
+                    <div class="star-badge" aria-label="${stars} stars">
+                        <i class="fas fa-star" aria-hidden="true"></i>
+                    </div>
+                ` : ''}
+            </article>
         `;
     }
 
-    function updateFeaturedCounter() {
-        if (elements.featuredCounter) {
-            elements.featuredCounter.textContent = `${state.featuredIndex + 1} / ${state.featuredRepos.length}`;
+    /**
+     * Generates technology tags based on repo language and common patterns
+     * @param {Object} repo - Repository object
+     * @returns {Array} Array of tag objects
+     */
+    function generateTechTags(repo) {
+        const tags = [];
+        const language = repo.language || '';
+        const name = repo.name.toLowerCase();
+
+        // Map language to tag
+        const languageTags = {
+            'JavaScript': { name: 'JavaScript', icon: 'fab fa-js' },
+            'TypeScript': { name: 'TypeScript', icon: 'fab fa-js' },
+            'Python': { name: 'Python', icon: 'fab fa-python' },
+            'HTML': { name: 'HTML', icon: 'fab fa-html5' },
+            'CSS': { name: 'CSS', icon: 'fab fa-css3-alt' },
+            'React': { name: 'React', icon: 'fab fa-react' },
+            'Vue': { name: 'Vue', icon: 'fab fa-vuejs' },
+            'PHP': { name: 'PHP', icon: 'fab fa-php' },
+            'Java': { name: 'Java', icon: 'fab fa-java' },
+            'C#': { name: 'C#', icon: 'fas fa-code' },
+            'Ruby': { name: 'Ruby', icon: 'fas fa-gem' },
+            'Go': { name: 'Go', icon: 'fas fa-code' },
+            'Rust': { name: 'Rust', icon: 'fas fa-cog' },
+            'Shell': { name: 'Shell', icon: 'fas fa-terminal' }
+        };
+
+        // Add language tag
+        if (languageTags[language]) {
+            tags.push(languageTags[language]);
+        } else if (language) {
+            tags.push({ name: language, icon: 'fas fa-code' });
         }
+
+        // Add additional tags based on repo name
+        if (name.includes('portfolio') || name.includes('website')) {
+            tags.push({ name: 'Web', icon: 'fas fa-globe' });
+        }
+        if (name.includes('api')) {
+            tags.push({ name: 'API', icon: 'fas fa-server' });
+        }
+        if (name.includes('game')) {
+            tags.push({ name: 'Game', icon: 'fas fa-gamepad' });
+        }
+
+        // Limit to 3 tags for clean display
+        return tags.slice(0, 3);
+    }
+
+    /**
+     * Gets a gradient background based on repo name for visual variety
+     * @param {string} repoName - Repository name
+     * @returns {string} CSS gradient value
+     */
+    function getRepoGradient(repoName) {
+        const gradients = [
+            'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+            'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)',
+            'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)',
+            'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)',
+            'linear-gradient(135deg, #fa709a 0%, #fee140 100%)',
+            'linear-gradient(135deg, #a8edea 0%, #fed6e3 100%)',
+            'linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%)',
+            'linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%)',
+            'linear-gradient(135deg, #2d7a4e 0%, #1a3a28 100%)',
+            'linear-gradient(135deg, #2c3e50 0%, #4ca1af 100%)'
+        ];
+
+        // Use consistent hash based on repo name
+        let hash = 0;
+        for (let i = 0; i < repoName.length; i++) {
+            hash = repoName.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        const index = Math.abs(hash) % gradients.length;
+        return gradients[index];
+    }
+
+    function updateFeaturedCounter() {
+        // No longer needed - grid is static now
     }
 
     function updateFeaturedButtons() {
-        if (elements.featuredPrev) {
-            elements.featuredPrev.disabled = state.featuredRepos.length <= 1;
-            elements.featuredPrev.setAttribute('aria-disabled', state.featuredRepos.length <= 1);
-        }
-        if (elements.featuredNext) {
-            elements.featuredNext.disabled = state.featuredRepos.length <= 1;
-            elements.featuredNext.setAttribute('aria-disabled', state.featuredRepos.length <= 1);
-        }
+        // No longer needed - grid is static now
     }
 
     function showFeaturedLoading() {
         if (elements.featuredLoadingSpinner) {
             elements.featuredLoadingSpinner.style.display = 'block';
         }
-        if (elements.featuredContainer) {
-            elements.featuredContainer.style.display = 'none';
+        if (elements.featuredGrid) {
+            elements.featuredGrid.style.display = 'none';
+        }
+        if (elements.featuredEmpty) {
+            elements.featuredEmpty.style.display = 'none';
         }
     }
 
@@ -312,8 +414,21 @@
         if (elements.featuredLoadingSpinner) {
             elements.featuredLoadingSpinner.style.display = 'none';
         }
-        if (elements.featuredContainer && state.featuredRepos.length > 0) {
-            elements.featuredContainer.style.display = 'block';
+        
+        if (state.featuredRepos.length > 0) {
+            if (elements.featuredGrid) {
+                elements.featuredGrid.style.display = 'grid';
+            }
+            if (elements.featuredEmpty) {
+                elements.featuredEmpty.style.display = 'none';
+            }
+        } else {
+            if (elements.featuredGrid) {
+                elements.featuredGrid.style.display = 'none';
+            }
+            if (elements.featuredEmpty) {
+                elements.featuredEmpty.style.display = 'block';
+            }
         }
     }
 
@@ -613,14 +728,17 @@
         // Hide skeleton loaders and show error message
         document.querySelectorAll('.skeleton-repo-card').forEach(el => el.style.display = 'none');
 
-        if (elements.featuredContainer) {
-            elements.featuredContainer.innerHTML = `
-                <div class="alert alert-warning" role="alert">
-                    <i class="fas fa-exclamation-triangle"></i>
-                    Failed to load featured projects. Please refresh the page.
+        if (elements.featuredGrid) {
+            elements.featuredGrid.innerHTML = `
+                <div class="col-12 text-center py-4">
+                    <div class="alert alert-warning" role="alert" style="max-width: 500px; margin: 0 auto;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <strong>Unable to load featured projects</strong>
+                        <p class="mb-0 mt-2">Please refresh the page to try again.</p>
+                    </div>
                 </div>
             `;
-            elements.featuredContainer.style.display = 'block';
+            elements.featuredGrid.style.display = 'grid';
         }
 
         if (elements.githubRepos) {
