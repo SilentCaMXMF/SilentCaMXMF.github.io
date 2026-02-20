@@ -245,6 +245,7 @@ body::before {
   letter-spacing: -0.02em;
   font-weight: 700;
   position: relative;
+  text-align: center;
 }
 
 .summary-content .lead {
