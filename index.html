@@ -734,104 +734,16 @@
                 </div>
             </section>
 
-            <section id="github-repos-section" class="container py-5">
+            <section id="github-repos-section" class="container py-5 text-center">
                 <h2 class="section-title">All Projects</h2>
-                <div class="project-controls" role="search" aria-label="Project search and filter">
-                    <div class="search-filter">
-                        <label for="repo-filter" class="sr-only">Search projects</label>
-                        <i class="fas fa-search" aria-hidden="true"></i>
-                        <input type="text" id="repo-filter"
-                               placeholder="Search projects..."
-                               aria-label="Search projects by name, description, or language"
-                               aria-describedby="repo-filter-help">
-                        <span id="repo-filter-help" class="sr-only">
-                            Type to filter the list of projects below. You can search by project name, description, or programming language.
-                        </span>
-                    </div>
-                    <div class="filter-group">
-                        <label for="language-filter" class="sr-only">Filter by programming language</label>
-                        <select id="language-filter" aria-label="Filter by programming language">
-                            <option value="">All Languages</option>
-                            <!-- Options populated dynamically -->
-                        </select>
-                    </div>
-                    <label for="repo-sort" class="sr-only">Sort projects</label>
-                    <select id="repo-sort" aria-label="Sort projects by">
-                        <option value="name">Sort by Name</option>
-                        <option value="updated">Sort by Recent</option>
-                        <option value="stars">Sort by Stars</option>
-                    </select>
-                </div>
-                <div id="loading-spinner" class="text-center my-4" role="status" aria-live="polite">
-                    <div class="spinner-border" role="status">
-                        <span class="visually-hidden">Loading projects from GitHub...</span>
-                    </div>
-                </div>
-                <div id="github-repos" 
-                     class="row gy-4" 
-                     role="list" 
-                     aria-live="polite" 
-                     aria-busy="true"
-                     aria-label="GitHub repositories">
-                    <!-- Skeleton loaders for initial render to prevent CLS -->
-                    <div class="col-md-6 col-lg-4 skeleton-repo-card" aria-hidden="true">
-                        <div class="card h-100 skeleton-card">
-                            <div class="card-body">
-                                <div class="skeleton skeleton-title"></div>
-                                <div class="skeleton skeleton-text"></div>
-                                <div class="skeleton skeleton-text"></div>
-                                <div class="skeleton skeleton-text"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="skeleton skeleton-text" style="height: 20px; width: 40%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 skeleton-repo-card" aria-hidden="true">
-                        <div class="card h-100 skeleton-card">
-                            <div class="card-body">
-                                <div class="skeleton skeleton-title"></div>
-                                <div class="skeleton skeleton-text"></div>
-                                <div class="skeleton skeleton-text"></div>
-                                <div class="skeleton skeleton-text"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="skeleton skeleton-text" style="height: 20px; width: 40%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-lg-4 skeleton-repo-card" aria-hidden="true">
-                        <div class="card h-100 skeleton-card">
-                            <div class="card-body">
-                                <div class="skeleton skeleton-title"></div>
-                                <div class="skeleton skeleton-text"></div>
-                                <div class="skeleton skeleton-text"></div>
-                                <div class="skeleton skeleton-text"></div>
-                            </div>
-                            <div class="card-footer">
-                                <div class="skeleton skeleton-text" style="height: 20px; width: 40%;"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div id="no-repos-message" class="text-center mt-4" role="status" aria-live="assertive" style="display: none;">
-                    <p>No projects found matching your criteria.</p>
-                </div>
-                
-                <!-- Fallback for users without JavaScript -->
-                <noscript>
-                    <div class="container py-4">
-                        <div class="alert alert-info" role="alert">
-                            <i class="fas fa-info-circle" aria-hidden="true"></i>
-                            <strong>JavaScript Required</strong>
-                            <p class="mb-0">This section loads projects dynamically from GitHub. To view my projects, please:</p>
-                            <ul class="mb-0 mt-2">
-                                <li>Enable JavaScript in your browser, or</li>
-                                <li><a href="https://github.com/SilentCaMXMF" target="_blank" rel="noopener noreferrer">View my GitHub profile directly</a></li>
-                            </ul>
-                        </div>
-                    </div>
-                </noscript>
+                <p class="lead mb-4">Explore all my projects, contributions, and repositories on GitHub.</p>
+                <a href="https://github.com/SilentCaMXMF" 
+                   target="_blank" 
+                   rel="noopener noreferrer"
+                   class="btn btn-primary btn-lg"
+                   aria-label="View all projects on GitHub">
+                    <i class="fab fa-github me-2" aria-hidden="true"></i>View All Projects
+                </a>
             </section>
         </main>
 
